@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Envs
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+
+# Snapshots (never commit outputs)
+.repo-runner/
+.repo-runner-output/
+
+# IDE
+.vscode/
+.idea/
