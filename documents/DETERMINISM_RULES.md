@@ -46,3 +46,6 @@ Repo-runner should fail hard if:
 - roots escape repo boundary (if enforced)
 - unreadable files in the included set
 - output snapshot folder already exists
+
+Exporters must consume the canonical scanned file set.
+Exporters must not independently walk the filesystem.

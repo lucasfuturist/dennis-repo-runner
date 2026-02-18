@@ -75,6 +75,12 @@ Responsibility:
 - Exporters must not change canonical snapshot data
 - Exporters must read from the same scanned set to remain consistent
 
+Example Exporter:
+- FlattenMarkdownExporter
+  - Produces a deterministic flattened tree and optional file bodies.
+  - Intended for context assembly (e.g., Dennis).
+  - Must not influence manifest.json or structure.json.
+
 ## Data Flow Rules
 
 - No component may “reach backward” and mutate earlier outputs.
@@ -90,3 +96,4 @@ Responsibility:
 - Diagram projection
 
 Those are introduced in v0.2+ with separate specs.
+

@@ -146,3 +146,14 @@ Optional pointer for convenience:
 }
 
 Overwriting current.json is allowed.
+
+## Snapshot Resolution Policy
+
+When invoked without explicit snapshot_id:
+- Repo-runner or its consumer may default to current.json pointer.
+
+If snapshot_id is provided:
+- The specified snapshot folder must exist.
+- If not found, fail explicitly.
+
+Snapshot resolution does not mutate snapshots.
