@@ -1,17 +1,3 @@
-Good. This is the moment to formalize it properly.
-
-Below is a clean, production-grade `README.md` for **repo-runner v0.1** reflecting:
-
-* snapshot-first architecture
-* deterministic guarantees
-* flatten exporter (list_tree replacement)
-* current snapshot defaulting
-* strict separation from Dennis
-
-You can drop this directly into the repo root.
-
----
-
 # repo-runner
 
 Deterministic repository structure compiler.

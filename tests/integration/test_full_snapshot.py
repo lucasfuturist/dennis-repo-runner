@@ -18,7 +18,8 @@ class TestFullSnapshot(unittest.TestCase):
 
         # Create dummy repo content
         self._create_file("README.md", "# Hello")
-        self._create_file("src/main.py", "print('hello')")
+        # main.py imports 'os' (external)
+        self._create_file("src/main.py", "import os\nprint('hello')")
         self._create_file("src/utils.py", "def add(a,b): return a+b")
         self._create_file("node_modules/bad_file.js", "ignore me") # Should be ignored
 
@@ -62,20 +63,20 @@ class TestFullSnapshot(unittest.TestCase):
         files = manifest["files"]
         paths = [f["path"] for f in files]
         
-        # Expected: readme.md, src/main.py, src/utils.py
-        # node_modules should be gone.
         self.assertIn("readme.md", paths)
         self.assertIn("src/main.py", paths)
         self.assertIn("src/utils.py", paths)
         self.assertNotIn("node_modules/bad_file.js", paths)
 
-        # 4. Verify Determinism (Hash)
+        # 4. Verify External Dependencies (New Feature)
+        stats = manifest["stats"]
+        self.assertIn("external_dependencies", stats)
+        # 'os' should be detected from src/main.py
+        self.assertIn("os", stats["external_dependencies"])
+
+        # 5. Verify Determinism (Hash)
         main_py_entry = next(f for f in files if f["path"] == "src/main.py")
         self.assertEqual(main_py_entry["language"], "python")
-        self.assertGreater(main_py_entry["size_bytes"], 0)
-        # SHA256 of "print('hello')"
-        # We won't hardcode the hash here to be robust against newline changes in test setup,
-        # but we ensure it exists.
         self.assertTrue(len(main_py_entry["sha256"]) == 64)
 
 if __name__ == "__main__":

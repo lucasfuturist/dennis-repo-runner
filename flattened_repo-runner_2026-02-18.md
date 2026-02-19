@@ -2,7 +2,7 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `33`
+- file_count: `57`
 - tree_only: `False`
 ## Tree
 
@@ -24,34 +24,63 @@
 ├── scripts
 │   ├── build_exe.ps1
 │   ├── export-signal.ps1
+│   ├── generate_test_repo.ps1
 │   └── package-repo.ps1
-└── src
+├── src
+│   ├── __init__.py
+│   ├── analysis
+│   │   ├── __init__.py
+│   │   ├── graph_builder.py
+│   │   └── import_scanner.py
+│   ├── cli
+│   │   ├── __init__.py
+│   │   └── main.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── controller.py
+│   │   └── types.py
+│   ├── entry_point.py
+│   ├── exporters
+│   │   └── flatten_markdown_exporter.py
+│   ├── fingerprint
+│   │   └── file_fingerprint.py
+│   ├── gui
+│   │   ├── __init__.py
+│   │   ├── app.py
+│   │   └── components
+│   │       ├── config_tabs.py
+│   │       ├── export_preview.py
+│   │       ├── preview_pane.py
+│   │       └── tree_view.py
+│   ├── normalize
+│   │   └── path_normalizer.py
+│   ├── scanner
+│   │   └── filesystem_scanner.py
+│   ├── snapshot
+│   │   ├── snapshot_loader.py
+│   │   └── snapshot_writer.py
+│   └── structure
+│       └── structure_builder.py
+└── tests
     ├── __init__.py
-    ├── cli
+    ├── integration
     │   ├── __init__.py
-    │   └── main.py
-    ├── entry_point.py
-    ├── exporters
-    │   └── flatten_markdown_exporter.py
-    ├── fingerprint
-    │   └── file_fingerprint.py
-    ├── gui
-    │   ├── __init__.py
-    │   ├── app.py
-    │   └── components
-    │       ├── config_tabs.py
-    │       ├── export_preview.py
-    │       ├── preview_pane.py
-    │       └── tree_view.py
-    ├── normalize
-    │   └── path_normalizer.py
-    ├── scanner
-    │   └── filesystem_scanner.py
-    ├── snapshot
-    │   ├── snapshot_loader.py
-    │   └── snapshot_writer.py
-    └── structure
-        └── structure_builder.py
+    │   ├── test_full_snapshot.py
+    │   ├── test_robustness.py
+    │   └── test_snapshot_flow.py
+    └── unit
+        ├── __init__.py
+        ├── test_filesystem_scanner.py
+        ├── test_fingerprint_hardening.py
+        ├── test_flatten_exporter.py
+        ├── test_graph_builder.py
+        ├── test_ignore_logic.py
+        ├── test_import_scanner.py
+        ├── test_normalizer.p
+        ├── test_path_normalizer.py
+        ├── test_scanner_hardening.py
+        ├── test_structure.py
+        └── test_structure_builder.py
 ```
 
 ## File Contents
@@ -871,20 +900,6 @@ Tool version and schema_version are related but distinct.
 ### `readme.md`
 
 ```
-Good. This is the moment to formalize it properly.
-
-Below is a clean, production-grade `README.md` for **repo-runner v0.1** reflecting:
-
-* snapshot-first architecture
-* deterministic guarantees
-* flatten exporter (list_tree replacement)
-* current snapshot defaulting
-* strict separation from Dennis
-
-You can drop this directly into the repo root.
-
----
-
 # repo-runner
 
 Deterministic repository structure compiler.
@@ -1462,6 +1477,129 @@ Write-Host ("wrote zip:     {0}" -f $ZipOut)
 Write-Host "DONE."
 ```
 
+### `scripts/generate_test_repo.ps1`
+
+```
+param(
+    [string]$BasePath = "tests\fixtures",
+    [switch]$SkipSnapshot = $false
+)
+
+$ErrorActionPreference = "Stop"
+
+# Create unique timestamped name
+$Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$RepoName = "repo_$Timestamp"
+$RepoPath = Join-Path $BasePath $RepoName
+
+# Ensure directory exists
+if (-not (Test-Path $RepoPath)) {
+    New-Item -ItemType Directory -Path $RepoPath -Force | Out-Null
+}
+
+Write-Host "Generating random test repo at: $RepoPath" -ForegroundColor Cyan
+
+# Helper to write files
+function New-File($RelPath, $Content) {
+    $Full = Join-Path $RepoPath $RelPath
+    $Dir = Split-Path -Parent $Full
+    if (-not (Test-Path $Dir)) {
+        New-Item -ItemType Directory -Path $Dir -Force | Out-Null
+    }
+    # Note: PowerShell 5.1 'UTF8' adds BOM. This effectively tests our BOM stripping logic!
+    Set-Content -Path $Full -Value $Content -Encoding UTF8
+    Write-Host "  + $RelPath" -ForegroundColor Gray
+}
+
+# 1. Root Files
+New-File "README.md" "# Test Repo $Timestamp`n`nGenerated for semantic import testing."
+New-File "requirements.txt" "requests`nnumpy`npandas"
+
+# 2. Python Source
+New-File "src\main.py" @"
+import os
+import sys
+from utils.logger import log_msg
+
+def main():
+    print(os.getcwd())
+    log_msg('Start')
+"@
+
+New-File "src\utils\logger.py" @"
+import datetime
+# This is a comment
+def log_msg(msg):
+    print(f'{datetime.datetime.now()}: {msg}')
+"@
+
+New-File "src\utils\__init__.py" ""
+
+# 3. TypeScript / JS Source
+New-File "frontend\app.tsx" @"
+import React from 'react';
+import { Button } from './components/Button';
+import './styles.css';
+
+export const App = () => <Button />;
+"@
+
+New-File "frontend\components\Button.tsx" @"
+import { useState } from 'react';
+export const Button = () => <button>Click</button>;
+"@
+
+New-File "frontend\legacy.js" @"
+const fs = require('fs');
+const path = require('path');
+// require('ignored');
+"@
+
+# 4. Nested Deep Logic (Ignored by default configs usually, but let's check imports)
+New-File "scripts\deploy.py" @"
+import boto3
+import json
+"@
+
+Write-Host "`nGeneration Done." -ForegroundColor Green
+
+if (-not $SkipSnapshot) {
+    Write-Host "`nRunning Snapshot Capture..." -ForegroundColor Yellow
+    
+    # Define output folder inside the fixture
+    $OutputDir = Join-Path $RepoPath "output"
+    
+    # Determine Project Root (parent of 'scripts') to run python module correctly
+    $ScriptDir = Split-Path -Parent $PSCommandPath
+    $ProjectRoot = (Resolve-Path (Join-Path $ScriptDir "..")).Path
+    
+    # We must ignore the output directory so the scanner doesn't scan the results
+    # Standard ignores + 'output'
+    $Ignores = @(".git", "node_modules", "__pycache__", "dist", "build", ".next", ".expo", ".venv", "output")
+    
+    Push-Location $ProjectRoot
+    try {
+        # Run src.cli.main with --export-flatten
+        # We assume 'python' is in PATH.
+        python -m src.cli.main snapshot "$RepoPath" --output-root "$OutputDir" --ignore $Ignores --export-flatten
+        
+        Write-Host "`nSnapshot Success!" -ForegroundColor Green
+        Write-Host "Output located at: $OutputDir" -ForegroundColor Gray
+        Write-Host "Flattened export:  $OutputDir\<SNAPSHOT_ID>\exports\flatten.md" -ForegroundColor Gray
+    }
+    catch {
+        Write-Error "Failed to run snapshot: $_"
+    }
+    finally {
+        Pop-Location
+    }
+} else {
+    Write-Host "Skipping snapshot run." -ForegroundColor Gray
+    Write-Host "To run manually:" -ForegroundColor Yellow
+    Write-Host "python -m src.cli.main snapshot $RepoPath --output-root $RepoPath/output --export-flatten" -ForegroundColor White
+}
+```
+
 ### `scripts/package-repo.ps1`
 
 ```
@@ -1635,6 +1773,269 @@ Write-Host "log:  $RoboLog"
 
 ```
 
+### `src/analysis/__init__.py`
+
+```
+# src/analysis/__init__.py
+```
+
+### `src/analysis/graph_builder.py`
+
+```
+import os
+from typing import List, Dict, Set, Optional
+from src.core.types import FileEntry, GraphStructure, GraphNode, GraphEdge
+
+class GraphBuilder:
+    def build(self, files: List[FileEntry]) -> GraphStructure:
+        """
+        Constructs a dependency graph from a list of FileEntries.
+        Resolves raw import strings to stable_ids where possible.
+        """
+        
+        # 1. Build Lookup Maps
+        # path -> stable_id (e.g., "src/utils/logger.py" -> "file:src/utils/logger.py")
+        # Ensure keys are lowercased for case-insensitive lookup, matching normalizer behavior.
+        path_map: Dict[str, str] = {f["path"].lower(): f["stable_id"] for f in files}
+        
+        nodes: List[GraphNode] = []
+        edges: List[GraphEdge] = []
+        
+        # Add all file nodes
+        for f in files:
+            nodes.append({
+                "id": f["stable_id"],
+                "type": "file"
+            })
+
+        # 2. Iterate and Resolve Imports
+        for f in files:
+            source_id = f["stable_id"]
+            source_path = f["path"]
+            source_dir = os.path.dirname(source_path)
+            lang = f["language"]
+
+            for raw_import in f["imports"]:
+                target_id = self._resolve_import(raw_import, source_dir, lang, path_map)
+                
+                if target_id:
+                    edges.append({
+                        "source": source_id,
+                        "target": target_id,
+                        "relation": "imports"
+                    })
+                else:
+                    # Optional: Add external/unresolved node
+                    pass
+
+        return {
+            "schema_version": "1.0",
+            "nodes": nodes,
+            "edges": edges
+        }
+
+    def _resolve_import(
+        self, 
+        import_str: str, 
+        source_dir: str, 
+        language: str, 
+        path_map: Dict[str, str]
+    ) -> Optional[str]:
+        """
+        Heuristic resolution logic.
+        """
+        if language == "python":
+            return self._resolve_python(import_str, source_dir, path_map)
+        elif language in ("javascript", "typescript"):
+            return self._resolve_js(import_str, source_dir, path_map)
+        return None
+
+    def _resolve_python(
+        self, 
+        import_str: str, 
+        source_dir: str, 
+        path_map: Dict[str, str]
+    ) -> Optional[str]:
+        # Convert dots to slashes: "utils.logger" -> "utils/logger"
+        base_path = import_str.replace(".", "/")
+        
+        # Candidates to check
+        candidates = []
+
+        # 1. Repo-relative match (absolute import from root)
+        # e.g. "utils/logger" -> "utils/logger.py"
+        candidates.append(f"{base_path}.py")
+        candidates.append(f"{base_path}/__init__.py")
+
+        # 2. Source-relative match (sibling or sub-package import)
+        # e.g. source="src", import="utils.logger" -> "src/utils/logger.py"
+        # We use os.path.join but must force forward slashes
+        rel_base = os.path.join(source_dir, base_path).replace("\\", "/")
+        candidates.append(f"{rel_base}.py")
+        candidates.append(f"{rel_base}/__init__.py")
+
+        for c in candidates:
+            c_lower = c.lower()
+            if c_lower in path_map:
+                return path_map[c_lower]
+
+        return None
+
+    def _resolve_js(
+        self, 
+        import_str: str, 
+        source_dir: str, 
+        path_map: Dict[str, str]
+    ) -> Optional[str]:
+        
+        # 1. External packages (lodash, react) -> Skip
+        if not import_str.startswith("."):
+            return None
+
+        # 2. Relative resolution
+        try:
+            joined = os.path.join(source_dir, import_str)
+            normalized = os.path.normpath(joined).replace("\\", "/")
+        except ValueError:
+            return None
+
+        # 3. Extensions probing
+        extensions = ["", ".ts", ".tsx", ".js", ".jsx", ".d.ts", ".json"]
+        
+        for ext in extensions:
+            candidate = f"{normalized}{ext}"
+            candidate_lower = candidate.lower()
+            if candidate_lower in path_map:
+                return path_map[candidate_lower]
+                
+        # 4. Index probing
+        index_extensions = [".ts", ".tsx", ".js", ".jsx"]
+        for ext in index_extensions:
+            candidate = f"{normalized}/index{ext}"
+            candidate_lower = candidate.lower()
+            if candidate_lower in path_map:
+                return path_map[candidate_lower]
+                
+        return None
+```
+
+### `src/analysis/import_scanner.py`
+
+```
+import re
+import ast
+import os
+from typing import List, Set
+
+class ImportScanner:
+    # --- JavaScript / TypeScript Patterns (Regex) ---
+    
+    # 1. import ... from 'x' (Supports multi-line via [\s\S]*?)
+    _JS_IMPORT_FROM = re.compile(r'import\s+[\s\S]*?from\s+[\'"]([^\'"]+)[\'"]')
+    
+    # 2. import 'x' (Side effect)
+    _JS_IMPORT_SIDE_EFFECT = re.compile(r'import\s+[\'"]([^\'"]+)[\'"]')
+    
+    # 3. require('x')
+    _JS_REQUIRE = re.compile(r'require\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
+
+    # Comment Stripping
+    _JS_BLOCK_COMMENT = re.compile(r'/\*[\s\S]*?\*/')
+    _JS_LINE_COMMENT = re.compile(r'//.*')
+
+    @staticmethod
+    def scan(path: str, language: str) -> List[str]:
+        """
+        Scans a file for import statements based on its language.
+        Returns a sorted list of unique import targets.
+        """
+        if language not in ("python", "javascript", "typescript"):
+            return []
+
+        try:
+            # Limit read size to 1MB
+            # Use 'utf-8-sig' to automatically consume BOM on Windows files
+            with open(path, 'r', encoding='utf-8-sig', errors='ignore') as f:
+                content = f.read(1_000_000)
+        except OSError:
+            return []
+
+        imports: Set[str] = set()
+
+        if language == "python":
+            ImportScanner._scan_python(content, imports)
+        elif language in ("javascript", "typescript"):
+            ImportScanner._scan_js(content, imports)
+
+        return sorted(list(imports))
+
+    @staticmethod
+    def _scan_python(content: str, imports: Set[str]):
+        """
+        Uses Python's native AST to extract imports reliably.
+        """
+        try:
+            tree = ast.parse(content)
+        except SyntaxError:
+            # If the file is invalid Python, we simply skip scanning imports
+            # rather than crashing the tool.
+            return
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    imports.add(alias.name)
+            
+            elif isinstance(node, ast.ImportFrom):
+                # Handle 'from x import y' -> module='x'
+                # Handle 'from . import y' -> module=None, level=1
+                
+                module_name = node.module or ""
+                
+                # Reconstruct relative imports
+                # level 1 = ., level 2 = .., etc.
+                if node.level > 0:
+                    prefix = "." * node.level
+                    
+                    # Special Case: 'from . import sibling'
+                    # If module is empty but we have a level, the 'names' are likely submodules.
+                    if not module_name:
+                        for alias in node.names:
+                            imports.add(prefix + alias.name)
+                        continue
+                    
+                    module_name = prefix + module_name
+                
+                if module_name:
+                    imports.add(module_name)
+
+    @staticmethod
+    def _scan_js(content: str, imports: Set[str]):
+        """
+        Uses Regex heuristics to extract JS/TS imports.
+        """
+        # 1. Strip Comments to avoid false positives
+        clean_content = ImportScanner._JS_BLOCK_COMMENT.sub('', content)
+        clean_content = ImportScanner._JS_LINE_COMMENT.sub('', clean_content)
+
+        # 2. Run Regex on the full cleaned content
+        
+        # import ... from '...'
+        for match in ImportScanner._JS_IMPORT_FROM.finditer(clean_content):
+            imports.add(match.group(1))
+            
+        # import '...' (side effect)
+        for match in ImportScanner._JS_IMPORT_SIDE_EFFECT.finditer(clean_content):
+            full_match = match.group(0)
+            # Heuristic: avoid capturing the "import" part of a "from" statement
+            if "from" not in full_match: 
+                imports.add(match.group(1))
+
+        # require('...')
+        for match in ImportScanner._JS_REQUIRE.finditer(clean_content):
+            imports.add(match.group(1))
+```
+
 ### `src/cli/__init__.py`
 
 ```
@@ -1645,20 +2046,7 @@ Write-Host "log:  $RoboLog"
 
 ```
 ﻿import argparse
-import os
-from typing import List, Optional
-
-from src.exporters.flatten_markdown_exporter import (
-    FlattenMarkdownExporter,
-    FlattenOptions,
-)
-from src.fingerprint.file_fingerprint import FileFingerprint
-from src.normalize.path_normalizer import PathNormalizer
-from src.scanner.filesystem_scanner import FileSystemScanner
-from src.snapshot.snapshot_loader import SnapshotLoader
-from src.snapshot.snapshot_writer import SnapshotWriter
-from src.structure.structure_builder import StructureBuilder
-
+from src.core.controller import run_snapshot, run_export_flatten
 
 def _parse_args():
     parser = argparse.ArgumentParser(prog="repo-runner", description="repo-runner v0.1")
@@ -1679,6 +2067,7 @@ def _parse_args():
     snap.add_argument("--no-include-readme", action="store_false", dest="include_readme")
     snap.add_argument("--write-current-pointer", action="store_true", default=True)
     snap.add_argument("--no-write-current-pointer", action="store_false", dest="write_current_pointer")
+    snap.add_argument("--export-flatten", action="store_true", help="Automatically generate flatten.md export")
 
     # export
     exp = sub.add_parser("export", help="Export derived artifacts from a snapshot")
@@ -1714,6 +2103,76 @@ def _parse_args():
     return parser.parse_args()
 
 
+def main():
+    args = _parse_args()
+
+    if args.command == "snapshot":
+        snap_id = run_snapshot(
+            repo_root=args.repo_root,
+            output_root=args.output_root,
+            depth=args.depth,
+            ignore=args.ignore,
+            include_extensions=args.include_extensions,
+            include_readme=args.include_readme,
+            write_current_pointer=args.write_current_pointer,
+            export_flatten=args.export_flatten,
+        )
+        print(f"Snapshot created: {snap_id}")
+        return
+
+    if args.command == "export" and args.export_command == "flatten":
+        out = run_export_flatten(
+            output_root=args.output_root,
+            repo_root=args.repo_root,
+            snapshot_id=args.snapshot_id,
+            output_path=args.output,
+            tree_only=args.tree_only,
+            include_readme=args.include_readme,
+            scope=args.scope,
+            title=args.title,
+        )
+        print(f"Wrote: {out}")
+        return
+    
+    if args.command == "ui":
+        from src.gui.app import run_gui
+        run_gui()
+        return
+
+    raise RuntimeError("Unhandled command")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+### `src/core/__init__.py`
+
+```
+# src/core/__init__.py
+```
+
+### `src/core/controller.py`
+
+```
+import os
+from typing import List, Optional, Set
+
+from src.core.types import Manifest, FileEntry
+from src.analysis.import_scanner import ImportScanner
+from src.analysis.graph_builder import GraphBuilder
+from src.exporters.flatten_markdown_exporter import (
+    FlattenMarkdownExporter,
+    FlattenOptions,
+)
+from src.fingerprint.file_fingerprint import FileFingerprint
+from src.normalize.path_normalizer import PathNormalizer
+from src.scanner.filesystem_scanner import FileSystemScanner
+from src.snapshot.snapshot_loader import SnapshotLoader
+from src.snapshot.snapshot_writer import SnapshotWriter
+from src.structure.structure_builder import StructureBuilder
+
+
 def _filter_by_extensions(abs_files: List[str], include_exts: List[str]) -> List[str]:
     if not include_exts:
         return abs_files
@@ -1738,12 +2197,17 @@ def run_snapshot(
     include_readme: bool,
     write_current_pointer: bool,
     explicit_file_list: Optional[List[str]] = None,
+    export_flatten: bool = False,
 ) -> str:
     """
     Creates a snapshot.
     If explicit_file_list is provided, it skips the directory scan and uses that exact list.
     """
     repo_root_abs = os.path.abspath(repo_root)
+
+    # FAIL FAST: If the repo root doesn't exist, stop immediately.
+    if not os.path.isdir(repo_root_abs):
+        raise ValueError(f"Repository root does not exist or is not a directory: {repo_root_abs}")
 
     if explicit_file_list is not None:
         # UI Override Mode: Use the list exactly as provided
@@ -1755,11 +2219,15 @@ def run_snapshot(
         absolute_files = _filter_by_extensions(absolute_files, include_extensions)
 
     normalizer = PathNormalizer(repo_root_abs)
-    file_entries = []
+    file_entries: List[FileEntry] = []
     total_bytes = 0
-    seen_ids = set()
+    seen_ids: Set[str] = set()
 
     for abs_path in absolute_files:
+        # Hardening: Check if file still exists before processing
+        if not os.path.exists(abs_path):
+            continue
+
         normalized = normalizer.normalize(abs_path)
 
         # In override mode, we assume the user already selected what they want, 
@@ -1780,31 +2248,46 @@ def run_snapshot(
 
         module_path = normalizer.module_path(normalized)
         
-        # Fingerprint might fail if file was deleted between scan and click
+        # Fingerprint might fail if file was deleted between scan and click,
+        # or if it is locked/unreadable.
         try:
             fp = FileFingerprint.fingerprint(abs_path)
             total_bytes += fp["size_bytes"]
             
-            file_entries.append(
-                {
-                    "stable_id": stable_id,
-                    "path": normalized,
-                    "module_path": module_path,
-                    **fp,
-                }
-            )
+            # Analyze Imports
+            # If import scanning fails, we default to empty list rather than crashing
+            try:
+                imports = ImportScanner.scan(abs_path, fp["language"])
+            except Exception:
+                imports = []
+
+            entry: FileEntry = {
+                "stable_id": stable_id,
+                "path": normalized,
+                "module_path": module_path,
+                "sha256": fp["sha256"],
+                "size_bytes": fp["size_bytes"],
+                "language": fp["language"],
+                "imports": imports
+            }
+            file_entries.append(entry)
         except OSError:
-            # If a file is unreadable or deleted, we skip it
+            # File unreadable, locked, or vanished. Skip.
             continue
 
     file_entries = sorted(file_entries, key=lambda x: x["path"])
 
+    # 1. Build Containment Structure
     structure = StructureBuilder().build(
         repo_id=PathNormalizer.repo_id(),
         files=file_entries,
     )
 
-    manifest = {
+    # 2. Build Dependency Graph
+    graph = GraphBuilder().build(file_entries)
+
+    # 3. Assemble Manifest
+    manifest: Manifest = {
         "schema_version": "1.0",
         "tool": {"name": "repo-runner", "version": "0.1.0"},
         "inputs": {
@@ -1828,14 +2311,38 @@ def run_snapshot(
             "total_bytes": total_bytes,
         },
         "files": file_entries,
+        "snapshot": {} # Populated by SnapshotWriter
     }
 
+    # 4. Write Snapshot
     writer = SnapshotWriter(output_root)
     snapshot_id = writer.write(
         manifest,
         structure,
+        graph=graph,
         write_current_pointer=write_current_pointer,
     )
+
+    # 5. Optional Auto-Export
+    if export_flatten:
+        exporter = FlattenMarkdownExporter()
+        # Default options for auto-export
+        options = FlattenOptions(
+            tree_only=False,
+            include_readme=True,
+            scope="full"
+        )
+        snapshot_dir = os.path.join(output_root, snapshot_id)
+        
+        # We reuse the manifest we just built to avoid re-reading from disk
+        exporter.export(
+            repo_root=repo_root_abs,
+            snapshot_dir=snapshot_dir,
+            manifest=manifest,
+            output_path=None, # Uses default: exports/flatten.md
+            options=options,
+            title=f"Auto Export: {snapshot_id}"
+        )
 
     return snapshot_id
 
@@ -1870,48 +2377,67 @@ def run_export_flatten(
         options=options,
         title=title,
     )
+```
 
+### `src/core/types.py`
 
-def main():
-    args = _parse_args()
+```
+from typing import TypedDict, List, Optional, Any, Dict
 
-    if args.command == "snapshot":
-        snap_id = run_snapshot(
-            repo_root=args.repo_root,
-            output_root=args.output_root,
-            depth=args.depth,
-            ignore=args.ignore,
-            include_extensions=args.include_extensions,
-            include_readme=args.include_readme,
-            write_current_pointer=args.write_current_pointer,
-        )
-        print(f"Snapshot created: {snap_id}")
-        return
+class FileEntry(TypedDict):
+    stable_id: str
+    path: str
+    module_path: str
+    sha256: str
+    size_bytes: int
+    language: str
+    imports: List[str]
 
-    if args.command == "export" and args.export_command == "flatten":
-        out = run_export_flatten(
-            output_root=args.output_root,
-            repo_root=args.repo_root,
-            snapshot_id=args.snapshot_id,
-            output_path=args.output,
-            tree_only=args.tree_only,
-            include_readme=args.include_readme,
-            scope=args.scope,
-            title=args.title,
-        )
-        print(f"Wrote: {out}")
-        return
-    
-    if args.command == "ui":
-        from src.gui.app import run_gui
-        run_gui()
-        return
+class SnapshotTool(TypedDict):
+    name: str
+    version: str
 
-    raise RuntimeError("Unhandled command")
+class SnapshotInputs(TypedDict):
+    repo_root: str
+    roots: List[str]
+    git: Dict[str, Any]
 
+class SnapshotConfig(TypedDict):
+    depth: int
+    ignore_names: List[str]
+    include_extensions: List[str]
+    include_readme: bool
+    tree_only: bool
+    manual_override: bool
 
-if __name__ == "__main__":
-    main()
+class SnapshotStats(TypedDict):
+    file_count: int
+    total_bytes: int
+
+class Manifest(TypedDict):
+    schema_version: str
+    tool: SnapshotTool
+    inputs: SnapshotInputs
+    config: SnapshotConfig
+    stats: SnapshotStats
+    files: List[FileEntry]
+    snapshot: Dict[str, Any]
+
+# --- Graph Types ---
+
+class GraphNode(TypedDict):
+    id: str  # stable_id
+    type: str  # file | module | external
+
+class GraphEdge(TypedDict):
+    source: str  # stable_id
+    target: str  # stable_id
+    relation: str  # imports | defines
+
+class GraphStructure(TypedDict):
+    schema_version: str
+    nodes: List[GraphNode]
+    edges: List[GraphEdge]
 ```
 
 ### `src/entry_point.py`
@@ -2137,12 +2663,24 @@ class FileFingerprint:
 
     @staticmethod
     def fingerprint(path: str) -> Dict:
+        """
+        Computes the fingerprint of a file.
+        Raises OSError if the file cannot be opened or read (e.g. locked, permissions).
+        """
         sha = hashlib.sha256()
+        
+        # We allow OSError to propagate so the caller (Controller) can decide 
+        # whether to skip the file or fail the run.
         with open(path, "rb") as f:
             for chunk in iter(lambda: f.read(8192), b""):
                 sha.update(chunk)
 
-        size = os.path.getsize(path)
+        try:
+            size = os.path.getsize(path)
+        except OSError:
+            # Fallback if getsize fails but read succeeded (rare race condition)
+            size = 0 
+
         ext = os.path.splitext(path)[1].lower()
         language = FileFingerprint.LANGUAGE_MAP.get(ext, "unknown")
 
@@ -2171,7 +2709,7 @@ import datetime
 
 from src.scanner.filesystem_scanner import FileSystemScanner
 from src.normalize.path_normalizer import PathNormalizer
-from src.cli.main import run_snapshot
+from src.core.controller import run_snapshot
 from src.exporters.flatten_markdown_exporter import FlattenMarkdownExporter, FlattenOptions
 
 from src.gui.components.config_tabs import ConfigTabs
@@ -2575,12 +3113,13 @@ class ExportPreviewWindow(tk.Toplevel):
 import tkinter as tk
 from tkinter import ttk
 from src.fingerprint.file_fingerprint import FileFingerprint
+from src.analysis.import_scanner import ImportScanner
 
 class PreviewPanel(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         
-        # Metadata Header
+        # Metadata Header (Brief)
         self.lbl_meta = ttk.Label(self, text="Select a file to preview properties.", 
                                   background="#f0f0f0", padding=5, relief=tk.RIDGE)
         self.lbl_meta.pack(fill=tk.X, side=tk.TOP)
@@ -2603,14 +3142,46 @@ class PreviewPanel(ttk.Frame):
     def load_file(self, abs_path, stable_id):
         self.clear()
         try:
+            # 1. Fingerprint (Size, SHA, Lang)
             fp = FileFingerprint.fingerprint(abs_path)
-            self.lbl_meta.config(text=f" ID: {stable_id}  |  Size: {fp['size_bytes']}B  |  Lang: {fp['language']}  |  SHA: {fp['sha256'][:12]}")
             
+            # 2. Scan Imports (Lazy load on click using detected language)
+            imports = ImportScanner.scan(abs_path, fp['language'])
+            
+            # 3. Update Brief Header Label
+            import_count = len(imports)
+            self.lbl_meta.config(text=f" ID: {stable_id}  |  {fp['language']}  |  {import_count} Imports")
+
+            # 4. Construct Detailed Metadata Header
+            header_lines = [
+                f"Path:    {abs_path}",
+                f"SHA256:  {fp['sha256']}",
+                f"Size:    {fp['size_bytes']:,} bytes",
+                "-" * 60,
+                "IMPORTS FOUND:",
+            ]
+            
+            if imports:
+                for imp in imports:
+                    header_lines.append(f"  • {imp}")
+            else:
+                header_lines.append("  (none)")
+                
+            header_lines.append("-" * 60)
+            header_lines.append("") # Spacer line
+            
+            full_header = "\n".join(header_lines)
+            
+            # 5. Insert Header
+            self.text_preview.insert("1.0", full_header)
+
+            # 6. Append Real File Content
             if fp['size_bytes'] > 250_000:
-                self.text_preview.insert("1.0", "<< File too large for preview >>")
+                self.text_preview.insert(tk.END, "<< File too large for preview >>")
             else:
                 with open(abs_path, 'r', encoding='utf-8', errors='replace') as f:
-                    self.text_preview.insert("1.0", f.read())
+                    self.text_preview.insert(tk.END, f.read())
+                    
         except Exception as e:
             self.text_preview.insert("1.0", f"<< Error loading file: {e} >>")
 ```
@@ -2775,11 +3346,17 @@ class FileTreePanel(ttk.Frame):
         paths = []
         for item_id in self.tree.get_children(parent_id):
             vals = self.tree.item(item_id, "values")
+            
+            # 1. If this item is explicitly checked, add it (if it's a file)
             if vals[0] == "☑":
                 tags = self.tree.item(item_id, "tags")
                 if tags and tags[0] != "folder":
                     paths.append(tags[0])
-                paths.extend(self.get_checked_files(item_id))
+            
+            # 2. ALWAYS recurse into children, regardless of this folder's check state.
+            # This fixes the bug where deep files weren't found if a parent folder was unchecked.
+            paths.extend(self.get_checked_files(item_id))
+            
         return paths
 ```
 
@@ -2840,27 +3417,41 @@ class FileSystemScanner:
 
     def scan(self, root_paths: List[str]) -> List[str]:
         all_files = []
+        visited_realpaths = set()
 
         for root in root_paths:
+            # Handle explicit file inputs
             if os.path.isfile(root):
                 all_files.append(os.path.abspath(root))
                 continue
 
-            root = os.path.abspath(root)
-            all_files.extend(self._walk(root, current_depth=0))
+            # Handle directories
+            abs_root = os.path.abspath(root)
+            if os.path.isdir(abs_root):
+                self._walk(abs_root, 0, all_files, visited_realpaths)
 
         return sorted(all_files)
 
-    def _walk(self, directory: str, current_depth: int) -> List[str]:
+    def _walk(self, directory: str, current_depth: int, results: List[str], visited: Set[str]):
         if self.depth >= 0 and current_depth > self.depth:
-            return []
+            return
 
-        results = []
+        # 1. Symlink Cycle Detection
+        try:
+            real_path = os.path.realpath(directory)
+            if real_path in visited:
+                return
+            visited.add(real_path)
+        except OSError:
+            # If we cannot resolve the path (permission/locked), we skip it safely.
+            return
 
+        # 2. List Directory
         try:
             entries = sorted(os.listdir(directory))
         except OSError:
-            return []
+            # Permission denied, not a directory, or vanished
+            return
 
         for entry in entries:
             if entry in self.ignore_names:
@@ -2868,12 +3459,15 @@ class FileSystemScanner:
 
             full_path = os.path.join(directory, entry)
 
-            if os.path.isdir(full_path):
-                results.extend(self._walk(full_path, current_depth + 1))
-            elif os.path.isfile(full_path):
-                results.append(os.path.abspath(full_path))
-
-        return results
+            # 3. Classify and Recurse
+            try:
+                if os.path.isdir(full_path):
+                    self._walk(full_path, current_depth + 1, results, visited)
+                elif os.path.isfile(full_path):
+                    results.append(os.path.abspath(full_path))
+            except OSError:
+                # Handle race conditions where file disappears between listdir and isfile
+                continue
 ```
 
 ### `src/snapshot/snapshot_loader.py`
@@ -2936,7 +3530,6 @@ import os
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
-
 class SnapshotWriter:
     def __init__(self, output_root: str):
         self.output_root = output_root
@@ -2945,6 +3538,7 @@ class SnapshotWriter:
         self,
         manifest: Dict,
         structure: Dict,
+        graph: Optional[Dict] = None,
         snapshot_id: Optional[str] = None,
         write_current_pointer: bool = True,
     ) -> str:
@@ -2971,12 +3565,20 @@ class SnapshotWriter:
         manifest["snapshot"].setdefault("created_utc", now_utc.strftime("%Y-%m-%dT%H:%M:%SZ"))
         manifest["snapshot"].setdefault("output_root", self.output_root)
 
+        # Write Manifest
         with open(os.path.join(snapshot_dir, "manifest.json"), "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2, sort_keys=True)
 
+        # Write Structure
         with open(os.path.join(snapshot_dir, "structure.json"), "w", encoding="utf-8") as f:
             json.dump(structure, f, indent=2, sort_keys=True)
+            
+        # Write Graph (if present)
+        if graph:
+            with open(os.path.join(snapshot_dir, "graph.json"), "w", encoding="utf-8") as f:
+                json.dump(graph, f, indent=2, sort_keys=True)
 
+        # Update Pointer
         if write_current_pointer:
             current_path = os.path.join(self.output_root, "current.json")
             with open(current_path, "w", encoding="utf-8") as f:
@@ -3027,4 +3629,856 @@ class StructureBuilder:
                 "modules": module_entries
             }
         }
+```
+
+### `tests/__init__.py`
+
+```
+
+```
+
+### `tests/integration/__init__.py`
+
+```
+
+```
+
+### `tests/integration/test_full_snapshot.py`
+
+```
+import unittest
+import tempfile
+import shutil
+import os
+import json
+from src.cli.main import run_snapshot
+from src.snapshot.snapshot_loader import SnapshotLoader
+
+class TestFullSnapshot(unittest.TestCase):
+    def setUp(self):
+        # Create a temp directory for the "Repo"
+        self.test_dir = tempfile.mkdtemp()
+        self.repo_root = os.path.join(self.test_dir, "my_repo")
+        self.output_root = os.path.join(self.test_dir, "output")
+        
+        os.makedirs(self.repo_root)
+        os.makedirs(self.output_root)
+
+        # Create dummy repo content
+        self._create_file("README.md", "# Hello")
+        self._create_file("src/main.py", "print('hello')")
+        self._create_file("src/utils.py", "def add(a,b): return a+b")
+        self._create_file("node_modules/bad_file.js", "ignore me") # Should be ignored
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def _create_file(self, path, content):
+        full_path = os.path.join(self.repo_root, path)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, "w") as f:
+            f.write(content)
+
+    def test_snapshot_creation(self):
+        # 1. Run Snapshot
+        snapshot_id = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=5,
+            ignore=["node_modules"],
+            include_extensions=[".py", ".md"],
+            include_readme=True,
+            write_current_pointer=True
+        )
+
+        # 2. Verify Output Directory Structure
+        snap_dir = os.path.join(self.output_root, snapshot_id)
+        self.assertTrue(os.path.isdir(snap_dir))
+        self.assertTrue(os.path.isfile(os.path.join(snap_dir, "manifest.json")))
+        self.assertTrue(os.path.isfile(os.path.join(snap_dir, "structure.json")))
+        self.assertTrue(os.path.isfile(os.path.join(self.output_root, "current.json")))
+
+        # 3. Verify Manifest Content
+        loader = SnapshotLoader(self.output_root)
+        manifest = loader.load_manifest(snap_dir)
+        
+        # Check Config
+        self.assertEqual(manifest["config"]["depth"], 5)
+        self.assertIn("node_modules", manifest["config"]["ignore_names"])
+
+        # Check Files
+        files = manifest["files"]
+        paths = [f["path"] for f in files]
+        
+        # Expected: readme.md, src/main.py, src/utils.py
+        # node_modules should be gone.
+        self.assertIn("readme.md", paths)
+        self.assertIn("src/main.py", paths)
+        self.assertIn("src/utils.py", paths)
+        self.assertNotIn("node_modules/bad_file.js", paths)
+
+        # 4. Verify Determinism (Hash)
+        main_py_entry = next(f for f in files if f["path"] == "src/main.py")
+        self.assertEqual(main_py_entry["language"], "python")
+        self.assertGreater(main_py_entry["size_bytes"], 0)
+        # SHA256 of "print('hello')"
+        # We won't hardcode the hash here to be robust against newline changes in test setup,
+        # but we ensure it exists.
+        self.assertTrue(len(main_py_entry["sha256"]) == 64)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/integration/test_robustness.py`
+
+```
+import unittest
+import tempfile
+import shutil
+import os
+import sys
+from src.core.controller import run_snapshot
+from src.snapshot.snapshot_loader import SnapshotLoader
+
+class TestRobustness(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        self.repo_root = os.path.join(self.test_dir, "repo")
+        self.output_root = os.path.join(self.test_dir, "output")
+        os.makedirs(self.repo_root)
+        os.makedirs(self.output_root)
+
+    def tearDown(self):
+        try:
+            shutil.rmtree(self.test_dir)
+        except OSError:
+            pass
+
+    def test_snapshot_with_mixed_health(self):
+        # 1. Valid Files
+        with open(os.path.join(self.repo_root, "valid.py"), "w") as f:
+            f.write("print('ok')")
+            
+        # 2. Ignored Files
+        os.makedirs(os.path.join(self.repo_root, "node_modules"))
+        with open(os.path.join(self.repo_root, "node_modules", "ignore.js"), "w") as f:
+            f.write("ignore")
+
+        # 3. Symlink Cycle (Unix only)
+        if sys.platform != 'win32':
+            os.symlink(self.repo_root, os.path.join(self.repo_root, "loop"))
+
+        # Run Snapshot
+        # This should succeed despite the complexity
+        snap_id = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=10,
+            ignore=["node_modules"],
+            include_extensions=[],
+            include_readme=True,
+            write_current_pointer=True
+        )
+
+        # Verify Manifest
+        loader = SnapshotLoader(self.output_root)
+        manifest = loader.load_manifest(os.path.join(self.output_root, snap_id))
+        
+        files = manifest["files"]
+        paths = [f["path"] for f in files]
+        
+        self.assertIn("valid.py", paths)
+        self.assertNotIn("node_modules/ignore.js", paths)
+        
+        # Ensure we didn't index the loop infinitely
+        # The loop link itself might be skipped or included as a file depending on classification,
+        # but the cycle must be broken.
+        loop_matches = [p for p in paths if "loop" in p]
+        self.assertLess(len(loop_matches), 2)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/integration/test_snapshot_flow.py`
+
+```
+﻿import unittest
+import tempfile
+import shutil
+import os
+import json
+from src.cli.main import run_snapshot
+from src.snapshot.snapshot_loader import SnapshotLoader
+
+class TestSnapshotFlow(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        self.repo_root = os.path.join(self.test_dir, "my_repo")
+        self.output_root = os.path.join(self.test_dir, "output")
+        os.makedirs(self.repo_root)
+        os.makedirs(self.output_root)
+
+        self._create_file("README.md", "# Hello")
+        self._create_file("src/main.py", "print('hello')")
+        self._create_file("node_modules/bad_file.js", "ignore me")
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def _create_file(self, path, content):
+        full_path = os.path.join(self.repo_root, path)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, "w") as f:
+            f.write(content)
+
+    def test_snapshot_creation(self):
+        snapshot_id = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=5,
+            ignore=["node_modules"],
+            include_extensions=[".py", ".md"],
+            include_readme=True,
+            write_current_pointer=True
+        )
+
+        snap_dir = os.path.join(self.output_root, snapshot_id)
+        self.assertTrue(os.path.isdir(snap_dir))
+        self.assertTrue(os.path.isfile(os.path.join(snap_dir, "manifest.json")))
+
+        loader = SnapshotLoader(self.output_root)
+        manifest = loader.load_manifest(snap_dir)
+        
+        paths = [f["path"] for f in manifest["files"]]
+        self.assertIn("readme.md", paths)
+        self.assertIn("src/main.py", paths)
+        self.assertNotIn("node_modules/bad_file.js", paths)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/__init__.py`
+
+```
+
+```
+
+### `tests/unit/test_filesystem_scanner.py`
+
+```
+﻿import unittest
+import tempfile
+import shutil
+import os
+from src.scanner.filesystem_scanner import FileSystemScanner
+
+class TestFileSystemScanner(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        self._touch("ok.txt")
+        self._touch(".git/config")
+        self._touch("dist/bundle.js")
+        self._touch("src/code.ts")
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def _touch(self, path):
+        full = os.path.join(self.test_dir, path)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        with open(full, "w") as f:
+            f.write("test")
+
+    def test_scanner_ignores(self):
+        ignore_set = {".git", "dist"}
+        scanner = FileSystemScanner(depth=10, ignore_names=ignore_set)
+        
+        results = scanner.scan([self.test_dir])
+        rel_results = [os.path.relpath(p, self.test_dir).replace("\\", "/") for p in results]
+        
+        self.assertIn("ok.txt", rel_results)
+        self.assertIn("src/code.ts", rel_results)
+        self.assertFalse(any("config" in p for p in rel_results))
+        self.assertFalse(any("bundle.js" in p for p in rel_results))
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_fingerprint_hardening.py`
+
+```
+import unittest
+import tempfile
+import shutil
+import os
+import hashlib
+from src.fingerprint.file_fingerprint import FileFingerprint
+
+class TestFingerprintHardening(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_valid_file(self):
+        path = os.path.join(self.test_dir, "test.txt")
+        content = b"hello world"
+        with open(path, "wb") as f:
+            f.write(content)
+            
+        fp = FileFingerprint.fingerprint(path)
+        
+        expected_sha = hashlib.sha256(content).hexdigest()
+        self.assertEqual(fp["sha256"], expected_sha)
+        self.assertEqual(fp["size_bytes"], len(content))
+        self.assertEqual(fp["language"], "unknown") # .txt is unknown in current map
+
+    def test_empty_file(self):
+        path = os.path.join(self.test_dir, "empty.py")
+        with open(path, "wb") as f:
+            pass
+            
+        fp = FileFingerprint.fingerprint(path)
+        self.assertEqual(fp["size_bytes"], 0)
+        self.assertEqual(fp["language"], "python")
+
+    def test_locked_or_missing_file(self):
+        # Test missing file raises OSError
+        path = os.path.join(self.test_dir, "ghost.txt")
+        
+        with self.assertRaises(OSError):
+            FileFingerprint.fingerprint(path)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_flatten_exporter.py`
+
+```
+import unittest
+import os
+from src.exporters.flatten_markdown_exporter import FlattenMarkdownExporter, FlattenOptions
+
+class TestFlattenExporter(unittest.TestCase):
+    def setUp(self):
+        self.exporter = FlattenMarkdownExporter()
+        self.manifest = {
+            "files": [
+                {"path": "src/index.ts", "size_bytes": 100, "sha256": "a"},
+                {"path": "readme.md", "size_bytes": 50, "sha256": "b"},
+            ]
+        }
+        self.options = FlattenOptions(
+            tree_only=False,
+            include_readme=True,
+            scope="full"
+        )
+
+    def test_tree_generation(self):
+        # We test the internal _render_tree method implicitly via generate_content
+        md = self.exporter.generate_content(
+            repo_root="C:/fake",
+            manifest=self.manifest,
+            options=self.options,
+            title="Test Export"
+        )
+        
+        self.assertIn("## Tree", md)
+        # readme.md comes before src, so src is the last element (└──)
+        self.assertIn("└── src", md) 
+        self.assertIn("└── index.ts", md)
+
+    def test_scope_filtering(self):
+        # Change scope to only 'src'
+        options = FlattenOptions(tree_only=True, include_readme=False, scope="module:src")
+        
+        files = self.exporter._canonical_files_from_manifest(self.manifest, options)
+        paths = [f["path"] for f in files]
+        
+        self.assertIn("src/index.ts", paths)
+        self.assertNotIn("readme.md", paths)
+
+    def test_binary_placeholder(self):
+        # Mock a binary file entry in manifest
+        entry = {"path": "image.png", "size_bytes": 1024, "sha256": "binhash"}
+        placeholder = self.exporter._binary_placeholder(entry)
+        
+        self.assertIn("<<BINARY_OR_SKIPPED_FILE>>", placeholder)
+        self.assertIn("binhash", placeholder)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_graph_builder.py`
+
+```
+import unittest
+from src.analysis.graph_builder import GraphBuilder
+from src.core.types import FileEntry
+
+class TestGraphBuilder(unittest.TestCase):
+    def setUp(self):
+        self.files = [
+            {
+                "stable_id": "file:src/main.py",
+                "path": "src/main.py",
+                "language": "python",
+                "imports": ["utils.logger", "os"], # 'os' is external (should be ignored or handled)
+                "module_path": "src",
+                "sha256": "abc", "size_bytes": 100
+            },
+            {
+                "stable_id": "file:src/utils/logger.py",
+                "path": "src/utils/logger.py", # Note: builder logic expects normalized paths
+                "language": "python",
+                "imports": [],
+                "module_path": "src/utils",
+                "sha256": "def", "size_bytes": 200
+            }
+        ]
+        self.builder = GraphBuilder()
+
+    def test_node_generation(self):
+        graph = self.builder.build(self.files)
+        
+        node_ids = [n["id"] for n in graph["nodes"]]
+        self.assertIn("file:src/main.py", node_ids)
+        self.assertIn("file:src/utils/logger.py", node_ids)
+        self.assertEqual(len(graph["nodes"]), 2)
+
+    def test_edge_resolution_python(self):
+        graph = self.builder.build(self.files)
+        
+        # We expect an edge from main.py -> logger.py
+        # "utils.logger" -> "src/utils/logger.py" via relative/absolute resolution
+        
+        edges = graph["edges"]
+        
+        # Check for the specific edge
+        found = False
+        for e in edges:
+            if e["source"] == "file:src/main.py" and e["target"] == "file:src/utils/logger.py":
+                found = True
+                break
+        
+        self.assertTrue(found, "Failed to resolve 'utils.logger' import to file node")
+
+    def test_external_imports_ignored(self):
+        graph = self.builder.build(self.files)
+        edges = graph["edges"]
+        
+        # 'os' is not in our file list, so it should not produce an internal edge
+        # (Current implementation skips externals)
+        for e in edges:
+            if e["source"] == "file:src/main.py":
+                self.assertNotEqual(e["target"], "os")
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_ignore_logic.py`
+
+```
+import unittest
+from src.scanner.filesystem_scanner import FileSystemScanner
+import tempfile
+import shutil
+import os
+
+class TestIgnoreLogic(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        
+        # Structure:
+        # /ok.txt
+        # /.git/config (should ignore)
+        # /dist/bundle.js (should ignore)
+        # /src/code.ts (should keep)
+        
+        self._touch("ok.txt")
+        self._touch(".git/config")
+        self._touch("dist/bundle.js")
+        self._touch("src/code.ts")
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def _touch(self, path):
+        full = os.path.join(self.test_dir, path)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        with open(full, "w") as f:
+            f.write("test")
+
+    def test_scanner_ignores(self):
+        ignore_set = {".git", "dist"}
+        scanner = FileSystemScanner(depth=10, ignore_names=ignore_set)
+        
+        results = scanner.scan([self.test_dir])
+        
+        # Normalize for assertion
+        rel_results = [os.path.relpath(p, self.test_dir).replace("\\", "/") for p in results]
+        
+        self.assertIn("ok.txt", rel_results)
+        self.assertIn("src/code.ts", rel_results)
+        
+        # Should NOT be present
+        self.assertFalse(any("config" in p for p in rel_results))
+        self.assertFalse(any("bundle.js" in p for p in rel_results))
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_import_scanner.py`
+
+```
+import unittest
+from src.analysis.import_scanner import ImportScanner
+
+class TestImportScanner(unittest.TestCase):
+    
+    # --- Python Tests (AST Based) ---
+
+    def test_python_complex_structure(self):
+        """
+        Tests:
+        1. Multi-line parenthesized imports (common in big projects).
+        2. Multiple modules on one line.
+        3. Aliasing (should capture the *source*, not the alias).
+        """
+        content = """
+import os, sys
+from datetime import (
+    datetime,
+    timedelta as td
+)
+import pandas as pd
+"""
+        imports = set()
+        ImportScanner._scan_python(content, imports)
+        
+        expected = {"os", "sys", "datetime", "pandas"}
+        self.assertEqual(imports, expected)
+
+    def test_python_relative_imports(self):
+        """
+        Tests relative imports used in modular monoliths.
+        .  = current directory
+        .. = parent
+        """
+        content = """
+from . import sibling
+from ..parent import something
+from ...grandparent.utils import helper
+"""
+        imports = set()
+        ImportScanner._scan_python(content, imports)
+        
+        expected = {".sibling", "..parent", "...grandparent.utils"}
+        self.assertEqual(imports, expected)
+
+    def test_python_scope_and_strings(self):
+        """
+        Tests the superiority of AST over Regex:
+        1. Finds imports hidden inside functions (lazy imports).
+        2. IGNORES strings that look like imports.
+        """
+        content = """
+def lazy_loader():
+    import json # Should be found
+    
+def print_help():
+    msg = "import os" # Should be IGNORED
+    print(msg)
+    
+# import commented_out # Should be IGNORED
+"""
+        imports = set()
+        ImportScanner._scan_python(content, imports)
+        
+        self.assertIn("json", imports)
+        self.assertNotIn("os", imports)
+        self.assertNotIn("commented_out", imports)
+
+    def test_python_syntax_error(self):
+        """
+        Ensure the tool is robust against broken files (e.g., during a merge conflict).
+        """
+        content = "def broken_code(:"
+        imports = set()
+        
+        # Should catch SyntaxError silently
+        ImportScanner._scan_python(content, imports)
+        self.assertEqual(len(imports), 0)
+
+    # --- JavaScript / TypeScript Tests (Regex Based) ---
+
+    def test_js_standard_imports(self):
+        content = """
+import React from 'react';
+import { useState, useEffect } from "react";
+const fs = require('fs');
+"""
+        imports = set()
+        ImportScanner._scan_js(content, imports)
+        
+        expected = {"react", "fs"}
+        self.assertEqual(imports, expected)
+
+    def test_js_edge_cases(self):
+        """
+        Tests:
+        1. Side-effect imports (import 'css').
+        2. Multi-line imports (Angular/NestJS style).
+        3. Comments (should not pick up commented imports).
+        """
+        content = """
+import './styles.css'; // Side effect
+
+// import { bad } from 'bad-lib'; 
+
+import { 
+  Component,
+  OnInit
+} from '@angular/core';
+
+/* 
+  import { ignore } from 'block-comment'; 
+*/
+"""
+        imports = set()
+        ImportScanner._scan_js(content, imports)
+        
+        self.assertIn("./styles.css", imports)
+        self.assertIn("@angular/core", imports)
+        
+        # Verify comments are stripped
+        self.assertNotIn("bad-lib", imports)
+        self.assertNotIn("block-comment", imports)
+
+    def test_ts_type_imports(self):
+        """
+        TypeScript 'import type' should still register as a dependency.
+        """
+        content = "import type { User } from './models';"
+        imports = set()
+        ImportScanner._scan_js(content, imports)
+        
+        self.assertIn("./models", imports)
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_normalizer.p`
+
+```
+<<BINARY_OR_SKIPPED_FILE>>
+size_bytes: 0
+sha256: pre-snapshot
+```
+
+### `tests/unit/test_path_normalizer.py`
+
+```
+﻿import unittest
+import os
+from src.normalize.path_normalizer import PathNormalizer
+
+class TestPathNormalizer(unittest.TestCase):
+    def setUp(self):
+        self.root = "C:\\projects\\my-repo"
+        self.normalizer = PathNormalizer(self.root)
+
+    def test_basic_normalization(self):
+        # Input: Absolute path
+        abs_path = os.path.join(self.root, "src", "main.py")
+        normalized = self.normalizer.normalize(abs_path)
+        self.assertEqual(normalized, "src/main.py")
+
+    def test_windows_separator_handling(self):
+        # Force a windows-style relative path string
+        raw_relative = "src\\Components\\Header.tsx"
+        normalized = raw_relative.replace("\\", "/").lower()
+        self.assertEqual(normalized, "src/components/header.tsx")
+
+    def test_casing_policy(self):
+        path = os.path.join(self.root, "README.md")
+        normalized = self.normalizer.normalize(path)
+        self.assertEqual(normalized, "readme.md")
+
+    def test_id_generation(self):
+        self.assertEqual(self.normalizer.file_id("src/utils/helper.ts"), "file:src/utils/helper.ts")
+        self.assertEqual(self.normalizer.module_id("src/utils"), "module:src/utils")
+        self.assertEqual(self.normalizer.repo_id(), "repo:root")
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_scanner_hardening.py`
+
+```
+import unittest
+import tempfile
+import shutil
+import os
+import sys
+from unittest.mock import patch, MagicMock
+from src.scanner.filesystem_scanner import FileSystemScanner
+
+class TestScannerHardening(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        try:
+            shutil.rmtree(self.test_dir)
+        except OSError:
+            pass
+
+    def _create_file(self, path):
+        full = os.path.join(self.test_dir, path)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        with open(full, "w") as f:
+            f.write("content")
+        return full
+
+    def test_symlink_cycle_detection(self):
+        # Skip on Windows if privileges are insufficient for symlinks
+        if sys.platform == 'win32':
+            try:
+                os.symlink(self.test_dir, os.path.join(self.test_dir, "link_to_self"))
+            except OSError:
+                print("Skipping symlink test on Windows (permission denied)")
+                return
+        else:
+            # Create a cycle: root/link -> root
+            link_path = os.path.join(self.test_dir, "link_to_self")
+            os.symlink(self.test_dir, link_path)
+
+        self._create_file("file_a.txt")
+        
+        scanner = FileSystemScanner(depth=10, ignore_names=set())
+        
+        # Should not hang or crash
+        # If robust, it scans file_a.txt and maybe the link, but stops at the cycle
+        files = scanner.scan([self.test_dir])
+        
+        # We expect at least the real file
+        self.assertTrue(any(f.endswith("file_a.txt") for f in files))
+        
+        # Ensure we didn't recurse infinitely
+        # The number of files should be small (1 real file + potentially 1 from link if not collapsed immediately)
+        self.assertLess(len(files), 5)
+
+    @patch('os.listdir')
+    def test_permission_error_handling(self, mock_listdir):
+        # Simulate PermissionError on a subdirectory
+        mock_listdir.side_effect = PermissionError("Access Denied")
+        
+        scanner = FileSystemScanner(depth=5, ignore_names=set())
+        
+        # Scan should complete returning empty list (or list of root files if root scan succeeded)
+        # Here we mock the root scan failing
+        files = scanner.scan([self.test_dir])
+        
+        self.assertEqual(files, [])
+
+    def test_vanished_directory(self):
+        # Test case where a directory exists during walk start but vanishes before listdir
+        # We can't easily race-condition this in real IO, so we verify logic via sub-test structure
+        # or rely on the code review of the try/except block.
+        # Here we trust the previous patch test covers the OSError path.
+        pass
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_structure.py`
+
+```
+import unittest
+from src.structure.structure_builder import StructureBuilder
+from src.normalize.path_normalizer import PathNormalizer
+
+class TestStructureBuilder(unittest.TestCase):
+    def test_build_structure(self):
+        # Mock Input: A list of flat file entries (already normalized)
+        files = [
+            {"stable_id": "file:src/a.ts", "module_path": "src", "path": "src/a.ts"},
+            {"stable_id": "file:src/b.ts", "module_path": "src", "path": "src/b.ts"},
+            {"stable_id": "file:root.md", "module_path": ".", "path": "root.md"},
+            {"stable_id": "file:utils/deep/x.py", "module_path": "utils/deep", "path": "utils/deep/x.py"},
+        ]
+
+        builder = StructureBuilder()
+        output = builder.build(repo_id="repo:root", files=files)
+
+        # Assertions based on structure.json schema
+        self.assertEqual(output["schema_version"], "1.0")
+        self.assertEqual(output["repo"]["stable_id"], "repo:root")
+        
+        modules = output["repo"]["modules"]
+        
+        # We expect 3 modules: ".", "src", "utils/deep"
+        # They must be sorted by path
+        self.assertEqual(len(modules), 3)
+        self.assertEqual(modules[0]["path"], ".")
+        self.assertEqual(modules[1]["path"], "src")
+        self.assertEqual(modules[2]["path"], "utils/deep")
+
+        # Check content of "src"
+        src_mod = modules[1]
+        self.assertEqual(src_mod["stable_id"], "module:src")
+        self.assertEqual(len(src_mod["files"]), 2)
+        self.assertEqual(src_mod["files"][0], "file:src/a.ts")
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### `tests/unit/test_structure_builder.py`
+
+```
+﻿import unittest
+from src.structure.structure_builder import StructureBuilder
+
+class TestStructureBuilder(unittest.TestCase):
+    def test_build_structure(self):
+        files = [
+            {"stable_id": "file:src/a.ts", "module_path": "src", "path": "src/a.ts"},
+            {"stable_id": "file:src/b.ts", "module_path": "src", "path": "src/b.ts"},
+            {"stable_id": "file:root.md", "module_path": ".", "path": "root.md"},
+            {"stable_id": "file:utils/deep/x.py", "module_path": "utils/deep", "path": "utils/deep/x.py"},
+        ]
+
+        builder = StructureBuilder()
+        output = builder.build(repo_id="repo:root", files=files)
+
+        self.assertEqual(output["schema_version"], "1.0")
+        self.assertEqual(output["repo"]["stable_id"], "repo:root")
+        
+        modules = output["repo"]["modules"]
+        self.assertEqual(len(modules), 3)
+        self.assertEqual(modules[0]["path"], ".")
+        self.assertEqual(modules[1]["path"], "src")
+        self.assertEqual(modules[2]["path"], "utils/deep")
+
+        src_mod = modules[1]
+        self.assertEqual(src_mod["stable_id"], "module:src")
+        self.assertEqual(len(src_mod["files"]), 2)
+        self.assertEqual(src_mod["files"][0], "file:src/a.ts")
+
+if __name__ == "__main__":
+    unittest.main()
 ```

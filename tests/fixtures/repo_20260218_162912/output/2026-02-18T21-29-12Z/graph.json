@@ -1,0 +1,53 @@
+{
+  "edges": [
+    {
+      "relation": "imports",
+      "source": "file:frontend/app.tsx",
+      "target": "file:frontend/components/button.tsx"
+    },
+    {
+      "relation": "imports",
+      "source": "file:src/main.py",
+      "target": "file:src/utils/logger.py"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "file:frontend/app.tsx",
+      "type": "file"
+    },
+    {
+      "id": "file:frontend/components/button.tsx",
+      "type": "file"
+    },
+    {
+      "id": "file:frontend/legacy.js",
+      "type": "file"
+    },
+    {
+      "id": "file:readme.md",
+      "type": "file"
+    },
+    {
+      "id": "file:requirements.txt",
+      "type": "file"
+    },
+    {
+      "id": "file:scripts/deploy.py",
+      "type": "file"
+    },
+    {
+      "id": "file:src/main.py",
+      "type": "file"
+    },
+    {
+      "id": "file:src/utils/__init__.py",
+      "type": "file"
+    },
+    {
+      "id": "file:src/utils/logger.py",
+      "type": "file"
+    }
+  ],
+  "schema_version": "1.0"
+}

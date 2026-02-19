@@ -155,9 +155,15 @@ class FileTreePanel(ttk.Frame):
         paths = []
         for item_id in self.tree.get_children(parent_id):
             vals = self.tree.item(item_id, "values")
+            
+            # 1. If this item is explicitly checked, add it (if it's a file)
             if vals[0] == "☑":
                 tags = self.tree.item(item_id, "tags")
                 if tags and tags[0] != "folder":
                     paths.append(tags[0])
-                paths.extend(self.get_checked_files(item_id))
+            
+            # 2. ALWAYS recurse into children, regardless of this folder's check state.
+            # This fixes the bug where deep files weren't found if a parent folder was unchecked.
+            paths.extend(self.get_checked_files(item_id))
+            
         return paths

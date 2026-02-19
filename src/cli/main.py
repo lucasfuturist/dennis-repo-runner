@@ -1,18 +1,5 @@
 ﻿import argparse
-import os
-from typing import List, Optional
-
-from src.exporters.flatten_markdown_exporter import (
-    FlattenMarkdownExporter,
-    FlattenOptions,
-)
-from src.fingerprint.file_fingerprint import FileFingerprint
-from src.normalize.path_normalizer import PathNormalizer
-from src.scanner.filesystem_scanner import FileSystemScanner
-from src.snapshot.snapshot_loader import SnapshotLoader
-from src.snapshot.snapshot_writer import SnapshotWriter
-from src.structure.structure_builder import StructureBuilder
-
+from src.core.controller import run_snapshot, run_export_flatten
 
 def _parse_args():
     parser = argparse.ArgumentParser(prog="repo-runner", description="repo-runner v0.1")
@@ -33,6 +20,7 @@ def _parse_args():
     snap.add_argument("--no-include-readme", action="store_false", dest="include_readme")
     snap.add_argument("--write-current-pointer", action="store_true", default=True)
     snap.add_argument("--no-write-current-pointer", action="store_false", dest="write_current_pointer")
+    snap.add_argument("--export-flatten", action="store_true", help="Automatically generate flatten.md export")
 
     # export
     exp = sub.add_parser("export", help="Export derived artifacts from a snapshot")
@@ -68,164 +56,6 @@ def _parse_args():
     return parser.parse_args()
 
 
-def _filter_by_extensions(abs_files: List[str], include_exts: List[str]) -> List[str]:
-    if not include_exts:
-        return abs_files
-
-    include = set([e.lower() for e in include_exts])
-    out = []
-
-    for p in abs_files:
-        ext = os.path.splitext(p)[1].lower()
-        if ext in include:
-            out.append(p)
-
-    return out
-
-
-def run_snapshot(
-    repo_root: str,
-    output_root: str,
-    depth: int,
-    ignore: List[str],
-    include_extensions: List[str],
-    include_readme: bool,
-    write_current_pointer: bool,
-    explicit_file_list: Optional[List[str]] = None,
-) -> str:
-    """
-    Creates a snapshot.
-    If explicit_file_list is provided, it skips the directory scan and uses that exact list.
-    """
-    repo_root_abs = os.path.abspath(repo_root)
-
-    if explicit_file_list is not None:
-        # UI Override Mode: Use the list exactly as provided
-        absolute_files = [os.path.abspath(f) for f in explicit_file_list]
-    else:
-        # CLI / Default Mode: Scan the disk
-        scanner = FileSystemScanner(depth=depth, ignore_names=set(ignore))
-        absolute_files = scanner.scan([repo_root_abs])
-        absolute_files = _filter_by_extensions(absolute_files, include_extensions)
-
-    normalizer = PathNormalizer(repo_root_abs)
-    file_entries = []
-    total_bytes = 0
-    seen_ids = set()
-
-    for abs_path in absolute_files:
-        normalized = normalizer.normalize(abs_path)
-
-        # In override mode, we assume the user already selected what they want, 
-        # but we still respect the readme flag if scanning.
-        if explicit_file_list is None:
-            if not include_readme and os.path.basename(normalized).lower().startswith("readme"):
-                continue
-
-        stable_id = normalizer.file_id(normalized)
-
-        if stable_id in seen_ids:
-            # In explicit mode, we warn/skip instead of crashing to be robust to UI quirks
-            if explicit_file_list:
-                continue
-            raise RuntimeError(f"Path collision after normalization: {stable_id}")
-
-        seen_ids.add(stable_id)
-
-        module_path = normalizer.module_path(normalized)
-        
-        # Fingerprint might fail if file was deleted between scan and click
-        try:
-            fp = FileFingerprint.fingerprint(abs_path)
-            total_bytes += fp["size_bytes"]
-            
-            file_entries.append(
-                {
-                    "stable_id": stable_id,
-                    "path": normalized,
-                    "module_path": module_path,
-                    **fp,
-                }
-            )
-        except OSError:
-            # If a file is unreadable or deleted, we skip it
-            continue
-
-    file_entries = sorted(file_entries, key=lambda x: x["path"])
-
-    structure = StructureBuilder().build(
-        repo_id=PathNormalizer.repo_id(),
-        files=file_entries,
-    )
-
-    manifest = {
-        "schema_version": "1.0",
-        "tool": {"name": "repo-runner", "version": "0.1.0"},
-        "inputs": {
-            "repo_root": repo_root_abs.replace("\\", "/"),
-            "roots": [repo_root_abs.replace("\\", "/")],
-            "git": {
-                "is_repo": os.path.isdir(os.path.join(repo_root_abs, ".git")),
-                "commit": None,
-            },
-        },
-        "config": {
-            "depth": depth,
-            "ignore_names": ignore,
-            "include_extensions": include_extensions,
-            "include_readme": include_readme,
-            "tree_only": False,
-            "manual_override": explicit_file_list is not None
-        },
-        "stats": {
-            "file_count": len(file_entries),
-            "total_bytes": total_bytes,
-        },
-        "files": file_entries,
-    }
-
-    writer = SnapshotWriter(output_root)
-    snapshot_id = writer.write(
-        manifest,
-        structure,
-        write_current_pointer=write_current_pointer,
-    )
-
-    return snapshot_id
-
-
-def run_export_flatten(
-    output_root: str,
-    repo_root: str,
-    snapshot_id: Optional[str],
-    output_path: Optional[str],
-    tree_only: bool,
-    include_readme: bool,
-    scope: str,
-    title: Optional[str],
-) -> str:
-    loader = SnapshotLoader(output_root)
-    snapshot_dir = loader.resolve_snapshot_dir(snapshot_id)
-    manifest = loader.load_manifest(snapshot_dir)
-
-    exporter = FlattenMarkdownExporter()
-
-    options = FlattenOptions(
-        tree_only=tree_only,
-        include_readme=include_readme,
-        scope=scope,
-    )
-
-    return exporter.export(
-        repo_root=os.path.abspath(repo_root),
-        snapshot_dir=snapshot_dir,
-        manifest=manifest,
-        output_path=output_path,
-        options=options,
-        title=title,
-    )
-
-
 def main():
     args = _parse_args()
 
@@ -238,6 +68,7 @@ def main():
             include_extensions=args.include_extensions,
             include_readme=args.include_readme,
             write_current_pointer=args.write_current_pointer,
+            export_flatten=args.export_flatten,
         )
         print(f"Snapshot created: {snap_id}")
         return

@@ -7,7 +7,7 @@ import datetime
 
 from src.scanner.filesystem_scanner import FileSystemScanner
 from src.normalize.path_normalizer import PathNormalizer
-from src.cli.main import run_snapshot
+from src.core.controller import run_snapshot
 from src.exporters.flatten_markdown_exporter import FlattenMarkdownExporter, FlattenOptions
 
 from src.gui.components.config_tabs import ConfigTabs

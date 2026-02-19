@@ -1,0 +1,54 @@
+{
+  "repo": {
+    "modules": [
+      {
+        "files": [
+          "file:readme.md",
+          "file:requirements.txt"
+        ],
+        "path": "",
+        "stable_id": "module:"
+      },
+      {
+        "files": [
+          "file:frontend/app.tsx",
+          "file:frontend/legacy.js"
+        ],
+        "path": "frontend",
+        "stable_id": "module:frontend"
+      },
+      {
+        "files": [
+          "file:frontend/components/button.tsx"
+        ],
+        "path": "frontend/components",
+        "stable_id": "module:frontend/components"
+      },
+      {
+        "files": [
+          "file:scripts/deploy.py"
+        ],
+        "path": "scripts",
+        "stable_id": "module:scripts"
+      },
+      {
+        "files": [
+          "file:src/main.py"
+        ],
+        "path": "src",
+        "stable_id": "module:src"
+      },
+      {
+        "files": [
+          "file:src/utils/__init__.py",
+          "file:src/utils/logger.py"
+        ],
+        "path": "src/utils",
+        "stable_id": "module:src/utils"
+      }
+    ],
+    "root": ".",
+    "stable_id": "repo:root"
+  },
+  "schema_version": "1.0"
+}
