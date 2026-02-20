@@ -1,10 +1,10 @@
 # ID_SPEC.md
 
-# Stable ID Spec (v0.1)
+# Stable ID Spec (v0.2)
 
 Stable IDs are required for deterministic outputs and future graph layering.
 
-## ID Types (v0.1)
+## ID Types (v0.2)
 
 - Repository: repo:root
 - Module (directory): module:{path}
@@ -29,17 +29,17 @@ All paths stored in artifacts must be:
 2) Forward slashes
 - Always use "/" even on Windows
 
-3) Stable casing
-- On Windows: normalize to the actual filesystem casing if available, otherwise lower-case.
-- Recommended v0.1 rule: lower-case all paths to avoid case drift.
-  (This can be revised later, but must be consistent.)
+3) Strict Lowercase (v0.2 Rule)
+- To prevent "shimmering" IDs across OS environments (e.g., Windows "File.txt" vs Linux "file.txt"), all paths must be lowercased.
+- This applies to both file paths and module paths.
 
-4) No trailing slashes for modules
-- module path: "src/app", not "src/app/"
+4) Security: No Root Escape
+- Paths must not contain ".." segments that traverse above the repo root.
+- Any file resolving to a path outside the repo root must trigger a hard failure.
 
 5) No redundant segments
-- Remove "." segments
-- Collapse ".." deterministically (or disallow roots that escape repo root)
+- Remove "." segments.
+- Root-level files have a directory path of "." (which maps to the repo root container).
 
 ## Stable ID Generation
 
@@ -53,13 +53,13 @@ No random identifiers.
 
 ## Collisions
 
-If two included files normalize to the same path (rare, but possible with case conflicts on Windows):
+If two included files normalize to the same path (e.g., `README.md` and `readme.md` on a case-sensitive filesystem):
 - Repo-runner must detect the collision and fail the run with an explicit error.
 - No silent overwrites.
 
 ## Future Types (Reserved)
 
-These are not used in v0.1, but reserved for later:
+These are not used in v0.2, but reserved for later:
 - symbol:{file_path}#{symbol_name}
 - external:{package_name}
 - edge IDs derived from endpoint IDs

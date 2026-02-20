@@ -139,7 +139,7 @@ def run_snapshot(
     # 3. Assemble Manifest
     manifest: Manifest = {
         "schema_version": "1.0",
-        "tool": {"name": "repo-runner", "version": "0.1.0"},
+        "tool": {"name": "repo-runner", "version": "0.2.0"},
         "inputs": {
             "repo_root": repo_root_abs.replace("\\", "/"),
             "roots": [repo_root_abs.replace("\\", "/")],

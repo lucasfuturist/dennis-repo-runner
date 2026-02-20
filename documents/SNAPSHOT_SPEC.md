@@ -1,6 +1,6 @@
 # SNAPSHOT_SPEC.md
 
-# Snapshot Spec (v0.1)
+# Snapshot Spec (v0.2)
 
 This document defines the canonical snapshot format and on-disk layout.
 
@@ -14,6 +14,7 @@ Example:
   /{snapshot_id}/
     manifest.json
     structure.json
+    graph.json
     exports/
       ...
   current.json
@@ -57,7 +58,7 @@ Required fields:
   "schema_version": "1.0",
   "tool": {
     "name": "repo-runner",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "snapshot": {
     "snapshot_id": "...",
@@ -66,7 +67,7 @@ Required fields:
   },
   "inputs": {
     "repo_root": "normalized path string",
-    "roots": ["normalized path string", ...],
+    "roots":,
     "git": {
       "is_repo": true/false,
       "commit": "string or null"
@@ -74,22 +75,17 @@ Required fields:
   },
   "config": {
     "depth": number,
-    "ignore_names": ["node_modules", ".git", ...],
-    "include_extensions": [".ts", ".tsx", ...],
+    "ignore_names":,
+    "include_extensions":,
     "include_readme": true/false,
     "tree_only": true/false
   },
   "stats": {
     "file_count": number,
-    "total_bytes": number
+    "total_bytes": number,
+    "external_dependencies":
   },
-  "files": [
-    {
-      "stable_id": "file:src/app/page.tsx",
-      "path": "src/app/page.tsx",
-      "sha256": "hex string",
-      "size_bytes": number,
-      "language": "typescript"
+  "files":
     }
   ]
 }
@@ -108,14 +104,11 @@ structure.json is hierarchical containment only.
   "repo": {
     "stable_id": "repo:root",
     "root": "repo-relative root (usually '.')",
-    "modules": [
+    "modules":[
       {
         "stable_id": "module:src/app",
         "path": "src/app",
-        "files": [
-          "file:src/app/page.tsx",
-          "file:src/app/layout.tsx"
-        ]
+        "files":
       }
     ]
   }
@@ -125,6 +118,21 @@ Rules:
 - `modules` sorted by `path` ascending.
 - `files` entries sorted by their file path ascending.
 - module membership is defined by directory containment of the file path.
+
+## graph.json Schema
+
+graph.json provides the topological dependency map.
+
+{
+  "schema_version": "1.0",
+  "nodes":,
+  "edges":
+}
+
+Rules:
+- `nodes` array must be sorted ascending by `id`.
+- `edges` array must be sorted ascending by `source`, then `target`, then `relation`.
+- `external:` nodes represent inferred external boundaries (e.g., npm packages, python site-packages).
 
 ## exports/ Folder
 

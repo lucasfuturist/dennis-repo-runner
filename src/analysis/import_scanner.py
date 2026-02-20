@@ -15,6 +15,12 @@ class ImportScanner:
     # 3. require('x')
     _JS_REQUIRE = re.compile(r'require\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
 
+    # 4. export ... from 'x' (Re-exports)
+    _JS_EXPORT_FROM = re.compile(r'export\s+[\s\S]*?from\s+[\'"]([^\'"]+)[\'"]')
+
+    # 5. import('x') (Dynamic imports)
+    _JS_DYNAMIC_IMPORT = re.compile(r'import\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
+
     # Comment Stripping
     _JS_BLOCK_COMMENT = re.compile(r'/\*[\s\S]*?\*/')
     _JS_LINE_COMMENT = re.compile(r'//.*')
@@ -109,4 +115,12 @@ class ImportScanner:
 
         # require('...')
         for match in ImportScanner._JS_REQUIRE.finditer(clean_content):
+            imports.add(match.group(1))
+
+        # export ... from '...'
+        for match in ImportScanner._JS_EXPORT_FROM.finditer(clean_content):
+            imports.add(match.group(1))
+
+        # import('...')
+        for match in ImportScanner._JS_DYNAMIC_IMPORT.finditer(clean_content):
             imports.add(match.group(1))

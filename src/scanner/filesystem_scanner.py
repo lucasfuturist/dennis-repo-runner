@@ -1,5 +1,5 @@
 import os
-from typing import List, Set
+from typing import List, Set, Optional, Callable
 
 
 class FileSystemScanner:
@@ -7,43 +7,57 @@ class FileSystemScanner:
         self.depth = depth
         self.ignore_names = ignore_names
 
-    def scan(self, root_paths: List[str]) -> List[str]:
+    def scan(self, root_paths: List[str], progress_callback: Optional[Callable[[int], None]] = None) -> List[str]:
         all_files = []
         visited_realpaths = set()
+        count = 0
 
         for root in root_paths:
+            # Hardening: Resolve user provided paths to realpaths immediately.
+            try:
+                abs_root = os.path.realpath(root)
+            except OSError:
+                continue
+
             # Handle explicit file inputs
-            if os.path.isfile(root):
-                all_files.append(os.path.abspath(root))
+            if os.path.isfile(abs_root):
+                all_files.append(abs_root)
+                count += 1
+                if progress_callback and count % 100 == 0:
+                     if not progress_callback(count): return all_files
                 continue
 
             # Handle directories
-            abs_root = os.path.abspath(root)
             if os.path.isdir(abs_root):
-                self._walk(abs_root, 0, all_files, visited_realpaths)
+                # We start the recursive walk
+                if not self._walk(abs_root, 0, all_files, visited_realpaths, progress_callback):
+                    # If _walk returns False, it means scan was cancelled
+                    return sorted(all_files)
 
         return sorted(all_files)
 
-    def _walk(self, directory: str, current_depth: int, results: List[str], visited: Set[str]):
+    def _walk(self, directory: str, current_depth: int, results: List[str], visited: Set[str], 
+              progress_callback: Optional[Callable[[int], bool]]) -> bool:
+        """
+        Returns True if walk should continue, False if cancelled.
+        """
         if self.depth >= 0 and current_depth > self.depth:
-            return
+            return True
 
-        # 1. Symlink Cycle Detection
+        # 1. Symlink Cycle Detection & Canonicalization
         try:
             real_path = os.path.realpath(directory)
             if real_path in visited:
-                return
+                return True
             visited.add(real_path)
         except OSError:
-            # If we cannot resolve the path (permission/locked), we skip it safely.
-            return
+            return True
 
-        # 2. List Directory
+        # 2. List Directory (Robust)
         try:
             entries = sorted(os.listdir(directory))
-        except OSError:
-            # Permission denied, not a directory, or vanished
-            return
+        except (PermissionError, OSError):
+            return True
 
         for entry in entries:
             if entry in self.ignore_names:
@@ -54,9 +68,17 @@ class FileSystemScanner:
             # 3. Classify and Recurse
             try:
                 if os.path.isdir(full_path):
-                    self._walk(full_path, current_depth + 1, results, visited)
+                    if not self._walk(full_path, current_depth + 1, results, visited, progress_callback):
+                        return False
                 elif os.path.isfile(full_path):
                     results.append(os.path.abspath(full_path))
-            except OSError:
-                # Handle race conditions where file disappears between listdir and isfile
+                    
+                    # Report Progress every 50 files to avoid UI spam
+                    if progress_callback and len(results) % 50 == 0:
+                        should_continue = progress_callback(len(results))
+                        if not should_continue:
+                            return False
+            except (PermissionError, OSError):
                 continue
+                
+        return True

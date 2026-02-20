@@ -2,12 +2,11 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `57`
+- file_count: `59`
 - tree_only: `False`
 ## Tree
 
 ```
-├── .gitignore
 ├── documents
 │   ├── architecture.md
 │   ├── config_spec.md
@@ -62,12 +61,17 @@
 │   └── structure
 │       └── structure_builder.py
 └── tests
-    ├── __init__.py
     ├── integration
     │   ├── __init__.py
     │   ├── test_full_snapshot.py
     │   ├── test_robustness.py
     │   └── test_snapshot_flow.py
+    ├── output
+    │   ├── 2026-02-18t21-09-34z
+    │   │   ├── graph.json
+    │   │   ├── manifest.json
+    │   │   └── structure.json
+    │   └── current.json
     └── unit
         ├── __init__.py
         ├── test_filesystem_scanner.py
@@ -84,14 +88,6 @@
 ```
 
 ## File Contents
-
-### `.gitignore`
-
-```
-<<BINARY_OR_SKIPPED_FILE>>
-size_bytes: 0
-sha256: pre-snapshot
-```
 
 ### `documents/architecture.md`
 
@@ -1800,6 +1796,7 @@ class GraphBuilder:
         
         nodes: List[GraphNode] = []
         edges: List[GraphEdge] = []
+        external_ids: Set[str] = set()
         
         # Add all file nodes
         for f in files:
@@ -1816,6 +1813,7 @@ class GraphBuilder:
             lang = f["language"]
 
             for raw_import in f["imports"]:
+                # Try internal resolution first
                 target_id = self._resolve_import(raw_import, source_dir, lang, path_map)
                 
                 if target_id:
@@ -1825,8 +1823,25 @@ class GraphBuilder:
                         "relation": "imports"
                     })
                 else:
-                    # Optional: Add external/unresolved node
-                    pass
+                    # Try external resolution
+                    pkg_name = self._resolve_external(raw_import, lang)
+                    if pkg_name:
+                        ext_id = f"external:{pkg_name}"
+                        
+                        # Add external node if new
+                        if ext_id not in external_ids:
+                            external_ids.add(ext_id)
+                            nodes.append({
+                                "id": ext_id,
+                                "type": "external"
+                            })
+                        
+                        # Add edge
+                        edges.append({
+                            "source": source_id,
+                            "target": ext_id,
+                            "relation": "imports"
+                        })
 
         return {
             "schema_version": "1.0",
@@ -1842,12 +1857,46 @@ class GraphBuilder:
         path_map: Dict[str, str]
     ) -> Optional[str]:
         """
-        Heuristic resolution logic.
+        Heuristic resolution logic for internal files.
         """
         if language == "python":
             return self._resolve_python(import_str, source_dir, path_map)
         elif language in ("javascript", "typescript"):
             return self._resolve_js(import_str, source_dir, path_map)
+        return None
+
+    def _resolve_external(self, import_str: str, language: str) -> Optional[str]:
+        """
+        Determines if an import string represents an external package and returns
+        the canonical package name.
+        """
+        if language == "python":
+            # Python Logic
+            # 1. Ignore relative imports (starting with .)
+            if import_str.startswith("."):
+                return None
+            
+            # 2. Extract top-level package
+            # e.g., "pandas.core.frame" -> "pandas"
+            # e.g., "os" -> "os"
+            return import_str.split(".")[0]
+
+        elif language in ("javascript", "typescript"):
+            # JS/TS Logic
+            # 1. Ignore relative paths
+            if import_str.startswith(".") or import_str.startswith("/"):
+                return None
+            
+            # 2. Handle scoped packages (@org/pkg/sub -> @org/pkg)
+            if import_str.startswith("@"):
+                parts = import_str.split("/")
+                if len(parts) >= 2:
+                    return f"{parts[0]}/{parts[1]}"
+                return import_str # Fallback (weird case)
+            
+            # 3. Handle standard packages (lodash/fp -> lodash)
+            return import_str.split("/")[0]
+
         return None
 
     def _resolve_python(
@@ -1888,10 +1937,12 @@ class GraphBuilder:
         path_map: Dict[str, str]
     ) -> Optional[str]:
         
-        # 1. External packages (lodash, react) -> Skip
-        if not import_str.startswith("."):
-            return None
-
+        # 1. External packages (lodash, react) -> Skip internal check if not relative
+        # Note: We check relative logic in _resolve_external, but for internal resolution
+        # we strictly only look at relative paths or paths that might be aliased.
+        # For v0.1/0.2, we assume internal imports start with "." to be safe, 
+        # or we might catch absolute imports if they match a file exactly.
+        
         # 2. Relative resolution
         try:
             joined = os.path.join(source_dir, import_str)
@@ -2286,6 +2337,13 @@ def run_snapshot(
     # 2. Build Dependency Graph
     graph = GraphBuilder().build(file_entries)
 
+    # Extract external dependencies for Manifest stats
+    external_deps = sorted([
+        n["id"].replace("external:", "") 
+        for n in graph["nodes"] 
+        if n["type"] == "external"
+    ])
+
     # 3. Assemble Manifest
     manifest: Manifest = {
         "schema_version": "1.0",
@@ -2309,6 +2367,7 @@ def run_snapshot(
         "stats": {
             "file_count": len(file_entries),
             "total_bytes": total_bytes,
+            "external_dependencies": external_deps
         },
         "files": file_entries,
         "snapshot": {} # Populated by SnapshotWriter
@@ -2413,6 +2472,7 @@ class SnapshotConfig(TypedDict):
 class SnapshotStats(TypedDict):
     file_count: int
     total_bytes: int
+    external_dependencies: List[str]  # New field
 
 class Manifest(TypedDict):
     schema_version: str
@@ -3631,12 +3691,6 @@ class StructureBuilder:
         }
 ```
 
-### `tests/__init__.py`
-
-```
-
-```
-
 ### `tests/integration/__init__.py`
 
 ```
@@ -3666,7 +3720,8 @@ class TestFullSnapshot(unittest.TestCase):
 
         # Create dummy repo content
         self._create_file("README.md", "# Hello")
-        self._create_file("src/main.py", "print('hello')")
+        # main.py imports 'os' (external)
+        self._create_file("src/main.py", "import os\nprint('hello')")
         self._create_file("src/utils.py", "def add(a,b): return a+b")
         self._create_file("node_modules/bad_file.js", "ignore me") # Should be ignored
 
@@ -3710,20 +3765,20 @@ class TestFullSnapshot(unittest.TestCase):
         files = manifest["files"]
         paths = [f["path"] for f in files]
         
-        # Expected: readme.md, src/main.py, src/utils.py
-        # node_modules should be gone.
         self.assertIn("readme.md", paths)
         self.assertIn("src/main.py", paths)
         self.assertIn("src/utils.py", paths)
         self.assertNotIn("node_modules/bad_file.js", paths)
 
-        # 4. Verify Determinism (Hash)
+        # 4. Verify External Dependencies (New Feature)
+        stats = manifest["stats"]
+        self.assertIn("external_dependencies", stats)
+        # 'os' should be detected from src/main.py
+        self.assertIn("os", stats["external_dependencies"])
+
+        # 5. Verify Determinism (Hash)
         main_py_entry = next(f for f in files if f["path"] == "src/main.py")
         self.assertEqual(main_py_entry["language"], "python")
-        self.assertGreater(main_py_entry["size_bytes"], 0)
-        # SHA256 of "print('hello')"
-        # We won't hardcode the hash here to be robust against newline changes in test setup,
-        # but we ensure it exists.
         self.assertTrue(len(main_py_entry["sha256"]) == 64)
 
 if __name__ == "__main__":
@@ -3858,6 +3913,271 @@ class TestSnapshotFlow(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+```
+
+### `tests/output/2026-02-18t21-09-34z/graph.json`
+
+```
+{
+  "edges": [],
+  "nodes": [
+    {
+      "id": "file:frontend/app.tsx",
+      "type": "file"
+    },
+    {
+      "id": "file:frontend/components/button.tsx",
+      "type": "file"
+    },
+    {
+      "id": "file:frontend/legacy.js",
+      "type": "file"
+    },
+    {
+      "id": "file:readme.md",
+      "type": "file"
+    },
+    {
+      "id": "file:requirements.txt",
+      "type": "file"
+    },
+    {
+      "id": "file:scripts/deploy.py",
+      "type": "file"
+    },
+    {
+      "id": "file:src/main.py",
+      "type": "file"
+    },
+    {
+      "id": "file:src/utils/__init__.py",
+      "type": "file"
+    },
+    {
+      "id": "file:src/utils/logger.py",
+      "type": "file"
+    }
+  ],
+  "schema_version": "1.0"
+}
+```
+
+### `tests/output/2026-02-18t21-09-34z/manifest.json`
+
+```
+{
+  "config": {
+    "depth": 25,
+    "ignore_names": [
+      ".git",
+      "node_modules",
+      "__pycache__",
+      "dist",
+      "build",
+      ".next",
+      ".expo",
+      ".venv"
+    ],
+    "include_extensions": [],
+    "include_readme": true,
+    "manual_override": false,
+    "tree_only": false
+  },
+  "files": [
+    {
+      "imports": [
+        "./components/Button",
+        "./styles.css",
+        "react"
+      ],
+      "language": "typescript",
+      "module_path": "frontend",
+      "path": "frontend/app.tsx",
+      "sha256": "c4e3f3274e7c43d41ab16610884d5b6bb58dee24e764a5ad46743661b53213bb",
+      "size_bytes": 142,
+      "stable_id": "file:frontend/app.tsx"
+    },
+    {
+      "imports": [
+        "react"
+      ],
+      "language": "typescript",
+      "module_path": "frontend/components",
+      "path": "frontend/components/button.tsx",
+      "sha256": "e66b5591313c4a023c378a8301b8f5d4bfe93f97902f4006897253a587e59534",
+      "size_bytes": 91,
+      "stable_id": "file:frontend/components/button.tsx"
+    },
+    {
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "language": "javascript",
+      "module_path": "frontend",
+      "path": "frontend/legacy.js",
+      "sha256": "6066685d1ea34d639ec83d9ef46f64a86dce63e0ee5c5126ec5da0eb143c50bd",
+      "size_bytes": 85,
+      "stable_id": "file:frontend/legacy.js"
+    },
+    {
+      "imports": [],
+      "language": "markdown",
+      "module_path": "",
+      "path": "readme.md",
+      "sha256": "084e0f1df61e114153d628ca0125ced7a69a3101b920577b070dc7cabcd485d7",
+      "size_bytes": 72,
+      "stable_id": "file:readme.md"
+    },
+    {
+      "imports": [],
+      "language": "unknown",
+      "module_path": "",
+      "path": "requirements.txt",
+      "sha256": "fa45fe2d500fbfcacd606225bcc56c4ee9f9e199dd03908ac6a323fe4e3baf54",
+      "size_bytes": 26,
+      "stable_id": "file:requirements.txt"
+    },
+    {
+      "imports": [
+        "boto3",
+        "json"
+      ],
+      "language": "python",
+      "module_path": "scripts",
+      "path": "scripts/deploy.py",
+      "sha256": "af9507ef7830ef0854f7ffe81e042d35e319e3609a33a7057c6241d51a791b47",
+      "size_bytes": 30,
+      "stable_id": "file:scripts/deploy.py"
+    },
+    {
+      "imports": [
+        "os",
+        "sys",
+        "utils.logger"
+      ],
+      "language": "python",
+      "module_path": "src",
+      "path": "src/main.py",
+      "sha256": "39ed434953dad5ae0cb2f106c6a8adfafd7315cbfe1dafbc1ed26c9bc2541996",
+      "size_bytes": 121,
+      "stable_id": "file:src/main.py"
+    },
+    {
+      "imports": [],
+      "language": "python",
+      "module_path": "src/utils",
+      "path": "src/utils/__init__.py",
+      "sha256": "f01a374e9c81e3db89b3a42940c4d6a5447684986a1296e42bf13f196eed6295",
+      "size_bytes": 5,
+      "stable_id": "file:src/utils/__init__.py"
+    },
+    {
+      "imports": [
+        "datetime"
+      ],
+      "language": "python",
+      "module_path": "src/utils",
+      "path": "src/utils/logger.py",
+      "sha256": "a64e73ac733dc461d08ed36a17799d72dacc023ca64f65a8b8b40aa5cab1edee",
+      "size_bytes": 108,
+      "stable_id": "file:src/utils/logger.py"
+    }
+  ],
+  "inputs": {
+    "git": {
+      "commit": null,
+      "is_repo": false
+    },
+    "repo_root": "C:/projects/repo-runner/tests/fixtures/repo_20260218_154821",
+    "roots": [
+      "C:/projects/repo-runner/tests/fixtures/repo_20260218_154821"
+    ]
+  },
+  "schema_version": "1.0",
+  "snapshot": {
+    "created_utc": "2026-02-18T21:09:34Z",
+    "output_root": "tests/output",
+    "snapshot_id": "2026-02-18T21-09-34Z"
+  },
+  "stats": {
+    "file_count": 9,
+    "total_bytes": 680
+  },
+  "tool": {
+    "name": "repo-runner",
+    "version": "0.1.0"
+  }
+}
+```
+
+### `tests/output/2026-02-18t21-09-34z/structure.json`
+
+```
+{
+  "repo": {
+    "modules": [
+      {
+        "files": [
+          "file:readme.md",
+          "file:requirements.txt"
+        ],
+        "path": "",
+        "stable_id": "module:"
+      },
+      {
+        "files": [
+          "file:frontend/app.tsx",
+          "file:frontend/legacy.js"
+        ],
+        "path": "frontend",
+        "stable_id": "module:frontend"
+      },
+      {
+        "files": [
+          "file:frontend/components/button.tsx"
+        ],
+        "path": "frontend/components",
+        "stable_id": "module:frontend/components"
+      },
+      {
+        "files": [
+          "file:scripts/deploy.py"
+        ],
+        "path": "scripts",
+        "stable_id": "module:scripts"
+      },
+      {
+        "files": [
+          "file:src/main.py"
+        ],
+        "path": "src",
+        "stable_id": "module:src"
+      },
+      {
+        "files": [
+          "file:src/utils/__init__.py",
+          "file:src/utils/logger.py"
+        ],
+        "path": "src/utils",
+        "stable_id": "module:src/utils"
+      }
+    ],
+    "root": ".",
+    "stable_id": "repo:root"
+  },
+  "schema_version": "1.0"
+}
+```
+
+### `tests/output/current.json`
+
+```
+{
+  "current_snapshot_id": "2026-02-18T21-09-34Z",
+  "path": "2026-02-18T21-09-34Z",
+  "schema_version": "1.0"
+}
 ```
 
 ### `tests/unit/__init__.py`
@@ -4030,17 +4350,25 @@ class TestGraphBuilder(unittest.TestCase):
                 "stable_id": "file:src/main.py",
                 "path": "src/main.py",
                 "language": "python",
-                "imports": ["utils.logger", "os"], # 'os' is external (should be ignored or handled)
+                "imports": ["utils.logger", "os", "pandas.core.frame"], 
                 "module_path": "src",
                 "sha256": "abc", "size_bytes": 100
             },
             {
                 "stable_id": "file:src/utils/logger.py",
-                "path": "src/utils/logger.py", # Note: builder logic expects normalized paths
+                "path": "src/utils/logger.py", 
                 "language": "python",
                 "imports": [],
                 "module_path": "src/utils",
                 "sha256": "def", "size_bytes": 200
+            },
+            {
+                "stable_id": "file:src/app.tsx",
+                "path": "src/app.tsx",
+                "language": "typescript",
+                "imports": ["react", "react-dom/client", "@angular/core", "./components/button"],
+                "module_path": "src",
+                "sha256": "ghi", "size_bytes": 300
             }
         ]
         self.builder = GraphBuilder()
@@ -4048,37 +4376,69 @@ class TestGraphBuilder(unittest.TestCase):
     def test_node_generation(self):
         graph = self.builder.build(self.files)
         
-        node_ids = [n["id"] for n in graph["nodes"]]
+        node_ids = set(n["id"] for n in graph["nodes"])
+        
+        # Internal files
         self.assertIn("file:src/main.py", node_ids)
         self.assertIn("file:src/utils/logger.py", node_ids)
-        self.assertEqual(len(graph["nodes"]), 2)
+        
+        # External nodes (Python)
+        self.assertIn("external:os", node_ids)
+        self.assertIn("external:pandas", node_ids) # Should collapse pandas.core.frame
+        
+        # External nodes (JS/TS)
+        self.assertIn("external:react", node_ids)
+        self.assertIn("external:react-dom", node_ids) # Should collapse react-dom/client
+        self.assertIn("external:@angular/core", node_ids) # Scoped package
 
     def test_edge_resolution_python(self):
         graph = self.builder.build(self.files)
-        
-        # We expect an edge from main.py -> logger.py
-        # "utils.logger" -> "src/utils/logger.py" via relative/absolute resolution
-        
         edges = graph["edges"]
         
-        # Check for the specific edge
-        found = False
-        for e in edges:
-            if e["source"] == "file:src/main.py" and e["target"] == "file:src/utils/logger.py":
-                found = True
-                break
+        # 1. Internal Edge: main.py -> logger.py
+        internal_edge = next((e for e in edges if 
+            e["source"] == "file:src/main.py" and 
+            e["target"] == "file:src/utils/logger.py"), None)
+        self.assertIsNotNone(internal_edge)
         
-        self.assertTrue(found, "Failed to resolve 'utils.logger' import to file node")
+        # 2. External Edge: main.py -> os
+        external_edge = next((e for e in edges if 
+            e["source"] == "file:src/main.py" and 
+            e["target"] == "external:os"), None)
+        self.assertIsNotNone(external_edge)
 
-    def test_external_imports_ignored(self):
+    def test_edge_resolution_js(self):
         graph = self.builder.build(self.files)
         edges = graph["edges"]
         
-        # 'os' is not in our file list, so it should not produce an internal edge
-        # (Current implementation skips externals)
-        for e in edges:
-            if e["source"] == "file:src/main.py":
-                self.assertNotEqual(e["target"], "os")
+        # 1. External Edge: app.tsx -> react
+        react_edge = next((e for e in edges if 
+            e["source"] == "file:src/app.tsx" and 
+            e["target"] == "external:react"), None)
+        self.assertIsNotNone(react_edge)
+        
+        # 2. External Edge: app.tsx -> @angular/core
+        angular_edge = next((e for e in edges if 
+            e["source"] == "file:src/app.tsx" and 
+            e["target"] == "external:@angular/core"), None)
+        self.assertIsNotNone(angular_edge)
+
+    def test_broken_relative_imports_ignored(self):
+        # If a relative import doesn't resolve to a file, it should NOT become an external node
+        files = [{
+            "stable_id": "file:broken.py",
+            "path": "broken.py",
+            "language": "python",
+            "imports": [".non_existent"], 
+            "module_path": ".",
+            "sha256": "123", "size_bytes": 10
+        }]
+        
+        graph = self.builder.build(files)
+        node_ids = [n["id"] for n in graph["nodes"]]
+        
+        self.assertNotIn("external:.non_existent", node_ids)
+        self.assertNotIn("external:non_existent", node_ids)
 
 if __name__ == "__main__":
     unittest.main()

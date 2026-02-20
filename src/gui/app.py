@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import ctypes
 import datetime
+import time
 
 from src.scanner.filesystem_scanner import FileSystemScanner
 from src.normalize.path_normalizer import PathNormalizer
@@ -14,6 +15,7 @@ from src.gui.components.config_tabs import ConfigTabs
 from src.gui.components.tree_view import FileTreePanel
 from src.gui.components.preview_pane import PreviewPanel
 from src.gui.components.export_preview import ExportPreviewWindow
+from src.gui.components.progress_window import ProgressWindow
 
 # High DPI
 try:
@@ -31,6 +33,7 @@ class RepoRunnerApp(tk.Tk):
         self.style.theme_use('vista' if 'vista' in self.style.theme_names() else 'clam')
         
         self.repo_root = None
+        self.scan_worker = None
         
         self._build_ui()
 
@@ -58,7 +61,7 @@ class RepoRunnerApp(tk.Tk):
         action_frame = ttk.Frame(upper_frame, padding=10)
         action_frame.pack(side=tk.RIGHT, fill=tk.Y)
         
-        ttk.Button(action_frame, text="Scan Repository", command=self._scan, width=20).pack(pady=5)
+        ttk.Button(action_frame, text="Scan Repository", command=self._start_scan, width=20).pack(pady=5)
         
         self.btn_snap = ttk.Button(action_frame, text="Snapshot Selection", command=self._snapshot, state=tk.DISABLED, width=20)
         self.btn_snap.pack(pady=5)
@@ -87,59 +90,109 @@ class RepoRunnerApp(tk.Tk):
             self.ent_root.insert(0, path)
             self.repo_root = path
 
-    def _scan(self):
+    def _start_scan(self):
         root = self.ent_root.get().strip()
         if not os.path.isdir(root):
             messagebox.showerror("Error", "Invalid Repository Path")
             return
         
         self.repo_root = root
-        self.status_var.set("Scanning...")
         self.tree_panel.clear()
         self.preview_panel.clear()
         
-        # Get settings
+        # Get settings safely on Main Thread
         depth = self.config_tabs.depth_var.get()
         ignore = set(self.config_tabs.ignore_var.get().split())
         exts = self.config_tabs.ext_var.get().split()
         readme = self.config_tabs.include_readme_var.get()
         
-        def run():
-            try:
-                scanner = FileSystemScanner(depth=depth, ignore_names=ignore)
-                abs_files = scanner.scan([root])
-                
-                # Filter
-                filtered = []
-                ext_set = set(e.lower() for e in exts)
-                for f in abs_files:
-                    _, ext = os.path.splitext(f)
-                    is_readme = readme and os.path.basename(f).lower().startswith("readme")
-                    if not ext_set or ext.lower() in ext_set or is_readme:
-                        filtered.append(f)
-                
-                # Normalize for tree
-                normalizer = PathNormalizer(root)
-                struct = {}
-                for f in filtered:
-                    rel = normalizer.normalize(f)
-                    parts = rel.split('/')
-                    curr = struct
-                    for p in parts:
-                        curr = curr.setdefault(p, {})
-                    curr['__metadata__'] = {'abs_path': f, 'stable_id': normalizer.file_id(rel)}
-                
-                self.after(0, lambda: self._scan_done(struct, len(filtered)))
-            except Exception as e:
-                self.after(0, lambda: messagebox.showerror("Scan Error", str(e)))
+        # Launch Progress Window
+        self.progress_win = ProgressWindow(self, title="Scanning", message=f"Scanning {root}...")
+        
+        # Start Worker Thread
+        self.scan_worker = threading.Thread(
+            target=self._scan_thread,
+            args=(root, depth, ignore, exts, readme),
+            daemon=True
+        )
+        self.scan_worker.start()
 
-        threading.Thread(target=run, daemon=True).start()
+    def _scan_thread(self, root, depth, ignore, exts, readme):
+        try:
+            scanner = FileSystemScanner(depth=depth, ignore_names=ignore)
+            
+            # Define callback for the scanner
+            def on_progress(count):
+                if self.progress_win.cancelled:
+                    return False # Stop scanning
+                
+                # Update UI thread
+                self.after(0, lambda: self.progress_win.update_message(f"Found {count} files..."))
+                return True
+
+            abs_files = scanner.scan([root], progress_callback=on_progress)
+            
+            if self.progress_win.cancelled:
+                self.after(0, self._scan_cancelled)
+                return
+
+            self.after(0, lambda: self.progress_win.update_message("Filtering and Normalizing..."))
+            
+            # Filter
+            filtered = []
+            ext_set = set(e.lower() for e in exts)
+            for f in abs_files:
+                _, ext = os.path.splitext(f)
+                is_readme = readme and os.path.basename(f).lower().startswith("readme")
+                if not ext_set or ext.lower() in ext_set or is_readme:
+                    filtered.append(f)
+            
+            # Normalize for tree
+            normalizer = PathNormalizer(root)
+            struct = {}
+            for f in filtered:
+                rel = normalizer.normalize(f)
+                parts = rel.split('/')
+                
+                # Build nested dict
+                curr = struct
+                for i, p in enumerate(parts):
+                    # Check if p is a file (last part) or dir
+                    is_last = (i == len(parts) - 1)
+                    
+                    if is_last:
+                        # File leaf
+                        # We might need to handle the case where a directory was previously created 
+                        # with the same name (unlikely in valid FS, but possible in logic).
+                        # For now, simplistic approach:
+                        if p not in curr:
+                            curr[p] = {}
+                        curr[p]['__metadata__'] = {'abs_path': f, 'stable_id': normalizer.file_id(rel)}
+                    else:
+                        # Directory node
+                        curr = curr.setdefault(p, {})
+            
+            # Success
+            self.after(0, lambda: self._scan_done(struct, len(filtered)))
+            
+        except Exception as e:
+            self.after(0, lambda: self._scan_fail(str(e)))
 
     def _scan_done(self, struct, count):
+        self.progress_win.close()
         self.tree_panel.populate(struct)
         self.status_var.set(f"Scan Complete. Found {count} files.")
         self.btn_snap.config(state=tk.NORMAL)
         self.btn_export.config(state=tk.NORMAL)
+
+    def _scan_cancelled(self):
+        self.progress_win.close()
+        self.status_var.set("Scan Cancelled.")
+
+    def _scan_fail(self, error):
+        self.progress_win.close()
+        messagebox.showerror("Scan Error", error)
+        self.status_var.set("Scan Failed.")
 
     def _on_file_selected(self, abs_path, stable_id):
         self.preview_panel.load_file(abs_path, stable_id)
@@ -155,7 +208,7 @@ class RepoRunnerApp(tk.Tk):
         
         # UI Locking
         self.btn_snap.config(state=tk.DISABLED)
-        self.status_var.set("Creating Snapshot (Calculating Hashes)...")
+        self.progress_win = ProgressWindow(self, title="Snapshotting", message="Calculating Hashes and Analyzing Imports...")
         
         def run():
             try:
@@ -176,11 +229,13 @@ class RepoRunnerApp(tk.Tk):
         threading.Thread(target=run, daemon=True).start()
 
     def _snapshot_done(self, sid):
+        self.progress_win.close()
         self.btn_snap.config(state=tk.NORMAL)
         self.status_var.set(f"Snapshot Created: {sid}")
         messagebox.showinfo("Success", f"Snapshot Created: {sid}")
 
     def _snapshot_fail(self, error):
+        self.progress_win.close()
         self.btn_snap.config(state=tk.NORMAL)
         self.status_var.set("Snapshot Failed.")
         messagebox.showerror("Error", error)

@@ -4,26 +4,27 @@
 
 This roadmap is intentionally staged to preserve determinism and keep complexity layered.
 
-## v0.1 — Structure + Fingerprints (Current)
+## v0.1 — Structure + Fingerprints (Completed)
 
 - structure.json (repo/module/file containment)
 - manifest.json (config + file hashes)
 - append-only snapshots
 - optional exports (flatten.md)
 
-## v0.2 — Dependency Extraction (Imports Only)
+## v0.2 — Dependency Extraction (Current)
 
 - symbols.json (definitions optional)
 - imports.json (file-to-file/module import edges)
 - external_deps.json (package usage)
 - stable external IDs
-
-## v0.3 — Graph Canonicalization
-
 - graph.json as the canonical structure:
   - nodes: repo/module/file/external
   - edges: contains/imports/depends_on
+
+## v0.3 — Graph Canonicalization & Cycle Policy
+
 - cycle handling policy
+- hierarchical dependency layering
 
 ## v0.4 — Diagram Projection
 

@@ -63,6 +63,11 @@ class GraphBuilder:
                             "relation": "imports"
                         })
 
+        # 3. Enforce Determinism 
+        # Lists must be explicitly sorted. The JSON writer only sorts dictionary keys.
+        nodes.sort(key=lambda n: n["id"])
+        edges.sort(key=lambda e: (e["source"], e["target"], e["relation"]))
+
         return {
             "schema_version": "1.0",
             "nodes": nodes,
