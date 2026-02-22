@@ -10,10 +10,10 @@ class TestContextSlicer(unittest.TestCase):
         # File C: 400 bytes -> 100 tokens
         self.manifest = {
             "files": [
-                {"stable_id": "file:a.py", "size_bytes": 40},
-                {"stable_id": "file:b.py", "size_bytes": 40},
-                {"stable_id": "file:c.py", "size_bytes": 400},
-                {"stable_id": "file:d.py", "size_bytes": 40}
+                {"stable_id": "file:a.py", "size_bytes": 40, "symbols": ["HelperClass"]},
+                {"stable_id": "file:b.py", "size_bytes": 40, "symbols": []},
+                {"stable_id": "file:c.py", "size_bytes": 400, "symbols": ["DataModel", "process"]},
+                {"stable_id": "file:d.py", "size_bytes": 40, "symbols": []}
             ],
             "stats": {"file_count": 4}
         }
@@ -109,6 +109,36 @@ class TestContextSlicer(unittest.TestCase):
             radius=1
         )
         self.assertEqual(sliced["stats"]["cycles_included"], 0)
+
+    def test_symbol_focus_resolution(self):
+        """
+        Test that passing 'symbol:DataModel' correctly resolves to 'file:c.py' 
+        and performs the standard graph traversal from there.
+        """
+        sliced = ContextSlicer.slice_manifest(
+            self.manifest, 
+            self.graph, 
+            "symbol:DataModel", 
+            radius=1
+        )
+        files = sorted([f["stable_id"] for f in sliced["files"]])
+        
+        # Radius 1 from C should include B (parent) and D (child), plus C itself
+        self.assertEqual(files, ["file:b.py", "file:c.py", "file:d.py"])
+        self.assertEqual(sliced["telemetry"]["resolved_id"], "file:c.py")
+
+    def test_symbol_not_found(self):
+        """
+        Test that requesting a missing symbol returns a safe, empty slice.
+        """
+        sliced = ContextSlicer.slice_manifest(
+            self.manifest, 
+            self.graph, 
+            "symbol:MissingSymbol", 
+            radius=1
+        )
+        self.assertEqual(len(sliced["files"]), 0)
+        self.assertEqual(sliced["stats"]["file_count"], 0)
 
 if __name__ == "__main__":
     unittest.main()
