@@ -5,9 +5,10 @@ from typing import List, Set, Dict
 class ImportScanner:
     # --- JavaScript / TypeScript Patterns (Regex) ---
     
-    # Imports (Hardened against greedy matching across statements by forbidding quotes before 'from')
-    _JS_IMPORT_FROM = re.compile(r'import\s+(?:type\s+)?[^\'"]+?\s+from\s+[\'"]([^\'"]+)[\'"]')
-    _JS_EXPORT_FROM = re.compile(r'export\s+(?:type\s+)?[^\'"]+?\s+from\s+[\'"]([^\'"]+)[\'"]')
+    # Imports 
+    # CHANGED: Uses [\s\S]*? instead of . to match multi-line imports (e.g. { \n Foo \n })
+    _JS_IMPORT_FROM = re.compile(r'import\s+(?:type\s+)?([\s\S]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
+    _JS_EXPORT_FROM = re.compile(r'export\s+(?:type\s+)?([\s\S]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
     
     # Strictly matches `import 'side-effect'` without snagging structured imports
     _JS_IMPORT_SIDE_EFFECT = re.compile(r'import\s+[\'"]([^\'"]+)[\'"]')
@@ -51,6 +52,7 @@ class ImportScanner:
             elif language in ("javascript", "typescript"):
                 ImportScanner._scan_js(content, imports, symbols)
         except Exception:
+            # Fail gracefully for syntax errors in user code
             pass
 
         result["imports"] = sorted(list(imports))
@@ -98,7 +100,7 @@ class ImportScanner:
 
         # Imports
         for match in ImportScanner._JS_IMPORT_FROM.finditer(clean_content):
-            imports.add(match.group(1))
+            imports.add(match.group(2)) # Group 2 is the path
             
         for match in ImportScanner._JS_IMPORT_SIDE_EFFECT.finditer(clean_content):
             imports.add(match.group(1))
@@ -107,7 +109,7 @@ class ImportScanner:
             imports.add(match.group(1))
 
         for match in ImportScanner._JS_EXPORT_FROM.finditer(clean_content):
-            imports.add(match.group(1))
+            imports.add(match.group(2)) # Group 2 is the path
 
         for match in ImportScanner._JS_DYNAMIC_IMPORT.finditer(clean_content):
             imports.add(match.group(1))

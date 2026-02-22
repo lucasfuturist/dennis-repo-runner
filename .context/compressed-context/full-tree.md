@@ -2,35 +2,15 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `100`
+- file_count: `86`
 - tree_only: `True`
 ## Tree
 
 ```
-├── .context
-│   ├── .dev-prompts
-│   │   ├── .context-compressor-prompt.md
-│   │   ├── commands.md
-│   │   ├── compressed
-│   │   │   ├── 00-compressed-codebase-ingest-prompt.md
-│   │   │   ├── 01-next-steps-prompt.md
-│   │   │   ├── 02-requested-files.md
-│   │   │   └── 03-code-conventions-prompt.md
-│   │   ├── raw
-│   │   │   ├── 00-raw-codebase-ingest-prompt.md
-│   │   │   ├── 01-next-steps-prompt.md
-│   │   │   └── 02-code-conventions-prompt.md
-│   │   └── repo-runner-flattened.md
-│   ├── compressed-context
-│   │   ├── all-documents.md
-│   │   ├── full-tree.md
-│   │   ├── scripts-compressed.md
-│   │   ├── src-compressed.md
-│   │   └── tests-compressed.md
-│   └── repo-runner-flattened.md
 ├── .gitignore
 ├── clean_test.py
 ├── documents
+│   ├── agent.md
 │   ├── architecture.md
 │   ├── config_spec.md
 │   ├── contributing.md
@@ -43,6 +23,7 @@
 │   ├── testing_strategy.md
 │   └── versioning_policy.md
 ├── drift_test.py
+├── flattened_repo-runner_2026-02-19.md
 ├── readme.md
 ├── repo-runner.code-workspace
 ├── repo-runner.spec
@@ -135,6 +116,6 @@
 
 ---
 ## Context Stats
-- **Total Characters:** 3,571
-- **Estimated Tokens:** ~892 (assuming ~4 chars/token)
+- **Total Characters:** 2,926
+- **Estimated Tokens:** ~731 (assuming ~4 chars/token)
 - **Model Fit:** GPT-4 (8k)

@@ -126,6 +126,7 @@ def run_snapshot(
             fp = FileFingerprint.fingerprint(abs_path)
             total_bytes += fp["size_bytes"]
             
+            # --- Analysis (Imports & Symbols) ---
             try:
                 scan_res = ImportScanner.scan(abs_path, fp["language"])
                 imports = scan_res.get("imports", [])
@@ -166,12 +167,14 @@ def run_snapshot(
 
     if not skip_graph:
         graph = GraphBuilder().build(file_entries)
+        # Extract external dependencies for manifest stats
         external_deps = sorted([
             n.id.replace("external:", "") 
             for n in graph.nodes 
             if n.type == "external"
         ])
 
+    # Build Symbol Index (Inverted: symbol -> list[file_ids])
     symbols_index_raw = defaultdict(list)
     for entry in file_entries:
         for sym in entry.symbols:

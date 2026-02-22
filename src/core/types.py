@@ -1,4 +1,4 @@
-from typing import List, Optional, Set, Any
+from typing import List, Optional, Set, Any, Dict
 from pydantic import BaseModel, Field, field_validator
 
 class RepoRunnerConfig(BaseModel):
@@ -26,7 +26,7 @@ class FileEntry(BaseModel):
     size_bytes: int
     language: str = "unknown"
     imports: List[str] = Field(default_factory=list)
-    symbols: List[str] = Field(default_factory=list) # NEW: Semantic extraction
+    symbols: List[str] = Field(default_factory=list) 
 
     @field_validator('path', 'module_path')
     @classmethod
