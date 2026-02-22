@@ -6,16 +6,20 @@ Stable IDs are required for deterministic outputs and future graph layering.
 
 ## ID Types (v0.2)
 
-- Repository: repo:root
-- Module (directory): module:{path}
-- File: file:{path}
+- Repository: `repo:root`
+- Module (directory): `module:{path}`
+- File: `file:{path}`
+- External Dependency: `external:{package_name}`
+- Symbol (Virtual): `symbol:{name}`
 
 Where `{path}` is a normalized repo-relative path.
 
 Examples:
-- repo:root
-- module:src/modules/catalog
-- file:src/modules/catalog/index.ts
+- `repo:root`
+- `module:src/modules/catalog`
+- `file:src/modules/catalog/index.ts`
+- `external:react`
+- `symbol:GraphBuilder`
 
 ## Path Normalization
 
@@ -44,22 +48,19 @@ All paths stored in artifacts must be:
 ## Stable ID Generation
 
 Given a normalized path:
-- file stable_id: "file:" + path
-- module stable_id: "module:" + directory_path
-- repo stable_id: "repo:root"
+- file stable_id: `"file:" + path`
+- module stable_id: `"module:" + directory_path`
+- repo stable_id: `"repo:root"`
+- external stable_id: `"external:" + package_name`
 
-No UUIDs.
-No random identifiers.
+## Symbol IDs
+
+Symbols are primarily used for Context Slicing queries and logical navigation.
+- Format: `symbol:{name}`
+- Example: `symbol:ContextSlicer` -> Resolves to `file:src/analysis/context_slicer.py` via `symbols.json`.
 
 ## Collisions
 
 If two included files normalize to the same path (e.g., `README.md` and `readme.md` on a case-sensitive filesystem):
 - Repo-runner must detect the collision and fail the run with an explicit error.
 - No silent overwrites.
-
-## Future Types (Reserved)
-
-These are not used in v0.2, but reserved for later:
-- symbol:{file_path}#{symbol_name}
-- external:{package_name}
-- edge IDs derived from endpoint IDs

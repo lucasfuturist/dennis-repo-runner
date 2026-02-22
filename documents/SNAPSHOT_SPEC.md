@@ -15,6 +15,7 @@ Example:
     manifest.json
     structure.json
     graph.json
+    symbols.json    <-- NEW in v0.2
     exports/
       ...
   current.json
@@ -36,13 +37,7 @@ snapshot_id must be:
 
 Recommended format:
 
-YYYY-MM-DDTHH-mm-ssZ_{short_hash}
-
-Where `short_hash` is derived from:
-- normalized roots
-- config (ignore/ext/depth)
-- optional git commit
-- optional file list hash (if available after scan)
+YYYY-MM-DDTHH-mm-ssZ (UTC)
 
 ## manifest.json Schema
 
@@ -94,7 +89,8 @@ Required fields:
       "sha256": "hex string",
       "size_bytes": number,
       "language": "typescript",
-      "imports": ["./layout.tsx", "react"]
+      "imports": ["./layout.tsx", "react"],
+      "symbols": ["Page", "generateMetadata"]
     }
   ]
 }
@@ -126,17 +122,13 @@ structure.json is hierarchical containment only.
   }
 }
 
-Rules:
-- `modules` sorted by `path` ascending.
-- `files` entries sorted by their file path ascending.
-- module membership is defined by directory containment of the file path.
-
 ## graph.json Schema
 
-graph.json provides the topological dependency map.
+graph.json provides the topological dependency map and cycle analysis.
 
 {
   "schema_version": "1.0",
+  "has_cycles": false,
   "nodes": [
     {
       "id": "file:src/app/page.tsx",
@@ -153,13 +145,29 @@ graph.json provides the topological dependency map.
       "target": "external:react",
       "relation": "imports"
     }
+  ],
+  "cycles": [
+    ["file:src/a.py", "file:src/b.py"]
   ]
 }
 
 Rules:
 - `nodes` array must be sorted ascending by `id`.
 - `edges` array must be sorted ascending by `source`, then `target`, then `relation`.
-- `external:` nodes represent inferred external boundaries (e.g., npm packages, python site-packages).
+- `cycles` lists must be normalized (rotated to start with smallest ID) and sorted.
+
+## symbols.json Schema (New in v0.2)
+
+A deterministic global index mapping symbol names to the files that define them.
+
+{
+  "ClassName": ["file:src/class.py"],
+  "process_data": ["file:src/utils.py", "file:src/core.py"]
+}
+
+Rules:
+- Keys are sorted alphabetically.
+- Values are lists of stable file IDs, sorted alphabetically.
 
 ## exports/ Folder
 
@@ -181,14 +189,3 @@ Optional pointer for convenience:
 }
 
 Overwriting current.json is allowed.
-
-## Snapshot Resolution Policy
-
-When invoked without explicit snapshot_id:
-- Repo-runner or its consumer may default to current.json pointer.
-
-If snapshot_id is provided:
-- The specified snapshot folder must exist.
-- If not found, fail explicitly.
-
-Snapshot resolution does not mutate snapshots.

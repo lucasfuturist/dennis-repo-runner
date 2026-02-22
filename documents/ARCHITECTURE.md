@@ -1,8 +1,8 @@
 # ARCHITECTURE.md
 
-# Architecture (v0.1.5)
+# Architecture (v0.1)
 
-Repo-runner is a deterministic pipeline with strict phase boundaries. In v0.1.5, the output includes structural containment, file fingerprints, and preliminary dependency graph construction.
+Repo-runner is a deterministic pipeline with strict phase boundaries. In v0.1, the output is purely structural (containment and file fingerprints).
 
 ## Pipeline Overview
 
@@ -14,15 +14,13 @@ Phases:
 1. Scan
 2. Normalize
 3. Fingerprint
-4. Analysis & Graph Construction
-5. Build Structure
-6. Write Snapshot
-7. Optional Exports
+4. Build Structure
+5. Write Snapshot
+6. Optional Exports
 
 Outputs:
 - `manifest.json`
 - `structure.json`
-- `graph.json` (Preliminary)
 - Optional export files under `exports/`
 
 ## Components
@@ -54,19 +52,7 @@ Responsibility:
 Constraints:
 - Hash is over file bytes only (no newline normalization)
 
-### 4) Analysis & Graph Construction
-Responsibility:
-- Parse file content (AST for Python, Regex for TS/JS)
-- Extract import statements and dependency edges
-- Construct a directed graph (`GraphStructure`)
-- Resolve internal modules vs. external packages
-
-Constraints:
-- Analysis must handle syntax errors gracefully (skip file or log warning)
-- Must be deterministic (sort imports before hashing/linking)
-- Graph construction must not mutate file fingerprints
-
-### 5) Structure Builder
+### 4) Structure Builder
 Responsibility:
 - Build hierarchical containment:
   - repo root
@@ -74,7 +60,7 @@ Responsibility:
   - files (leaf nodes)
 - Sort modules and files deterministically
 
-### 6) Snapshot Writer
+### 5) Snapshot Writer
 Responsibility:
 - Create append-only snapshot folder
 - Write `manifest.json` and `structure.json`
@@ -83,7 +69,7 @@ Responsibility:
 Constraints:
 - Snapshot folder is immutable once written
 
-### 7) Exporters (Optional)
+### 6) Exporters (Optional)
 Responsibility:
 - Produce auxiliary human-readable exports (e.g., flatten.md)
 - Exporters must not change canonical snapshot data
@@ -101,10 +87,13 @@ Example Exporter:
 - Only the Snapshot Writer touches disk for canonical artifacts.
 - Exports are derived and must be safe to delete/regenerate.
 
-## Non-Goals in v0.1.5
+## Non-Goals in v0.1
 
+- Graph edges
+- Import/export parsing
 - Symbol indexing
-- Call graph resolution (function-to-function)
+- Call graph
 - Diagram projection
 
 Those are introduced in v0.2+ with separate specs.
+

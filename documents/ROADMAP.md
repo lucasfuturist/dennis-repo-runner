@@ -11,34 +11,38 @@ This roadmap is intentionally staged to preserve determinism and keep complexity
 - [x] append-only snapshots
 - [x] optional exports (flatten.md)
 
-## v0.1.5 — Schema Assurance & Graph Hardening (Immediate Focus)
+## v0.1.5 — Schema Assurance & Graph Hardening (Complete)
 
-- [ ] **Migrate `src/core/types.py` to Pydantic**
+- [x] **Migrate `src/core/types.py` to Pydantic**
   - Enforce strict typing for `FileEntry` and `Manifest` at the class level
   - Implement runtime validators for normalized paths (lowercase, forward-slash)
-- [ ] **Integration with "Dennis" Context Engine**
+- [x] **Integration with "Dennis" Context Engine**
   - Verify structured output validation against AllSpice-style requirements
+- [x] **Graph Hardening**
+  - Formalized cycle detection (`has_cycles` flag)
+  - Hardened JS/TS Regex against greedy matching
 
-## v0.2 — Dependency Extraction & Graph Layer (In Progress)
+## v0.2 — Semantic Graph Layer (Complete)
 
 - [x] **Basic AST-based import scanning (Python)**
   - `src/analysis/import_scanner.py`
 - [x] **Regex-based import scanning (JS/TS)**
   - `src/analysis/import_scanner.py`
-- [x] **Initial `GraphStructure` implementation**
+- [x] **Graph Construction** (`graph.json`)
   - `src/analysis/graph_builder.py`
-- [ ] symbols.json (definitions optional)
-- [ ] external_deps.json (package usage)
-- [ ] Cycle detection and handling strategy
-- [ ] Stable external IDs (e.g., `external:pydantic`)
+- [x] **Symbol Extraction**
+  - `symbols.json` global index
+  - `symbols` list per file in manifest
+- [x] **Context Slicing**
+  - Slice by `symbol:{name}`
+  - Language-aware token budgeting (Python ~3.5 chars/token vs MD ~4.5)
 
-## v0.3 — Graph Canonicalization
+## v0.3 — Graph Canonicalization (Next Focus)
 
-- graph.json as the canonical structure:
-  - nodes: repo/module/file/external
-  - edges: contains/imports/depends_on
-- cycle handling policy
-- full determinism audit for graph edges
+- [ ] stable external IDs (e.g., `external:pydantic` vs `external:src`)
+- [ ] full determinism audit for graph edges across OS boundaries
+- [ ] cycle handling policy (warn vs fail)
+- [ ] support for `external_deps.json` (package usage stats)
 
 ## v0.4 — Diagram Projection
 
