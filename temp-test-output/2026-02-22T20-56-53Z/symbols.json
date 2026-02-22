@@ -1,0 +1,400 @@
+{
+  "CompareRequest": [
+    "file:api/server.py"
+  ],
+  "ConfigLoader": [
+    "file:core/config_loader.py"
+  ],
+  "ConfigTabs": [
+    "file:gui/components/config_tabs.py"
+  ],
+  "ContextSlicer": [
+    "file:analysis/context_slicer.py"
+  ],
+  "EdgeDiff": [
+    "file:core/types.py"
+  ],
+  "ExportPreviewWindow": [
+    "file:gui/components/export_preview.py"
+  ],
+  "FileDiff": [
+    "file:core/types.py"
+  ],
+  "FileEntry": [
+    "file:core/types.py"
+  ],
+  "FileFingerprint": [
+    "file:fingerprint/file_fingerprint.py"
+  ],
+  "FileSystemScanner": [
+    "file:scanner/filesystem_scanner.py"
+  ],
+  "FileTreePanel": [
+    "file:gui/components/tree_view.py"
+  ],
+  "FlattenMarkdownExporter": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "FlattenOptions": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "GitMetadata": [
+    "file:core/types.py"
+  ],
+  "GraphBuilder": [
+    "file:analysis/graph_builder.py"
+  ],
+  "GraphEdge": [
+    "file:core/types.py"
+  ],
+  "GraphNode": [
+    "file:core/types.py"
+  ],
+  "GraphStructure": [
+    "file:core/types.py"
+  ],
+  "ImportScanner": [
+    "file:analysis/import_scanner.py"
+  ],
+  "Manifest": [
+    "file:core/types.py"
+  ],
+  "ManifestConfig": [
+    "file:core/types.py"
+  ],
+  "ManifestInputs": [
+    "file:core/types.py"
+  ],
+  "ManifestStats": [
+    "file:core/types.py"
+  ],
+  "PathNormalizer": [
+    "file:normalize/path_normalizer.py"
+  ],
+  "PreviewPanel": [
+    "file:gui/components/preview_pane.py"
+  ],
+  "ProgressWindow": [
+    "file:gui/components/progress_window.py"
+  ],
+  "RepoRunnerApp": [
+    "file:gui/app.py"
+  ],
+  "RepoRunnerConfig": [
+    "file:core/types.py"
+  ],
+  "SliceRequest": [
+    "file:api/server.py"
+  ],
+  "SnapshotComparator": [
+    "file:analysis/snapshot_comparator.py"
+  ],
+  "SnapshotDiffReport": [
+    "file:core/types.py"
+  ],
+  "SnapshotLoader": [
+    "file:snapshot/snapshot_loader.py"
+  ],
+  "SnapshotRequest": [
+    "file:api/server.py"
+  ],
+  "SnapshotWriter": [
+    "file:snapshot/snapshot_writer.py"
+  ],
+  "StructureBuilder": [
+    "file:structure/structure_builder.py"
+  ],
+  "TokenTelemetry": [
+    "file:observability/token_telemetry.py"
+  ],
+  "__init__": [
+    "file:gui/app.py",
+    "file:gui/components/config_tabs.py",
+    "file:gui/components/export_preview.py",
+    "file:gui/components/preview_pane.py",
+    "file:gui/components/progress_window.py",
+    "file:gui/components/tree_view.py",
+    "file:normalize/path_normalizer.py",
+    "file:scanner/filesystem_scanner.py",
+    "file:snapshot/snapshot_loader.py",
+    "file:snapshot/snapshot_writer.py"
+  ],
+  "_apply_scope": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_binary_placeholder": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_browse": [
+    "file:gui/app.py"
+  ],
+  "_build_adjacency": [
+    "file:analysis/graph_builder.py"
+  ],
+  "_build_ignore_tab": [
+    "file:gui/components/config_tabs.py"
+  ],
+  "_build_output_tab": [
+    "file:gui/components/config_tabs.py"
+  ],
+  "_build_scan_tab": [
+    "file:gui/components/config_tabs.py"
+  ],
+  "_build_ui": [
+    "file:gui/app.py",
+    "file:gui/components/export_preview.py",
+    "file:gui/components/progress_window.py"
+  ],
+  "_bulk_toggle": [
+    "file:gui/components/tree_view.py"
+  ],
+  "_canonical_files_from_manifest": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_copy": [
+    "file:gui/components/export_preview.py"
+  ],
+  "_detect_cycles": [
+    "file:analysis/graph_builder.py"
+  ],
+  "_filter_by_extensions": [
+    "file:core/controller.py"
+  ],
+  "_get_model_fit": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_highlight_syntax": [
+    "file:gui/components/preview_pane.py"
+  ],
+  "_on_click": [
+    "file:gui/components/tree_view.py"
+  ],
+  "_on_file_selected": [
+    "file:gui/app.py"
+  ],
+  "_on_selection_change": [
+    "file:gui/components/tree_view.py"
+  ],
+  "_parse_args": [
+    "file:cli/main.py"
+  ],
+  "_quick_export": [
+    "file:gui/app.py"
+  ],
+  "_quick_export_done": [
+    "file:gui/app.py"
+  ],
+  "_quick_export_fail": [
+    "file:gui/app.py"
+  ],
+  "_render_contents": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_render_tree": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_resolve_external": [
+    "file:analysis/graph_builder.py"
+  ],
+  "_resolve_import": [
+    "file:analysis/graph_builder.py"
+  ],
+  "_resolve_js": [
+    "file:analysis/graph_builder.py"
+  ],
+  "_resolve_python": [
+    "file:analysis/graph_builder.py"
+  ],
+  "_save": [
+    "file:gui/components/export_preview.py"
+  ],
+  "_scan_cancelled": [
+    "file:gui/app.py"
+  ],
+  "_scan_done": [
+    "file:gui/app.py"
+  ],
+  "_scan_fail": [
+    "file:gui/app.py"
+  ],
+  "_scan_js": [
+    "file:analysis/import_scanner.py"
+  ],
+  "_scan_python": [
+    "file:analysis/import_scanner.py"
+  ],
+  "_scan_thread": [
+    "file:gui/app.py"
+  ],
+  "_set_check_recursive": [
+    "file:gui/components/tree_view.py"
+  ],
+  "_snapshot": [
+    "file:gui/app.py"
+  ],
+  "_snapshot_done": [
+    "file:gui/app.py"
+  ],
+  "_snapshot_fail": [
+    "file:gui/app.py"
+  ],
+  "_sniff_binary": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_start_scan": [
+    "file:gui/app.py"
+  ],
+  "_toggle_item": [
+    "file:gui/components/tree_view.py"
+  ],
+  "_tree_lines": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "_walk": [
+    "file:scanner/filesystem_scanner.py"
+  ],
+  "build": [
+    "file:analysis/graph_builder.py",
+    "file:structure/structure_builder.py"
+  ],
+  "cancel": [
+    "file:gui/components/progress_window.py"
+  ],
+  "clear": [
+    "file:gui/components/preview_pane.py",
+    "file:gui/components/tree_view.py"
+  ],
+  "cli_progress": [
+    "file:cli/main.py"
+  ],
+  "close": [
+    "file:gui/components/progress_window.py"
+  ],
+  "compare": [
+    "file:analysis/snapshot_comparator.py"
+  ],
+  "compare_snapshots": [
+    "file:api/server.py"
+  ],
+  "create_snapshot": [
+    "file:api/server.py"
+  ],
+  "dfs": [
+    "file:analysis/graph_builder.py"
+  ],
+  "estimate_tokens": [
+    "file:observability/token_telemetry.py"
+  ],
+  "export": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "file_id": [
+    "file:normalize/path_normalizer.py"
+  ],
+  "fingerprint": [
+    "file:fingerprint/file_fingerprint.py"
+  ],
+  "format_usage": [
+    "file:observability/token_telemetry.py"
+  ],
+  "generate_content": [
+    "file:exporters/flatten_markdown_exporter.py"
+  ],
+  "get_checked_files": [
+    "file:gui/components/tree_view.py"
+  ],
+  "insert_node": [
+    "file:gui/components/tree_view.py"
+  ],
+  "launch": [
+    "file:entry_point.py"
+  ],
+  "load_config": [
+    "file:core/config_loader.py"
+  ],
+  "load_file": [
+    "file:gui/components/preview_pane.py"
+  ],
+  "load_manifest": [
+    "file:snapshot/snapshot_loader.py"
+  ],
+  "load_structure": [
+    "file:snapshot/snapshot_loader.py"
+  ],
+  "main": [
+    "file:cli/main.py"
+  ],
+  "module_id": [
+    "file:normalize/path_normalizer.py"
+  ],
+  "module_path": [
+    "file:normalize/path_normalizer.py"
+  ],
+  "normalize": [
+    "file:normalize/path_normalizer.py"
+  ],
+  "on_progress": [
+    "file:gui/app.py"
+  ],
+  "populate": [
+    "file:gui/components/tree_view.py"
+  ],
+  "repo_id": [
+    "file:normalize/path_normalizer.py"
+  ],
+  "resolve_snapshot_dir": [
+    "file:snapshot/snapshot_loader.py"
+  ],
+  "root": [
+    "file:api/server.py"
+  ],
+  "run": [
+    "file:gui/app.py"
+  ],
+  "run_compare": [
+    "file:core/controller.py"
+  ],
+  "run_export": [
+    "file:gui/app.py"
+  ],
+  "run_export_flatten": [
+    "file:core/controller.py"
+  ],
+  "run_gui": [
+    "file:gui/app.py"
+  ],
+  "run_snapshot": [
+    "file:core/controller.py"
+  ],
+  "scan": [
+    "file:analysis/import_scanner.py",
+    "file:scanner/filesystem_scanner.py"
+  ],
+  "scan_cb": [
+    "file:core/controller.py"
+  ],
+  "slice_manifest": [
+    "file:analysis/context_slicer.py"
+  ],
+  "slice_snapshot": [
+    "file:api/server.py"
+  ],
+  "sync_var": [
+    "file:gui/components/config_tabs.py"
+  ],
+  "update_message": [
+    "file:gui/components/progress_window.py"
+  ],
+  "update_progress": [
+    "file:gui/components/progress_window.py"
+  ],
+  "validate_path_normalization": [
+    "file:core/types.py"
+  ],
+  "validate_stable_id": [
+    "file:core/types.py"
+  ],
+  "write": [
+    "file:snapshot/snapshot_writer.py"
+  ]
+}

@@ -62,6 +62,20 @@ def _parse_args():
     return parser.parse_args()
 
 
+def cli_progress(phase: str, current: int, total: int):
+    """
+    Renders an over-writable progress line suitable for standard terminals.
+    """
+    if total > 0:
+        msg = f"[repo-runner] {phase}: {current}/{total}"
+    else:
+        msg = f"[repo-runner] {phase}: {current} files found..."
+    
+    # Pad with spaces to overwrite previous longer lines, carriage return to reset cursor
+    sys.stdout.write(f"\r{msg:<70}")
+    sys.stdout.flush()
+
+
 def main():
     args = _parse_args()
 
@@ -82,8 +96,9 @@ def main():
             write_current_pointer=args.write_current_pointer if args.write_current_pointer is not None else True,
             skip_graph=args.skip_graph if args.skip_graph is not None else config.skip_graph,
             export_flatten=args.export_flatten if args.export_flatten is not None else config.export_flatten,
+            progress_callback=cli_progress
         )
-        print(f"Snapshot created:\n  {os.path.abspath(os.path.join(output_root, snap_id))}")
+        print(f"\nSnapshot created:\n  {os.path.abspath(os.path.join(output_root, snap_id))}")
         return
 
     if args.command == "diff":
@@ -127,7 +142,8 @@ def main():
             title=f"Context Slice: {args.focus}",
             focus_id=args.focus,
             radius=args.radius,
-            max_tokens=args.max_tokens
+            max_tokens=args.max_tokens,
+            print_summary=True
         )
         print(f"Slice generated:\n  {os.path.abspath(out) if out else 'None'}")
         return

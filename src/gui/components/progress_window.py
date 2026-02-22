@@ -39,6 +39,20 @@ class ProgressWindow(tk.Toplevel):
     def update_message(self, text):
         self.lbl_msg.config(text=text)
         
+    def update_progress(self, current: int, total: int = 0):
+        """
+        Dynamically shifts from indeterminate to determinate if total is known.
+        """
+        if total > 0:
+            if self.progress.cget('mode') == 'indeterminate':
+                self.progress.stop()
+                self.progress.config(mode='determinate', maximum=total)
+            self.progress['value'] = current
+        else:
+            if self.progress.cget('mode') == 'determinate':
+                self.progress.config(mode='indeterminate')
+                self.progress.start(15)
+        
     def cancel(self):
         self.cancelled = True
         self.lbl_msg.config(text="Cancelling... please wait.")

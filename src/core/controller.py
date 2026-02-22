@@ -1,7 +1,7 @@
 import os
 import json
 from collections import defaultdict
-from typing import List, Optional, Set, Dict
+from typing import List, Optional, Set, Dict, Callable
 
 from src.core.types import (
     Manifest, 
@@ -56,9 +56,11 @@ def run_snapshot(
     skip_graph: bool = False,
     explicit_file_list: Optional[List[str]] = None,
     export_flatten: bool = False,
+    progress_callback: Optional[Callable[[str, int, int], None]] = None
 ) -> str:
     """
     Creates a snapshot. Automatically ignores the output_root if it is inside the repo_root.
+    Reports progress across 3 phases: Scanning, Fingerprinting, and Analysis.
     """
     repo_root_abs = os.path.abspath(repo_root)
     output_root_abs = os.path.abspath(output_root)
@@ -67,28 +69,26 @@ def run_snapshot(
         raise ValueError(f"Repository root does not exist: {repo_root_abs}")
 
     # --- Self-Ignore Logic ---
-    # If the output directory is inside the repository, we must ignore it
-    # to avoid recursive snapshots and noise in diffs.
     effective_ignore = set(ignore)
     try:
-        # Check if output_root is a child of repo_root
         if os.path.commonpath([repo_root_abs, output_root_abs]) == repo_root_abs:
             rel_to_out = os.path.relpath(output_root_abs, repo_root_abs)
-            # We ignore the top-level segment of the output path relative to repo root
-            # e.g., if output is 'out/snapshots', we ignore 'out'
             top_level_segment = rel_to_out.split(os.sep)[0]
             if top_level_segment and top_level_segment != '.':
                 effective_ignore.add(top_level_segment)
     except ValueError:
-        # Handles cases on Windows where paths are on different drives
         pass
 
     if explicit_file_list is not None:
         absolute_files = [os.path.abspath(f) for f in explicit_file_list]
     else:
-        # Scanner uses the effective_ignore set which now includes the output folder
+        def scan_cb(count: int) -> bool:
+            if progress_callback:
+                progress_callback("Scanning Filesystem", count, 0)
+            return True
+            
         scanner = FileSystemScanner(depth=depth, ignore_names=effective_ignore)
-        absolute_files = scanner.scan([repo_root_abs])
+        absolute_files = scanner.scan([repo_root_abs], progress_callback=scan_cb)
         absolute_files = _filter_by_extensions(absolute_files, include_extensions)
 
     normalizer = PathNormalizer(repo_root_abs)
@@ -96,7 +96,13 @@ def run_snapshot(
     total_bytes = 0
     seen_ids: Set[str] = set()
 
-    for abs_path in absolute_files:
+    total_files = len(absolute_files)
+
+    for i, abs_path in enumerate(absolute_files):
+        # Progress Feedback for GUI/CLI
+        if progress_callback and i % 10 == 0:
+            progress_callback("Fingerprinting & Analysis", i, total_files)
+
         if not os.path.exists(abs_path):
             continue
 
@@ -142,7 +148,13 @@ def run_snapshot(
         except OSError:
             continue
 
+    if progress_callback:
+        progress_callback("Fingerprinting & Analysis", total_files, total_files)
+
     file_entries = sorted(file_entries, key=lambda x: x.path)
+
+    if progress_callback:
+        progress_callback("Building Graph & Structure", total_files, total_files)
 
     structure = StructureBuilder().build(
         repo_id=PathNormalizer.repo_id(),
@@ -160,7 +172,6 @@ def run_snapshot(
             if n.type == "external"
         ])
 
-    # Extract Global Symbol Index deterministically
     symbols_index_raw = defaultdict(list)
     for entry in file_entries:
         for sym in entry.symbols:
@@ -239,7 +250,8 @@ def run_export_flatten(
     title: Optional[str],
     focus_id: Optional[str] = None,
     radius: int = 1,
-    max_tokens: Optional[int] = None
+    max_tokens: Optional[int] = None,
+    print_summary: bool = False
 ) -> str:
     """
     Exports a snapshot to Markdown.
@@ -279,6 +291,18 @@ def run_export_flatten(
 """
         manifest = sliced_manifest
         
+        if print_summary and "telemetry" in manifest:
+            print("\n" + "="*45)
+            print(" Context Slice Summary")
+            print("="*45)
+            print(f" Focus:    {manifest['telemetry']['focus_id']}")
+            print(f" Resolved: {manifest['telemetry']['resolved_id']}")
+            print(f" Radius:   {manifest['telemetry']['radius']} hops")
+            print(f" Usage:    {usage_str}")
+            print(f" Files:    {manifest['stats']['file_count']}")
+            print(f" Cycles:   {cycles} captured")
+            print("="*45 + "\n")
+
         if not title:
             title = f"Context Slice: {focus_id} (Radius: {radius})"
 
