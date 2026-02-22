@@ -6,9 +6,11 @@ class ImportScanner:
     # --- JavaScript / TypeScript Patterns (Regex) ---
     
     # Imports 
-    # CHANGED: Uses [\s\S]*? instead of . to match multi-line imports (e.g. { \n Foo \n })
-    _JS_IMPORT_FROM = re.compile(r'import\s+(?:type\s+)?([\s\S]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
-    _JS_EXPORT_FROM = re.compile(r'export\s+(?:type\s+)?([\s\S]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
+    # CHANGED: Uses [^;]+? instead of [\s\S]+? to stop matching at the first semicolon.
+    # This prevents catastrophic backtracking on side-effect imports (import 'foo';)
+    # where the engine would otherwise scan the entire file looking for 'from'.
+    _JS_IMPORT_FROM = re.compile(r'import\s+(?:type\s+)?([^;]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
+    _JS_EXPORT_FROM = re.compile(r'export\s+(?:type\s+)?([^;]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
     
     # Strictly matches `import 'side-effect'` without snagging structured imports
     _JS_IMPORT_SIDE_EFFECT = re.compile(r'import\s+[\'"]([^\'"]+)[\'"]')
@@ -29,7 +31,7 @@ class ImportScanner:
     @staticmethod
     def scan(path: str, language: str) -> Dict[str, List[str]]:
         """
-        Scans a file for import statements and defined symbols based on its language.
+        Scans a file for import statements and defined symbols based on language.
         Returns a dictionary with 'imports' and 'symbols' lists.
         """
         result = {"imports": [], "symbols": []}
@@ -39,6 +41,7 @@ class ImportScanner:
 
         try:
             with open(path, 'r', encoding='utf-8-sig', errors='ignore') as f:
+                # Limit read to 250KB to prevent OOM on massive bundles
                 content = f.read(250_000)
         except OSError:
             return result
@@ -52,7 +55,7 @@ class ImportScanner:
             elif language in ("javascript", "typescript"):
                 ImportScanner._scan_js(content, imports, symbols)
         except Exception:
-            # Fail gracefully for syntax errors in user code
+            # Fail gracefully for syntax errors
             pass
 
         result["imports"] = sorted(list(imports))
@@ -89,18 +92,23 @@ class ImportScanner:
             elif isinstance(node, ast.ClassDef):
                 symbols.add(node.name)
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                # Ignore private/dunder methods unless they are root level (heuristic)
-                # To keep it simple and robust, we capture all named functions.
                 symbols.add(node.name)
 
     @staticmethod
     def _scan_js(content: str, imports: Set[str], symbols: Set[str]):
+        # Strip comments first to avoid matching code inside them
         clean_content = ImportScanner._JS_BLOCK_COMMENT.sub('', content)
         clean_content = ImportScanner._JS_LINE_COMMENT.sub('', clean_content)
 
         # Imports
+        # Group 1 is the capture group for the 'from' path in the new regex
+        # Note: In the previous regex it was group 2, but we removed (?:type\s+)? from capture?
+        # Wait, the regex is:
+        # r'import\s+(?:type\s+)?([^;]+?)\s+from\s+[\'"]([^\'"]+)[\'"]'
+        # Group 1: ([^;]+?) -> The symbols
+        # Group 2: ([^\'"]+) -> The path
         for match in ImportScanner._JS_IMPORT_FROM.finditer(clean_content):
-            imports.add(match.group(2)) # Group 2 is the path
+            imports.add(match.group(2)) 
             
         for match in ImportScanner._JS_IMPORT_SIDE_EFFECT.finditer(clean_content):
             imports.add(match.group(1))
@@ -109,7 +117,7 @@ class ImportScanner:
             imports.add(match.group(1))
 
         for match in ImportScanner._JS_EXPORT_FROM.finditer(clean_content):
-            imports.add(match.group(2)) # Group 2 is the path
+            imports.add(match.group(2))
 
         for match in ImportScanner._JS_DYNAMIC_IMPORT.finditer(clean_content):
             imports.add(match.group(1))

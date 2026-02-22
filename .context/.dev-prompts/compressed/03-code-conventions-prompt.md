@@ -91,3 +91,14 @@ For each implementation batch, follow **exactly** this structure:
 
 NOTE: ensure that the file titles are right above the implemented code. not in the actual codeblock, though. just a title before the codeblock.
 
+> **Codebase Context: Testing Regiment**
+>
+> We use a strict **Pytest** setup.
+> 1.  **Structure:** Tests live in `tests/unit` and `tests/integration`.
+> 2.  **Config:** Configuration is in `pytest.ini`. Do not modify `sys.path` manually.
+> 3.  **Fixtures:** Use `tests/conftest.py` for all file ops. **Never** write to the real disk; use the `temp_repo_root` fixture.
+> 4.  **Performance:** The suite currently runs in **1.6s**. Do not introduce slow tests or sleeps.
+> 5.  **Validation:** Run `scripts/verify.ps1` to prove your code works.
+>
+> **Current State:** v0.2, All 63 tests passing.
+
