@@ -152,16 +152,35 @@ import {
         self.assertNotIn("bad-lib", imports)
         self.assertNotIn("block-comment", imports)
 
-    def test_ts_type_imports(self):
+    def test_ts_advanced_imports(self):
         """
-        TypeScript 'import type' should still register as a dependency.
+        TypeScript 'import type', dynamic imports, and complex destructuring
+        must register accurately without greedy regex bleed.
         """
-        content = "import type { User } from './models';"
+        content = """
+        import type { User, Session } from '@models/auth';
+        import {
+          ComponentA,
+          ComponentB
+        } from "./components";
+        export * from './exports';
+        export { default as Utils } from './utils';
+        const Lazy = React.lazy(() => import('./LazyComponent'));
+        import '@fontsource/roboto';
+        """
         imports = set()
         symbols = set()
         ImportScanner._scan_js(content, imports, symbols)
         
-        self.assertIn("./models", imports)
+        expected = {
+            "@models/auth",
+            "./components",
+            "./exports",
+            "./utils",
+            "./LazyComponent",
+            "@fontsource/roboto"
+        }
+        self.assertEqual(imports, expected)
 
     def test_js_symbols(self):
         """
@@ -181,6 +200,23 @@ const ignoredVar = 42;
         self.assertIn("calculateTotal", symbols)
         self.assertIn("fetchUser", symbols)
         self.assertNotIn("ignoredVar", symbols)
+
+    def test_js_advanced_symbols(self):
+        """
+        Verify abstract classes and generator functions are caught.
+        """
+        content = """
+        export abstract class BaseService {}
+        function* myGenerator() {}
+        const process = async (data) => {}
+        """
+        imports = set()
+        symbols = set()
+        ImportScanner._scan_js(content, imports, symbols)
+        
+        self.assertIn("BaseService", symbols)
+        self.assertIn("myGenerator", symbols)
+        self.assertIn("process", symbols)
 
 if __name__ == "__main__":
     unittest.main()

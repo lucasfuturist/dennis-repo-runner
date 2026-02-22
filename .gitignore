@@ -18,6 +18,7 @@ dist/
 # Snapshots (never commit outputs)
 .repo-runner/
 .repo-runner-output/
+out/
 
 # IDE
 .vscode/

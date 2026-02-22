@@ -60,8 +60,14 @@ class GraphBuilder:
         # 4. Cycle Detection
         adjacency = self._build_adjacency(nodes, edges)
         cycles = self._detect_cycles(adjacency, nodes)
+        has_cycles = len(cycles) > 0
 
-        return GraphStructure(nodes=nodes, edges=edges, cycles=cycles)
+        return GraphStructure(
+            nodes=nodes, 
+            edges=edges, 
+            cycles=cycles, 
+            has_cycles=has_cycles
+        )
 
     def _build_adjacency(self, nodes: List[GraphNode], edges: List[GraphEdge]) -> Dict[str, List[str]]:
         adj: Dict[str, List[str]] = {n.id: [] for n in nodes}

@@ -66,6 +66,8 @@ class GraphStructure(BaseModel):
     edges: List[GraphEdge]
     # List of cycles, where each cycle is a list of node IDs in traversal order
     cycles: List[List[str]] = Field(default_factory=list)
+    # Formalized flag for O(1) downstream checks (e.g., DAG validation)
+    has_cycles: bool = False
 
 class ManifestStats(BaseModel):
     file_count: int

@@ -5,16 +5,20 @@ from typing import List, Set, Dict
 class ImportScanner:
     # --- JavaScript / TypeScript Patterns (Regex) ---
     
-    # Imports
-    _JS_IMPORT_FROM = re.compile(r'import\s+[\s\S]{0,1000}?\s+from\s+[\'"]([^\'"]+)[\'"]')
+    # Imports (Hardened against greedy matching across statements by forbidding quotes before 'from')
+    _JS_IMPORT_FROM = re.compile(r'import\s+(?:type\s+)?[^\'"]+?\s+from\s+[\'"]([^\'"]+)[\'"]')
+    _JS_EXPORT_FROM = re.compile(r'export\s+(?:type\s+)?[^\'"]+?\s+from\s+[\'"]([^\'"]+)[\'"]')
+    
+    # Strictly matches `import 'side-effect'` without snagging structured imports
     _JS_IMPORT_SIDE_EFFECT = re.compile(r'import\s+[\'"]([^\'"]+)[\'"]')
+    
     _JS_REQUIRE = re.compile(r'require\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
-    _JS_EXPORT_FROM = re.compile(r'export\s+[\s\S]{0,1000}?\s+from\s+[\'"]([^\'"]+)[\'"]')
     _JS_DYNAMIC_IMPORT = re.compile(r'import\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
 
     # Symbols (Classes & Functions)
-    _JS_CLASS_DEF = re.compile(r'(?:export\s+)?(?:default\s+)?class\s+([a-zA-Z0-9_$]+)')
-    _JS_FUNC_DEF = re.compile(r'(?:export\s+)?(?:default\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)')
+    _JS_CLASS_DEF = re.compile(r'(?:export\s+)?(?:default\s+)?(?:abstract\s+)?class\s+([a-zA-Z0-9_$]+)')
+    # FIXED: Allows `function* name`, `function * name`, or standard `function name`
+    _JS_FUNC_DEF = re.compile(r'(?:export\s+)?(?:default\s+)?(?:async\s+)?function(?:\s+|\s*\*\s*)([a-zA-Z0-9_$]+)')
     _JS_CONST_FUNC_DEF = re.compile(r'(?:export\s+)?const\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>')
 
     # Comment Stripping
@@ -97,9 +101,7 @@ class ImportScanner:
             imports.add(match.group(1))
             
         for match in ImportScanner._JS_IMPORT_SIDE_EFFECT.finditer(clean_content):
-            full_match = match.group(0)
-            if "from" not in full_match: 
-                imports.add(match.group(1))
+            imports.add(match.group(1))
 
         for match in ImportScanner._JS_REQUIRE.finditer(clean_content):
             imports.add(match.group(1))

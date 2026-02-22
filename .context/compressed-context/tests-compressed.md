@@ -1,112 +1,140 @@
-### **"High-Resolution Interface Map" - `repo-runner` Tests Module**
+## High-Resolution Interface Map: repo-runner (Test Suite)
 
----
-
-### **The Tree**
+### 1. The Tree
 ```
 └── tests
     ├── __init__.py
+    ├── fixtures
+    │   ├── repo_20260221_223954 [...]
+    │   └── repo_20260221_225829 [...]
     ├── integration
     │   ├── __init__.py
+    │   ├── test_api.py
+    │   ├── test_export_flow.py
     │   ├── test_full_snapshot.py
+    │   ├── test_graph_snapshot.py
     │   ├── test_robustness.py
     │   └── test_snapshot_flow.py
     └── unit
         ├── __init__.py
+        ├── test_cli_diff.py
+        ├── test_cli_slice.py
+        ├── test_config_loader.py
+        ├── test_context_slicer.py
         ├── test_filesystem_scanner.py
         ├── test_fingerprint_hardening.py
         ├── test_flatten_exporter.py
         ├── test_graph_builder.py
+        ├── test_graph_resolution.py
         ├── test_ignore_logic.py
         ├── test_import_scanner.py
-        ├── test_normalizer.p
+        ├── test_import_scanner_logic.py
+        ├── test_normalizer.py
         ├── test_path_normalizer.py
         ├── test_scanner_hardening.py
+        ├── test_snapshot_comparator.py
+        ├── test_snapshot_loader.py
         ├── test_structure.py
-        └── test_structure_builder.py
+        ├── test_structure_builder.py
+        ├── test_token_telemetry.py
+        └── test_types.py
 ```
 
 ---
 
-### **File Summaries**
+### 2. File Summaries (Integration Suite)
+
+### `tests/integration/test_api.py`
+**Role:** Validates the FastAPI REST layer by simulating HTTP lifecycles from snapshot creation to comparison.
+**Key Scenarios:**
+- `test_full_api_lifecycle` - Verifies snapshot generation, context slicing, and structural diffing via HTTP calls.
+- `test_slice_with_token_limit` - Validates that the API correctly enforces `max_tokens` when returning sliced manifests.
+**Dependencies:** `src.api.server`, `FastAPI.TestClient`
+
+### `tests/integration/test_export_flow.py`
+**Role:** Verifies the end-to-end pipeline of generating Markdown context files from existing snapshots.
+**Key Scenarios:**
+- `test_export_full_with_tokens` - Ensures token telemetry is correctly injected into the final Markdown header.
+- `test_export_scoped` - Validates directory-specific scoping (`module:src/api`) in the final export output.
+**Dependencies:** `src.core.controller`
 
 ### `tests/integration/test_full_snapshot.py`
-**Role:** Validates the end-to-end snapshot lifecycle from CLI execution to manifest/structure verification.
-**Key Exports:**
-- `test_snapshot_creation()` - Asserts that running the snapshot CLI produces a valid manifest with correct file paths, external dependencies, and hashes.
-**Dependencies:** `src.cli.main`, `src.snapshot.snapshot_loader`
-
-### `tests/integration/test_robustness.py`
-**Role:** Tests system resilience against complex filesystem scenarios like symlink cycles and mixed file health.
-**Key Exports:**
-- `test_snapshot_with_mixed_health()` - Verifies the controller can successfully complete a scan when encountering infinite directory loops and ignored folders.
+**Role:** Ensures the orchestration logic correctly syncs the Scanner, GraphBuilder, and Markdown Exporter.
+**Key Scenarios:**
+- `test_snapshot_creation_with_graph_and_auto_export` - Validates that all side-effect files (manifest, graph, structure, markdown) are written to disk.
+- `test_snapshot_skip_graph` - Verifies the system correctly bypasses analysis when configured.
 **Dependencies:** `src.core.controller`, `src.snapshot.snapshot_loader`
 
-### `tests/integration/test_snapshot_flow.py`
-**Role:** Standard integration test for the basic snapshot generation and loading workflow.
-**Key Exports:**
-- `test_snapshot_creation()` - Validates that the core runner generates a valid output directory containing expected manifest entries.
-**Dependencies:** `src.cli.main`, `src.snapshot.snapshot_loader`
+### `tests/integration/test_graph_snapshot.py`
+**Role:** Validates that generated snapshot artifacts correctly represent file-to-file and file-to-external dependencies.
+**Key Scenarios:**
+- `test_end_to_end_graph_generation` - Confirms that `main.py` -> `utils.py` edges are accurately serialized in the JSON output.
+**Dependencies:** `src.core.controller`
 
-### `tests/unit/test_filesystem_scanner.py`
-**Role:** Unit tests for the directory traversal engine and ignore-pattern matching logic.
-**Key Exports:**
-- `test_scanner_ignores()` - Confirms the scanner correctly excludes specified directory names during recursion.
-**Dependencies:** `src.scanner.filesystem_scanner`
+### `tests/integration/test_robustness.py`
+**Role:** Tests system stability against complex filesystem edge cases like symlink cycles and mixed file health.
+**Key Scenarios:**
+- `test_snapshot_with_mixed_health` - Verifies the scanner does not hang on circular symlinks and respects ignore rules.
+**Dependencies:** `src.core.controller`
 
-### `tests/unit/test_fingerprint_hardening.py`
-**Role:** Unit tests for the file hashing and metadata extraction utility.
-**Key Exports:**
-- `test_valid_file()` - Validates SHA256 calculation and size extraction.
-- `test_empty_file()` - Checks handling of 0-byte files.
-- `test_locked_or_missing_file()` - Ensures appropriate OS exceptions are raised for inaccessible paths.
-**Dependencies:** `src.fingerprint.file_fingerprint`
+---
 
-### `tests/unit/test_flatten_exporter.py`
-**Role:** Unit tests for generating flattened Markdown representations of repository snapshots.
-**Key Exports:**
-- `test_tree_generation()` - Validates the recursive rendering of the directory tree into Markdown strings.
-- `test_scope_filtering()` - Ensures specific module scopes can be isolated in the export.
-- `test_binary_placeholder()` - Checks formatting of entries for non-text or skipped files.
-**Dependencies:** `src.exporters.flatten_markdown_exporter`
+### 3. File Summaries (Unit Suite)
+
+### `tests/unit/test_context_slicer.py`
+**Role:** Exercises the core "context pruning" logic used to fit repository data into LLM context windows.
+**Key Scenarios:**
+- `test_token_budget_enforcement` - Validates BFS expansion stops exactly when the token limit is reached.
+- `test_symbol_focus_resolution` - Tests resolving semantic queries (`symbol:ClassName`) into physical file focuses.
+**Dependencies:** `src.analysis.context_slicer`
 
 ### `tests/unit/test_graph_builder.py`
-**Role:** Unit tests for the dependency graph construction engine, focusing on node resolution and edge mapping.
-**Key Exports:**
-- `test_node_generation()` - Validates identification of internal files versus collapsed external packages.
-- `test_edge_resolution_python()` - Verifies AST-derived import links between Python nodes.
-- `test_edge_resolution_js()` - Verifies Regex-derived import links for JavaScript/TypeScript.
-**Dependencies:** `src.analysis.graph_builder`, `src.core.types`
-
-### `tests/unit/test_ignore_logic.py`
-**Role:** Specific unit verification of the `FileSystemScanner`'s ability to filter the filesystem.
-**Key Exports:**
-- `test_scanner_ignores()` - Asserts that restricted paths (e.g., `.git`, `dist`) are absent from scan results.
-**Dependencies:** `src.scanner.filesystem_scanner`
+**Role:** Validates the conversion of raw imports into a normalized dependency graph.
+**Key Scenarios:**
+- `test_scoped_and_deep_external_packages` - Ensures NPM scopes (e.g., `@mui/material`) are preserved while sub-paths are collapsed.
+- `test_cycle_detection_*` - Verifies detection and normalization of circular dependencies (A->B->A).
+**Dependencies:** `src.analysis.graph_builder`
 
 ### `tests/unit/test_import_scanner.py`
-**Role:** Unit tests for the multi-language import extraction logic using AST (Python) and Regex (JS/TS).
-**Key Exports:**
-- `test_python_*()` - Validates parsing of relative imports, aliasing, and scope isolation in Python.
-- `test_js_*() / test_ts_*()` - Validates parsing of ES6 imports, CommonJS requires, and TypeScript type-only imports.
+**Role:** Deep testing of the AST and Regex parsers for Python and JS/TS.
+**Key Scenarios:**
+- `test_python_scope_and_strings` - Confirms AST correctly ignores imports inside strings/comments but finds lazy imports in functions.
+- `test_js_symbols` - Verifies extraction of Classes and Arrow Functions from modern JS.
 **Dependencies:** `src.analysis.import_scanner`
 
 ### `tests/unit/test_path_normalizer.py`
-**Role:** Unit tests for the path canonicalization and ID generation utility.
-**Key Exports:**
-- `test_basic_normalization()` - Checks conversion of absolute paths to relative, forward-slash formats.
-- `test_id_generation()` - Validates the creation of stable prefix-based IDs (e.g., `file:`, `module:`).
+**Role:** Ensures the "Stable ID" system is consistent across Windows and Unix.
+**Key Scenarios:**
+- `test_windows_separator_handling` - Confirms `\` is always converted to `/`.
+- `test_casing_policy` - Validates universal lowercase transformation for cross-OS comparison.
 **Dependencies:** `src.normalize.path_normalizer`
 
-### `tests/unit/test_scanner_hardening.py`
-**Role:** Unit tests for handling OS-level edge cases during filesystem scanning.
-**Key Exports:**
-- `test_symlink_cycle_detection()` - Confirms the scanner breaks infinite loops.
-- `test_permission_error_handling()` - Ensures the scanner skips inaccessible directories without crashing.
-**Dependencies:** `src.scanner.filesystem_scanner`
+### `tests/unit/test_snapshot_comparator.py`
+**Role:** Validates the logic for calculating structural drift between two snapshots.
+**Key Scenarios:**
+- `test_file_diffing` - Ensures modified files are detected via SHA256 changes even if paths remain identical.
+- `test_graph_diffing` - Verifies the addition/removal of dependency edges is accurately reported.
+**Dependencies:** `src.analysis.snapshot_comparator`
 
-### `tests/unit/test_structure.py` & `test_structure_builder.py`
-**Role:** Unit tests for the hierarchical module builder that organizes flat file lists into a tree schema.
-**Key Exports:**
-- `test_build_structure()` - Validates the transformation of `FileEntry` objects into a `structure.json` compliant hierarchy.
-**Dependencies:** `src.structure.structure_builder`, `src.normalize.path_normalizer`
+### `tests/unit/test_types.py`
+**Role:** Confirms Pydantic model validation and automatic path cleaning.
+**Key Scenarios:**
+- `test_path_normalization_validator` - Proves the `FileEntry` model cleans "dirty" input paths on instantiation.
+- `test_stable_id_validation` - Verifies strict ID prefixing (`file:`, `module:`).
+**Dependencies:** `src.core.types`
+
+### `tests/unit/test_cli_diff.py` / `test_cli_slice.py`
+**Role:** Validates that the ArgParse CLI correctly maps user flags to Controller arguments.
+**Dependencies:** `src.cli.main`
+
+### `tests/unit/test_token_telemetry.py`
+**Role:** Verifies the accuracy of token count estimations and cost projections.
+**Dependencies:** `src.observability.token_telemetry`
+
+### `tests/unit/test_structure_builder.py` / `test_structure.py`
+**Role:** Confirms that flat file lists are correctly organized into a tree structure for UI rendering.
+**Dependencies:** `src.structure.structure_builder`
+
+### `tests/unit/test_scanner_hardening.py` / `test_filesystem_scanner.py`
+**Role:** Validates filesystem traversal, permission error handling, and depth-limit logic.
+**Dependencies:** `src.scanner.filesystem_scanner`

@@ -181,6 +181,7 @@ imports:
  &#8226;   <a href="#src.cli">src.cli</a>
  &#8226;   <a href="#src.cli.main">src.cli.main</a>
  &#8226;   <a href="#src.core">src.core</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
  &#8226;   <a href="#src.entry_point">src.entry_point</a>
@@ -9928,6 +9929,7 @@ imported by:
  &#8226;   <a href="#setuptools._vendor.importlib_metadata">setuptools._vendor.importlib_metadata</a>
  &#8226;   <a href="#setuptools.config._validate_pyproject.error_reporting">setuptools.config._validate_pyproject.error_reporting</a>
  &#8226;   <a href="#setuptools.msvc">setuptools.msvc</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.snapshot.snapshot_loader">src.snapshot.snapshot_loader</a>
  &#8226;   <a href="#src.snapshot.snapshot_writer">src.snapshot.snapshot_writer</a>
@@ -10111,6 +10113,7 @@ imported by:
  &#8226;   <a href="#setuptools.config._validate_pyproject.formats">setuptools.config._validate_pyproject.formats</a>
  &#8226;   <a href="#setuptools.config.pyprojecttoml">setuptools.config.pyprojecttoml</a>
  &#8226;   <a href="#setuptools.logging">setuptools.logging</a>
+ &#8226;   <a href="#src.analysis.context_slicer">src.analysis.context_slicer</a>
  &#8226;   <a href="#unittest._log">unittest._log</a>
 
   </div>
@@ -11396,6 +11399,7 @@ imported by:
  &#8226;   <a href="#socketserver">socketserver</a>
  &#8226;   <a href="#src.analysis.graph_builder">src.analysis.graph_builder</a>
  &#8226;   <a href="#src.cli.main">src.cli.main</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
  &#8226;   <a href="#src.fingerprint.file_fingerprint">src.fingerprint.file_fingerprint</a>
@@ -20607,7 +20611,9 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#collections">collections</a>
+ &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#src.analysis">src.analysis</a>
+ &#8226;   <a href="#src.observability.token_telemetry">src.observability.token_telemetry</a>
  &#8226;   <a href="#typing">typing</a>
 
   </div>
@@ -20674,6 +20680,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#entry_point.py">entry_point.py</a>
+ &#8226;   <a href="#src.core.controller">src.core.controller</a>
 
   </div>
 
@@ -20704,8 +20711,10 @@ imports:
     <a href="#argparse">argparse</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#src.cli">src.cli</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#sys">sys</a>
 
   </div>
   <div class="import">
@@ -20728,8 +20737,30 @@ imports:
   <div class="import">
 imported by:
     <a href="#entry_point.py">entry_point.py</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.core.config_loader"></a>
+  <a target="code" href="///C:/projects/repo-runner/src/core/config_loader.py" type="text/plain"><tt>src.core.config_loader</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#json">json</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#src.core">src.core</a>
+ &#8226;   <a href="#src.core.types">src.core.types</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#entry_point.py">entry_point.py</a>
+ &#8226;   <a href="#src.cli.main">src.cli.main</a>
 
   </div>
 
@@ -20745,6 +20776,7 @@ imports:
  &#8226;   <a href="#src.analysis.context_slicer">src.analysis.context_slicer</a>
  &#8226;   <a href="#src.analysis.graph_builder">src.analysis.graph_builder</a>
  &#8226;   <a href="#src.analysis.import_scanner">src.analysis.import_scanner</a>
+ &#8226;   <a href="#src.analysis.snapshot_comparator">src.analysis.snapshot_comparator</a>
  &#8226;   <a href="#src.core">src.core</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
@@ -20784,6 +20816,7 @@ imported by:
     <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#src.analysis.graph_builder">src.analysis.graph_builder</a>
  &#8226;   <a href="#src.analysis.snapshot_comparator">src.analysis.snapshot_comparator</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.snapshot.snapshot_writer">src.snapshot.snapshot_writer</a>
  &#8226;   <a href="#src.structure.structure_builder">src.structure.structure_builder</a>
@@ -21115,7 +21148,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#src.core.controller">src.core.controller</a>
+    <a href="#src.analysis.context_slicer">src.analysis.context_slicer</a>
+ &#8226;   <a href="#src.core.controller">src.core.controller</a>
 
   </div>
 
@@ -21749,6 +21783,7 @@ imported by:
  &#8226;   <a href="#site">site</a>
  &#8226;   <a href="#socket">socket</a>
  &#8226;   <a href="#socketserver">socketserver</a>
+ &#8226;   <a href="#src.cli.main">src.cli.main</a>
  &#8226;   <a href="#src.entry_point">src.entry_point</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#statistics">statistics</a>
@@ -22836,6 +22871,7 @@ imported by:
  &#8226;   <a href="#src.analysis.graph_builder">src.analysis.graph_builder</a>
  &#8226;   <a href="#src.analysis.import_scanner">src.analysis.import_scanner</a>
  &#8226;   <a href="#src.analysis.snapshot_comparator">src.analysis.snapshot_comparator</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>

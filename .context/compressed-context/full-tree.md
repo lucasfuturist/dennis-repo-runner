@@ -2,7 +2,7 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `106`
+- file_count: `100`
 - tree_only: `True`
 ## Tree
 
@@ -29,6 +29,7 @@
 │   │   └── tests-compressed.md
 │   └── repo-runner-flattened.md
 ├── .gitignore
+├── clean_test.py
 ├── documents
 │   ├── architecture.md
 │   ├── config_spec.md
@@ -41,27 +42,7 @@
 │   ├── snapshot_spec.md
 │   ├── testing_strategy.md
 │   └── versioning_policy.md
-├── flattened_repo-runner_2026-02-19.md
-├── out
-│   ├── 2026-02-22t03-46-05z
-│   │   ├── exports
-│   │   │   └── flatten.md
-│   │   ├── graph.json
-│   │   ├── manifest.json
-│   │   └── structure.json
-│   ├── 2026-02-22t03-50-41z
-│   │   ├── exports
-│   │   │   └── flatten.md
-│   │   ├── graph.json
-│   │   ├── manifest.json
-│   │   └── structure.json
-│   ├── 2026-02-22t03-57-03z
-│   │   ├── exports
-│   │   │   └── flatten.md
-│   │   ├── graph.json
-│   │   ├── manifest.json
-│   │   └── structure.json
-│   └── current.json
+├── drift_test.py
 ├── readme.md
 ├── repo-runner.code-workspace
 ├── repo-runner.spec
@@ -70,6 +51,7 @@
 │   ├── export-signal.ps1
 │   ├── generate_test_repo.ps1
 │   └── package-repo.ps1
+├── slice_preview.md
 ├── src
 │   ├── __init__.py
 │   ├── analysis
@@ -86,6 +68,7 @@
 │   │   └── main.py
 │   ├── core
 │   │   ├── __init__.py
+│   │   ├── config_loader.py
 │   │   ├── controller.py
 │   │   ├── repo-runner.code-workspace
 │   │   └── types.py
@@ -127,6 +110,9 @@
     │   └── test_snapshot_flow.py
     └── unit
         ├── __init__.py
+        ├── test_cli_diff.py
+        ├── test_cli_slice.py
+        ├── test_config_loader.py
         ├── test_context_slicer.py
         ├── test_filesystem_scanner.py
         ├── test_fingerprint_hardening.py
@@ -140,6 +126,7 @@
         ├── test_path_normalizer.py
         ├── test_scanner_hardening.py
         ├── test_snapshot_comparator.py
+        ├── test_snapshot_loader.py
         ├── test_structure.py
         ├── test_structure_builder.py
         ├── test_token_telemetry.py
@@ -148,6 +135,6 @@
 
 ---
 ## Context Stats
-- **Total Characters:** 3,881
-- **Estimated Tokens:** ~970 (assuming ~4 chars/token)
+- **Total Characters:** 3,571
+- **Estimated Tokens:** ~892 (assuming ~4 chars/token)
 - **Model Fit:** GPT-4 (8k)

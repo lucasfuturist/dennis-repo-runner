@@ -77,6 +77,7 @@ class TestGraphBuilder(unittest.TestCase):
         graph = self.builder.build(files)
         
         self.assertEqual(len(graph.cycles), 1)
+        self.assertTrue(graph.has_cycles)
         # Cycle should be normalized to start with lowest ID
         self.assertEqual(graph.cycles[0], ["file:a.py", "file:b.py"])
 
@@ -89,6 +90,7 @@ class TestGraphBuilder(unittest.TestCase):
         graph = self.builder.build(files)
         
         self.assertEqual(len(graph.cycles), 1)
+        self.assertTrue(graph.has_cycles)
         self.assertEqual(graph.cycles[0], ["file:a.py"])
 
     def test_cycle_detection_triangular(self):
@@ -102,6 +104,7 @@ class TestGraphBuilder(unittest.TestCase):
         graph = self.builder.build(files)
         
         self.assertEqual(len(graph.cycles), 1)
+        self.assertTrue(graph.has_cycles)
         # Should be sorted: a -> b -> c
         self.assertEqual(graph.cycles[0], ["file:a.py", "file:b.py", "file:c.py"])
 
@@ -117,6 +120,7 @@ class TestGraphBuilder(unittest.TestCase):
         graph = self.builder.build(files)
         
         self.assertEqual(len(graph.cycles), 0)
+        self.assertFalse(graph.has_cycles)
 
 if __name__ == "__main__":
     unittest.main()
