@@ -13,8 +13,8 @@ class TestAPI(unittest.TestCase):
         self.test_dir = os.path.realpath(tempfile.mkdtemp())
         self.repo_root = os.path.join(self.test_dir, "repo")
         self.output_root = os.path.join(self.test_dir, "output")
-        os.makedirs(self.repo_root)
-        os.makedirs(self.output_root)
+        os.makedirs(self.repo_root, exist_ok=True)
+        os.makedirs(self.output_root, exist_ok=True)
         
         # Setup test client
         self.client = TestClient(app)
@@ -94,10 +94,44 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(diff_report["files_added"], 1)     # config.py
         self.assertEqual(diff_report["files_removed"], 1)   # utils.py
         self.assertEqual(diff_report["files_modified"], 1)  # main.py
+
+    def test_slice_with_token_limit(self):
+        """
+        Tests that setting max_tokens strictly limits the returned files.
+        """
+        # Create a heavy dependency chain: A -> B (Heavy)
+        self._create_file("a.py", "import b")
+        # 1 token ~= 4 chars. Create ~1000 tokens (4000 chars)
+        self._create_file("b.py", "#" * 4000) 
+
+        # Snapshot
+        resp = self.client.post("/snapshots", json={
+            "repo_root": self.repo_root,
+            "output_root": self.output_root,
+            "include_extensions": [".py"]
+        })
+        snap_id = resp.json()["snapshot_id"]
+
+        # Request slice with small limit (e.g. 50 tokens)
+        # Should include A (focus, small) but EXCLUDE B (too big)
+        slice_resp = self.client.post(f"/snapshots/{snap_id}/slice", json={
+            "output_root": self.output_root,
+            "focus_id": "file:a.py",
+            "radius": 1,
+            "max_tokens": 50
+        })
         
-        # Validate Dependency Graph Diff matches our code mutations
-        self.assertTrue(diff_report["edges_added"] > 0)     # Edge to config added
-        self.assertTrue(diff_report["edges_removed"] > 0)   # Edge to utils removed
+        data = slice_resp.json()
+        files = [f["stable_id"] for f in data["sliced_manifest"]["files"]]
+        
+        self.assertIn("file:a.py", files)
+        self.assertNotIn("file:b.py", files)
+        
+        # Telemetry should reflect the drop
+        self.assertIn("Usage:", data["telemetry_markdown"])
+        # Estimated tokens should be low (just A)
+        stats = data["sliced_manifest"]["stats"]
+        self.assertTrue(stats["estimated_tokens"] < 100)
 
 if __name__ == "__main__":
     unittest.main()

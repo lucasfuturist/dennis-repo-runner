@@ -1,7 +1,7 @@
 import os
 import json
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse  # Added this import
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
@@ -15,7 +15,7 @@ from src.core.types import Manifest, GraphStructure, SnapshotDiffReport
 app = FastAPI(
     title="Repo-Runner AI Context API",
     description="Deterministic ingestion and context slicing engine for LLMs.",
-    version="0.2.0"
+    version="0.2.1"
 )
 
 # --- NEW: Root Redirect ---
@@ -39,6 +39,7 @@ class SliceRequest(BaseModel):
     output_root: str
     focus_id: str
     radius: int = 1
+    max_tokens: Optional[int] = None  # NEW FIELD
 
 class CompareRequest(BaseModel):
     output_root: str
@@ -62,8 +63,7 @@ def create_snapshot(req: SnapshotRequest):
             include_extensions=req.include_extensions,
             include_readme=req.include_readme,
             write_current_pointer=True,
-            skip_graph=req.skip_graph,
-            export_flatten=False
+            skip_graph=req.skip_graph
         )
         return {"snapshot_id": snap_id, "status": "success"}
     except Exception as e:
@@ -91,14 +91,32 @@ def slice_snapshot(snapshot_id: str, req: SliceRequest):
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    # Slice and calculate telemetry
-    sliced_manifest = ContextSlicer.slice_manifest(manifest_dict, graph_data, req.focus_id, req.radius)
-    telemetry = TokenTelemetry.calculate_telemetry(manifest_dict, sliced_manifest, req.focus_id, req.radius)
+    # Slice with new max_tokens parameter
+    sliced_manifest = ContextSlicer.slice_manifest(
+        manifest=manifest_dict, 
+        graph=graph_data, 
+        focus_id=req.focus_id, 
+        radius=req.radius,
+        max_tokens=req.max_tokens
+    )
+    
+    # Generate human-readable telemetry
+    # We use the sliced manifest's internal stats for telemetry generation
+    estimated = sliced_manifest.get("stats", {}).get("estimated_tokens", 0)
+    usage_str = TokenTelemetry.format_usage(estimated, req.max_tokens or 0)
+    
+    telemetry_md = f"""
+## Context Telemetry
+- **Focus:** `{req.focus_id}`
+- **Radius:** {req.radius}
+- **Usage:** {usage_str}
+- **Cycles Included:** {sliced_manifest.get("stats", {}).get("cycles_included", 0)}
+"""
     
     return {
         "focus_id": req.focus_id,
         "radius": req.radius,
-        "telemetry_markdown": telemetry,
+        "telemetry_markdown": telemetry_md,
         "sliced_manifest": sliced_manifest
     }
 
