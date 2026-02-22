@@ -98,9 +98,12 @@ def run_snapshot(
             total_bytes += fp["size_bytes"]
             
             try:
-                imports = ImportScanner.scan(abs_path, fp["language"])
+                scan_res = ImportScanner.scan(abs_path, fp["language"])
+                imports = scan_res.get("imports", [])
+                symbols = scan_res.get("symbols", [])
             except Exception:
                 imports = []
+                symbols = []
 
             entry = FileEntry(
                 stable_id=stable_id,
@@ -109,7 +112,8 @@ def run_snapshot(
                 sha256=fp["sha256"],
                 size_bytes=fp["size_bytes"],
                 language=fp["language"],
-                imports=imports
+                imports=imports,
+                symbols=symbols # Include extracted symbols
             )
             file_entries.append(entry)
         except OSError:
@@ -201,7 +205,7 @@ def run_export_flatten(
     title: Optional[str],
     focus_id: Optional[str] = None,
     radius: int = 1,
-    max_tokens: Optional[int] = None # NEW ARG
+    max_tokens: Optional[int] = None
 ) -> str:
     """
     Exports a snapshot to Markdown.
@@ -213,7 +217,6 @@ def run_export_flatten(
 
     telemetry_md = None
 
-    # Context Slicing & Telemetry Layer
     if focus_id:
         graph_path = os.path.join(snapshot_dir, "graph.json")
         if not os.path.exists(graph_path):
@@ -222,7 +225,6 @@ def run_export_flatten(
         with open(graph_path, "r") as f:
             graph_data = json.load(f)
             
-        # Pass max_tokens to slicer
         sliced_manifest = ContextSlicer.slice_manifest(
             manifest=manifest, 
             graph=graph_data, 
@@ -231,7 +233,6 @@ def run_export_flatten(
             max_tokens=max_tokens
         )
         
-        # Telemetry: Use sliced manifest stats for accurate reporting
         estimated = sliced_manifest.get("stats", {}).get("estimated_tokens", 0)
         usage_str = TokenTelemetry.format_usage(estimated, max_tokens or 0)
         cycles = sliced_manifest.get("stats", {}).get("cycles_included", 0)
@@ -265,7 +266,6 @@ def run_export_flatten(
         title=title,
     )
 
-    # Prepend Telemetry Header to the final file
     if telemetry_md and out_path and os.path.exists(out_path):
         with open(out_path, 'r', encoding='utf-8') as f:
             content = f.read()

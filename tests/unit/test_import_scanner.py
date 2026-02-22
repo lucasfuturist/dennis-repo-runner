@@ -21,7 +21,8 @@ from datetime import (
 import pandas as pd
 """
         imports = set()
-        ImportScanner._scan_python(content, imports)
+        symbols = set()
+        ImportScanner._scan_python(content, imports, symbols)
         
         expected = {"os", "sys", "datetime", "pandas"}
         self.assertEqual(imports, expected)
@@ -38,7 +39,8 @@ from ..parent import something
 from ...grandparent.utils import helper
 """
         imports = set()
-        ImportScanner._scan_python(content, imports)
+        symbols = set()
+        ImportScanner._scan_python(content, imports, symbols)
         
         expected = {".sibling", "..parent", "...grandparent.utils"}
         self.assertEqual(imports, expected)
@@ -60,7 +62,8 @@ def print_help():
 # import commented_out # Should be IGNORED
 """
         imports = set()
-        ImportScanner._scan_python(content, imports)
+        symbols = set()
+        ImportScanner._scan_python(content, imports, symbols)
         
         self.assertIn("json", imports)
         self.assertNotIn("os", imports)
@@ -72,10 +75,35 @@ def print_help():
         """
         content = "def broken_code(:"
         imports = set()
+        symbols = set()
         
         # Should catch SyntaxError silently
-        ImportScanner._scan_python(content, imports)
+        ImportScanner._scan_python(content, imports, symbols)
         self.assertEqual(len(imports), 0)
+
+    def test_python_symbols(self):
+        """
+        Verify that Classes, Functions, and Async Functions are extracted.
+        """
+        content = """
+class DataModel:
+    def inner_method(self):
+        pass
+
+def process_data():
+    pass
+
+async def fetch_remote():
+    pass
+"""
+        imports = set()
+        symbols = set()
+        ImportScanner._scan_python(content, imports, symbols)
+        
+        self.assertIn("DataModel", symbols)
+        self.assertIn("inner_method", symbols)
+        self.assertIn("process_data", symbols)
+        self.assertIn("fetch_remote", symbols)
 
     # --- JavaScript / TypeScript Tests (Regex Based) ---
 
@@ -86,7 +114,8 @@ import { useState, useEffect } from "react";
 const fs = require('fs');
 """
         imports = set()
-        ImportScanner._scan_js(content, imports)
+        symbols = set()
+        ImportScanner._scan_js(content, imports, symbols)
         
         expected = {"react", "fs"}
         self.assertEqual(imports, expected)
@@ -113,7 +142,8 @@ import {
 */
 """
         imports = set()
-        ImportScanner._scan_js(content, imports)
+        symbols = set()
+        ImportScanner._scan_js(content, imports, symbols)
         
         self.assertIn("./styles.css", imports)
         self.assertIn("@angular/core", imports)
@@ -128,9 +158,29 @@ import {
         """
         content = "import type { User } from './models';"
         imports = set()
-        ImportScanner._scan_js(content, imports)
+        symbols = set()
+        ImportScanner._scan_js(content, imports, symbols)
         
         self.assertIn("./models", imports)
+
+    def test_js_symbols(self):
+        """
+        Verify that JS Classes, Functions, and Arrow Functions are extracted.
+        """
+        content = """
+export default class UserService {}
+function calculateTotal() {}
+export const fetchUser = async (id) => {}
+const ignoredVar = 42;
+"""
+        imports = set()
+        symbols = set()
+        ImportScanner._scan_js(content, imports, symbols)
+        
+        self.assertIn("UserService", symbols)
+        self.assertIn("calculateTotal", symbols)
+        self.assertIn("fetchUser", symbols)
+        self.assertNotIn("ignoredVar", symbols)
 
 if __name__ == "__main__":
     unittest.main()

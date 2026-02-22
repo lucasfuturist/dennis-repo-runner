@@ -1,6 +1,19 @@
 from typing import List, Optional, Set, Any
 from pydantic import BaseModel, Field, field_validator
 
+class RepoRunnerConfig(BaseModel):
+    """
+    Schema for repo-runner.json configuration files.
+    Defines system-wide defaults for snapshot runs.
+    """
+    output_root: Optional[str] = None
+    depth: int = 25
+    ignore: List[str] = [".git", "node_modules", "__pycache__", "dist", "build", ".next", ".expo", ".venv"]
+    include_extensions: List[str] = Field(default_factory=list)
+    include_readme: bool = True
+    skip_graph: bool = False
+    export_flatten: bool = False
+
 class FileEntry(BaseModel):
     """
     Represents a single file in the snapshot.
@@ -13,6 +26,7 @@ class FileEntry(BaseModel):
     size_bytes: int
     language: str = "unknown"
     imports: List[str] = Field(default_factory=list)
+    symbols: List[str] = Field(default_factory=list) # NEW: Semantic extraction
 
     @field_validator('path', 'module_path')
     @classmethod
@@ -85,7 +99,7 @@ class Manifest(BaseModel):
     stats: ManifestStats
     files: List[FileEntry]
 
-# --- Structural Diff Models (NEW) ---
+# --- Structural Diff Models ---
 
 class FileDiff(BaseModel):
     stable_id: str
