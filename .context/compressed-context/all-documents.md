@@ -2,24 +2,23 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `12`
+- file_count: `11`
 - tree_only: `False`
 ## Tree
 
 ```
-├── documents
-│   ├── architecture.md
-│   ├── config_spec.md
-│   ├── contributing.md
-│   ├── determinism_rules.md
-│   ├── id_spec.md
-│   ├── language_support.md
-│   ├── repo_layout.md
-│   ├── roadmap.md
-│   ├── snapshot_spec.md
-│   ├── testing_strategy.md
-│   └── versioning_policy.md
-└── readme.md
+└── documents
+    ├── architecture.md
+    ├── config_spec.md
+    ├── contributing.md
+    ├── determinism_rules.md
+    ├── id_spec.md
+    ├── language_support.md
+    ├── repo_layout.md
+    ├── roadmap.md
+    ├── snapshot_spec.md
+    ├── testing_strategy.md
+    └── versioning_policy.md
 ```
 
 ## File Contents
@@ -29,9 +28,9 @@
 ```
 # ARCHITECTURE.md
 
-# Architecture (v0.1)
+# Architecture (v0.1.5)
 
-Repo-runner is a deterministic pipeline with strict phase boundaries. In v0.1, the output is purely structural (containment and file fingerprints).
+Repo-runner is a deterministic pipeline with strict phase boundaries. In v0.1.5, the output includes structural containment, file fingerprints, and preliminary dependency graph construction.
 
 ## Pipeline Overview
 
@@ -43,13 +42,15 @@ Phases:
 1. Scan
 2. Normalize
 3. Fingerprint
-4. Build Structure
-5. Write Snapshot
-6. Optional Exports
+4. Analysis & Graph Construction
+5. Build Structure
+6. Write Snapshot
+7. Optional Exports
 
 Outputs:
 - `manifest.json`
 - `structure.json`
+- `graph.json` (Preliminary)
 - Optional export files under `exports/`
 
 ## Components
@@ -81,7 +82,19 @@ Responsibility:
 Constraints:
 - Hash is over file bytes only (no newline normalization)
 
-### 4) Structure Builder
+### 4) Analysis & Graph Construction
+Responsibility:
+- Parse file content (AST for Python, Regex for TS/JS)
+- Extract import statements and dependency edges
+- Construct a directed graph (`GraphStructure`)
+- Resolve internal modules vs. external packages
+
+Constraints:
+- Analysis must handle syntax errors gracefully (skip file or log warning)
+- Must be deterministic (sort imports before hashing/linking)
+- Graph construction must not mutate file fingerprints
+
+### 5) Structure Builder
 Responsibility:
 - Build hierarchical containment:
   - repo root
@@ -89,7 +102,7 @@ Responsibility:
   - files (leaf nodes)
 - Sort modules and files deterministically
 
-### 5) Snapshot Writer
+### 6) Snapshot Writer
 Responsibility:
 - Create append-only snapshot folder
 - Write `manifest.json` and `structure.json`
@@ -98,7 +111,7 @@ Responsibility:
 Constraints:
 - Snapshot folder is immutable once written
 
-### 6) Exporters (Optional)
+### 7) Exporters (Optional)
 Responsibility:
 - Produce auxiliary human-readable exports (e.g., flatten.md)
 - Exporters must not change canonical snapshot data
@@ -116,12 +129,10 @@ Example Exporter:
 - Only the Snapshot Writer touches disk for canonical artifacts.
 - Exports are derived and must be safe to delete/regenerate.
 
-## Non-Goals in v0.1
+## Non-Goals in v0.1.5
 
-- Graph edges
-- Import/export parsing
 - Symbol indexing
-- Call graph
+- Call graph resolution (function-to-function)
 - Diagram projection
 
 Those are introduced in v0.2+ with separate specs.
@@ -293,11 +304,11 @@ Exporters must not independently walk the filesystem.
 ```
 # ID_SPEC.md
 
-# Stable ID Spec (v0.1)
+# Stable ID Spec (v0.2)
 
 Stable IDs are required for deterministic outputs and future graph layering.
 
-## ID Types (v0.1)
+## ID Types (v0.2)
 
 - Repository: repo:root
 - Module (directory): module:{path}
@@ -322,17 +333,17 @@ All paths stored in artifacts must be:
 2) Forward slashes
 - Always use "/" even on Windows
 
-3) Stable casing
-- On Windows: normalize to the actual filesystem casing if available, otherwise lower-case.
-- Recommended v0.1 rule: lower-case all paths to avoid case drift.
-  (This can be revised later, but must be consistent.)
+3) Strict Lowercase (v0.2 Rule)
+- To prevent "shimmering" IDs across OS environments (e.g., Windows "File.txt" vs Linux "file.txt"), all paths must be lowercased.
+- This applies to both file paths and module paths.
 
-4) No trailing slashes for modules
-- module path: "src/app", not "src/app/"
+4) Security: No Root Escape
+- Paths must not contain ".." segments that traverse above the repo root.
+- Any file resolving to a path outside the repo root must trigger a hard failure.
 
 5) No redundant segments
-- Remove "." segments
-- Collapse ".." deterministically (or disallow roots that escape repo root)
+- Remove "." segments.
+- Root-level files have a directory path of "." (which maps to the repo root container).
 
 ## Stable ID Generation
 
@@ -346,13 +357,13 @@ No random identifiers.
 
 ## Collisions
 
-If two included files normalize to the same path (rare, but possible with case conflicts on Windows):
+If two included files normalize to the same path (e.g., `README.md` and `readme.md` on a case-sensitive filesystem):
 - Repo-runner must detect the collision and fail the run with an explicit error.
 - No silent overwrites.
 
 ## Future Types (Reserved)
 
-These are not used in v0.1, but reserved for later:
+These are not used in v0.2, but reserved for later:
 - symbol:{file_path}#{symbol_name}
 - external:{package_name}
 - edge IDs derived from endpoint IDs
@@ -526,19 +537,33 @@ Dennis-specific orchestration belongs in Dennis.
 
 This roadmap is intentionally staged to preserve determinism and keep complexity layered.
 
-## v0.1 — Structure + Fingerprints (Current)
+## v0.1 — Structure + Fingerprints (Complete)
 
-- structure.json (repo/module/file containment)
-- manifest.json (config + file hashes)
-- append-only snapshots
-- optional exports (flatten.md)
+- [x] structure.json (repo/module/file containment)
+- [x] manifest.json (config + file hashes)
+- [x] append-only snapshots
+- [x] optional exports (flatten.md)
 
-## v0.2 — Dependency Extraction (Imports Only)
+## v0.1.5 — Schema Assurance & Graph Hardening (Immediate Focus)
 
-- symbols.json (definitions optional)
-- imports.json (file-to-file/module import edges)
-- external_deps.json (package usage)
-- stable external IDs
+- [ ] **Migrate `src/core/types.py` to Pydantic**
+  - Enforce strict typing for `FileEntry` and `Manifest` at the class level
+  - Implement runtime validators for normalized paths (lowercase, forward-slash)
+- [ ] **Integration with "Dennis" Context Engine**
+  - Verify structured output validation against AllSpice-style requirements
+
+## v0.2 — Dependency Extraction & Graph Layer (In Progress)
+
+- [x] **Basic AST-based import scanning (Python)**
+  - `src/analysis/import_scanner.py`
+- [x] **Regex-based import scanning (JS/TS)**
+  - `src/analysis/import_scanner.py`
+- [x] **Initial `GraphStructure` implementation**
+  - `src/analysis/graph_builder.py`
+- [ ] symbols.json (definitions optional)
+- [ ] external_deps.json (package usage)
+- [ ] Cycle detection and handling strategy
+- [ ] Stable external IDs (e.g., `external:pydantic`)
 
 ## v0.3 — Graph Canonicalization
 
@@ -546,6 +571,7 @@ This roadmap is intentionally staged to preserve determinism and keep complexity
   - nodes: repo/module/file/external
   - edges: contains/imports/depends_on
 - cycle handling policy
+- full determinism audit for graph edges
 
 ## v0.4 — Diagram Projection
 
@@ -573,7 +599,7 @@ This roadmap is intentionally staged to preserve determinism and keep complexity
 ```
 # SNAPSHOT_SPEC.md
 
-# Snapshot Spec (v0.1)
+# Snapshot Spec (v0.2)
 
 This document defines the canonical snapshot format and on-disk layout.
 
@@ -587,6 +613,7 @@ Example:
   /{snapshot_id}/
     manifest.json
     structure.json
+    graph.json
     exports/
       ...
   current.json
@@ -630,7 +657,7 @@ Required fields:
   "schema_version": "1.0",
   "tool": {
     "name": "repo-runner",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "snapshot": {
     "snapshot_id": "...",
@@ -650,11 +677,14 @@ Required fields:
     "ignore_names": ["node_modules", ".git", ...],
     "include_extensions": [".ts", ".tsx", ...],
     "include_readme": true/false,
-    "tree_only": true/false
+    "tree_only": true/false,
+    "skip_graph": true/false,
+    "manual_override": true/false
   },
   "stats": {
     "file_count": number,
-    "total_bytes": number
+    "total_bytes": number,
+    "external_dependencies": ["react", "pandas", ...]
   },
   "files": [
     {
@@ -662,7 +692,8 @@ Required fields:
       "path": "src/app/page.tsx",
       "sha256": "hex string",
       "size_bytes": number,
-      "language": "typescript"
+      "language": "typescript",
+      "imports": ["./layout.tsx", "react"]
     }
   ]
 }
@@ -698,6 +729,36 @@ Rules:
 - `modules` sorted by `path` ascending.
 - `files` entries sorted by their file path ascending.
 - module membership is defined by directory containment of the file path.
+
+## graph.json Schema
+
+graph.json provides the topological dependency map.
+
+{
+  "schema_version": "1.0",
+  "nodes": [
+    {
+      "id": "file:src/app/page.tsx",
+      "type": "file"
+    },
+    {
+      "id": "external:react",
+      "type": "external"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/app/page.tsx",
+      "target": "external:react",
+      "relation": "imports"
+    }
+  ]
+}
+
+Rules:
+- `nodes` array must be sorted ascending by `id`.
+- `edges` array must be sorted ascending by `source`, then `target`, then `relation`.
+- `external:` nodes represent inferred external boundaries (e.g., npm packages, python site-packages).
 
 ## exports/ Folder
 
@@ -828,344 +889,8 @@ Both manifest.json and structure.json include `schema_version`.
 Tool version and schema_version are related but distinct.
 ```
 
-### `readme.md`
-
-```
-# repo-runner
-
-Deterministic repository structure compiler.
-
-repo-runner scans a repository, produces an immutable structural snapshot, and exports derived context artifacts (such as a flattened markdown tree) for downstream systems like Dennis.
-
-It is not an LLM tool.
-It is a structural substrate generator.
-
 ---
-
-## Design Goals
-
-* Deterministic outputs
-* Stable IDs
-* Append-only snapshots
-* Canonical structure first, exports second
-* No semantic interpretation
-* No mutation of past snapshots
-
-repo-runner is built to be a foundational layer in a larger AI ecosystem, but remains completely standalone.
-
----
-
-## Core Concepts
-
-### 1. Snapshot-First Architecture
-
-Every operation begins with a snapshot.
-
-```
-Filesystem
-  → snapshot
-    → manifest.json
-    → structure.json
-    → exports/
-```
-
-Snapshots are immutable.
-The `current.json` pointer references the latest snapshot.
-
-Exports are derived projections of a snapshot — never of the live filesystem.
-
----
-
-### 2. Determinism
-
-Given:
-
-* the same repository state
-* the same configuration
-* the same repo-runner version
-
-You will get:
-
-* identical manifest.json
-* identical structure.json
-* identical flatten exports (byte-for-byte)
-
-repo-runner does not rely on:
-
-* timestamps inside exports
-* random IDs
-* UUIDs
-* unordered traversal
-
-All ordering is lexicographically deterministic.
-
----
-
-### 3. Stable IDs
-
-Files use canonical normalized paths:
-
-```
-file:src/app/page.tsx
-module:src/app
-repo:root
-```
-
-Path normalization:
-
-* repo-relative
-* forward slashes
-* preserves leading dots (e.g., `.context-docs`)
-* lowercase normalized IDs
-* collision detection enforced
-
-Stable IDs never use random values.
-
----
-
-## Commands
-
-### Create a Snapshot
-
-```powershell
-python -m src.cli.main snapshot C:\projects\caffeine-melts-website `
-  --output-root C:\repo-runner-output `
-  --depth 10 `
-  --ignore node_modules .expo .git __pycache__ dist build .next
-```
-
-Produces:
-
-```
-C:\repo-runner-output\
-  2026-02-18T06-16-09Z\
-    manifest.json
-    structure.json
-    exports\
-  current.json
-```
-
-`current.json` is automatically updated unless disabled.
-
----
-
-### Export Flatten (list_tree replacement)
-
-Export from the current snapshot:
-
-```powershell
-python -m src.cli.main export flatten `
-  --output-root C:\repo-runner-output `
-  --repo-root C:\projects\caffeine-melts-website
-```
-
-Writes:
-
-```
-<snapshot>\exports\flatten.md
-```
-
-This replaces manual `list_tree.py` workflows.
-
----
-
-### Export Tree Only
-
-```powershell
-python -m src.cli.main export flatten `
-  --output-root C:\repo-runner-output `
-  --repo-root C:\projects\caffeine-melts-website `
-  --tree-only
-```
-
-Equivalent to your old `--tree-only` usage.
-
----
-
-### Export From a Specific Snapshot
-
-```powershell
-python -m src.cli.main export flatten `
-  --output-root C:\repo-runner-output `
-  --repo-root C:\projects\caffeine-melts-website `
-  --snapshot-id 2026-02-18T06-16-09Z
-```
-
-If `--snapshot-id` is not provided, repo-runner defaults to `current.json`.
-
----
-
-## Flatten Export Behavior
-
-The flatten exporter:
-
-* uses the canonical file set from `manifest.json`
-* renders a deterministic tree
-* optionally concatenates file contents
-* skips binary files by default
-* emits stable placeholders for binary files:
-
-```
-<<BINARY_OR_SKIPPED_FILE>>
-language: unknown
-size_bytes: 182343
-sha256: ...
-```
-
-No binary garbage is ever inlined.
-
----
-
-## Snapshot Contents
-
-### manifest.json
-
-Contains:
-
-* schema_version
-* tool metadata
-* inputs
-* config
-* stats
-* canonical file list (with sha256, size, language)
-* snapshot metadata
-
-### structure.json
-
-Contains:
-
-* schema_version
-* repository node
-* modules
-* file containment
-
-structure.json is structural only — no imports, no semantics.
-
----
-
-## What repo-runner Is Not
-
-* Not an LLM summarizer
-* Not a semantic analyzer (yet)
-* Not a code modifier
-* Not a refactoring engine
-* Not tied to Dennis
-
-repo-runner produces deterministic structure.
-Dennis consumes it.
-
----
-
-## Architecture Overview
-
-```
-scanner/
-normalize/
-fingerprint/
-structure/
-snapshot/
-exporters/
-cli/
-```
-
-Flow:
-
-```
-filesystem
-  → scanner
-    → normalizer
-      → fingerprint
-        → structure builder
-          → snapshot writer
-            → exporter
-```
-
-Exports are projections of snapshot state.
-
----
-
-## Determinism Rules
-
-* Files sorted lexicographically
-* Modules sorted lexicographically
-* No random UUIDs
-* No nondeterministic traversal
-* No implicit filesystem rescans during export
-* Exporters consume manifest, not filesystem discovery
-
----
-
-## Versioning
-
-repo-runner follows semantic versioning:
-
-MAJOR.MINOR.PATCH
-
-Breaking changes include:
-
-* stable ID format changes
-* path normalization changes
-* snapshot schema changes
-* manifest/structure schema changes
-
-Backward-compatible additions increment MINOR.
-
----
-
-## Why This Exists
-
-repo-runner exists to create a clean, stable structural substrate for:
-
-* context assembly
-* dependency graph generation
-* change impact analysis
-* semantic layering
-* AI orchestration
-
-But v0.1 intentionally does only structure and flatten export.
-
-Graph generation is planned for a future version.
-
----
-
-## Roadmap (High-Level)
-
-v0.1
-
-* deterministic snapshot
-* flatten exporter
-
-v0.2
-
-* import graph
-* external dependency edges
-* graph.json
-
-v0.3
-
-* draw.io exporter
-* subgraph exports
-* scoped context export
-
----
-
-## Development Philosophy
-
-* Deterministic first
-* Structure before semantics
-* Append-only snapshots
-* Explicit contracts
-* No hidden magic
-
-repo-runner is infrastructure.
-
----
-
-If you want, next we can:
-
-* write a minimal CONTRIBUTING.md aligned to this readme
-* or implement `--scope module:` support to eliminate your manual PowerShell zoo entirely
-* or move into graph layer design cleanly without contaminating determinism
-
-You’ve got a real substrate now.
-```
+## Context Stats
+- **Total Characters:** 22,182
+- **Estimated Tokens:** ~5,545 (assuming ~4 chars/token)
+- **Model Fit:** GPT-4 (8k)

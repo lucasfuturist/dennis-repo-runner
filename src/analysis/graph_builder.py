@@ -53,10 +53,88 @@ class GraphBuilder:
                         ))
 
         # 3. Enforce Determinism 
+        # Sort nodes and edges before graph analysis to ensure stable cycle detection
         nodes.sort(key=lambda n: n.id)
         edges.sort(key=lambda e: (e.source, e.target, e.relation))
 
-        return GraphStructure(nodes=nodes, edges=edges)
+        # 4. Cycle Detection
+        adjacency = self._build_adjacency(nodes, edges)
+        cycles = self._detect_cycles(adjacency, nodes)
+
+        return GraphStructure(nodes=nodes, edges=edges, cycles=cycles)
+
+    def _build_adjacency(self, nodes: List[GraphNode], edges: List[GraphEdge]) -> Dict[str, List[str]]:
+        adj: Dict[str, List[str]] = {n.id: [] for n in nodes}
+        for edge in edges:
+            if edge.source in adj:
+                adj[edge.source].append(edge.target)
+        
+        # Sort neighbors for deterministic traversal
+        for node_id in adj:
+            adj[node_id].sort()
+            
+        return adj
+
+    def _detect_cycles(self, adj: Dict[str, List[str]], nodes: List[GraphNode]) -> List[List[str]]:
+        """
+        Detects elementary cycles using DFS.
+        Returns a list of cycles, where each cycle is a list of node IDs.
+        """
+        visited: Set[str] = set()
+        visiting: Set[str] = set()
+        stack: List[str] = []
+        cycles: List[List[str]] = []
+
+        def dfs(node_id: str):
+            visited.add(node_id)
+            visiting.add(node_id)
+            stack.append(node_id)
+
+            if node_id in adj:
+                for neighbor in adj[node_id]:
+                    if neighbor in visiting:
+                        # Cycle found!
+                        # Extract the cycle portion from the current stack
+                        try:
+                            start_index = stack.index(neighbor)
+                            cycle_path = stack[start_index:]
+                            cycles.append(cycle_path)
+                        except ValueError:
+                            pass # Should not happen given logic
+                    elif neighbor not in visited:
+                        dfs(neighbor)
+            
+            stack.pop()
+            visiting.remove(node_id)
+
+        # Iterate through nodes in deterministic order (already sorted in build)
+        for node in nodes:
+            if node.id not in visited:
+                dfs(node.id)
+
+        # Post-process cycles for deterministic output
+        # 1. Normalize rotation (smallest element first)
+        # 2. Sort the list of cycles
+        normalized_cycles = []
+        for cycle in cycles:
+            # Rotate cycle so the smallest string is first
+            min_idx = cycle.index(min(cycle))
+            rotated = cycle[min_idx:] + cycle[:min_idx]
+            normalized_cycles.append(rotated)
+        
+        # Remove duplicates (possible if reachable from multiple paths)
+        unique_cycles = []
+        seen_cycles = set()
+        for c in normalized_cycles:
+            c_tuple = tuple(c)
+            if c_tuple not in seen_cycles:
+                seen_cycles.add(c_tuple)
+                unique_cycles.append(c)
+
+        # Sort lexicographically
+        unique_cycles.sort()
+
+        return unique_cycles
 
     def _resolve_import(
         self, 

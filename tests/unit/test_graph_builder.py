@@ -67,5 +67,56 @@ class TestGraphBuilder(unittest.TestCase):
         self.assertEqual(graph_a.nodes[0].id, "external:a_ext")
         self.assertEqual(graph_a.nodes[-1].id, "file:b.py")
 
+    def test_cycle_detection_simple(self):
+        """Test simple A <-> B cycle."""
+        common = {"module_path": ".", "sha256": "abc", "size_bytes": 0, "language": "python"}
+        files = [
+            FileEntry(stable_id="file:a.py", path="a.py", imports=["b"], **common),
+            FileEntry(stable_id="file:b.py", path="b.py", imports=["a"], **common),
+        ]
+        graph = self.builder.build(files)
+        
+        self.assertEqual(len(graph.cycles), 1)
+        # Cycle should be normalized to start with lowest ID
+        self.assertEqual(graph.cycles[0], ["file:a.py", "file:b.py"])
+
+    def test_cycle_detection_self_loop(self):
+        """Test A -> A cycle."""
+        common = {"module_path": ".", "sha256": "abc", "size_bytes": 0, "language": "python"}
+        files = [
+            FileEntry(stable_id="file:a.py", path="a.py", imports=["a"], **common),
+        ]
+        graph = self.builder.build(files)
+        
+        self.assertEqual(len(graph.cycles), 1)
+        self.assertEqual(graph.cycles[0], ["file:a.py"])
+
+    def test_cycle_detection_triangular(self):
+        """Test A -> B -> C -> A cycle."""
+        common = {"module_path": ".", "sha256": "abc", "size_bytes": 0, "language": "python"}
+        files = [
+            FileEntry(stable_id="file:a.py", path="a.py", imports=["b"], **common),
+            FileEntry(stable_id="file:b.py", path="b.py", imports=["c"], **common),
+            FileEntry(stable_id="file:c.py", path="c.py", imports=["a"], **common),
+        ]
+        graph = self.builder.build(files)
+        
+        self.assertEqual(len(graph.cycles), 1)
+        # Should be sorted: a -> b -> c
+        self.assertEqual(graph.cycles[0], ["file:a.py", "file:b.py", "file:c.py"])
+
+    def test_no_false_positive_diamond(self):
+        """Test Diamond (A->B, A->C, B->D, C->D) is NOT a cycle."""
+        common = {"module_path": ".", "sha256": "abc", "size_bytes": 0, "language": "python"}
+        files = [
+            FileEntry(stable_id="file:a.py", path="a.py", imports=["b", "c"], **common),
+            FileEntry(stable_id="file:b.py", path="b.py", imports=["d"], **common),
+            FileEntry(stable_id="file:c.py", path="c.py", imports=["d"], **common),
+            FileEntry(stable_id="file:d.py", path="d.py", imports=[], **common),
+        ]
+        graph = self.builder.build(files)
+        
+        self.assertEqual(len(graph.cycles), 0)
+
 if __name__ == "__main__":
     unittest.main()

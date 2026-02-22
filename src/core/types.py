@@ -29,7 +29,7 @@ class FileEntry(BaseModel):
     @field_validator('stable_id')
     @classmethod
     def validate_stable_id(cls, v: str) -> str:
-        if not v.startswith(('file:', 'module:', 'repo:')):
+        if not v.startswith(('file:', 'module:', 'repo:', 'external:')):
              raise ValueError(f"Invalid stable_id format: {v}")
         return v.lower()
 
@@ -50,6 +50,8 @@ class GraphStructure(BaseModel):
     schema_version: str = "1.0"
     nodes: List[GraphNode]
     edges: List[GraphEdge]
+    # List of cycles, where each cycle is a list of node IDs in traversal order
+    cycles: List[List[str]] = Field(default_factory=list)
 
 class ManifestStats(BaseModel):
     file_count: int
