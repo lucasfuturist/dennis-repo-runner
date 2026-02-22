@@ -1,5 +1,6 @@
-## 1. The Tree
+### `repo-runner` Source Module: High-Resolution Interface Map
 
+## The Tree
 ```
 └── src
     ├── __init__.py
@@ -13,6 +14,7 @@
     ├── core
     │   ├── __init__.py
     │   ├── controller.py
+    │   ├── repo-runner.code-workspace
     │   └── types.py
     ├── entry_point.py
     ├── exporters
@@ -26,6 +28,7 @@
     │       ├── config_tabs.py
     │       ├── export_preview.py
     │       ├── preview_pane.py
+    │       ├── progress_window.py
     │       └── tree_view.py
     ├── normalize
     │   └── path_normalizer.py
@@ -38,125 +41,128 @@
         └── structure_builder.py
 ```
 
-## 2. File Summaries
+## File Summaries
 
 ### `src/analysis/graph_builder.py`
-**Role:** Constructs a directed dependency graph by resolving raw import strings into internal file IDs or external package IDs.
+**Role:** Transforms flat file entries into a directed dependency graph showing internal and external imports.
 **Key Exports:**
-- `build(files: List[FileEntry]): GraphStructure` - Orchestrates node creation and edge resolution for an entire file set.
-- `_resolve_external(import_str, language): Optional[str]` - Heuristically identifies top-level package names (e.g., `pandas` from `pandas.core`).
-**Dependencies:** `src.core.types`, `os`.
+- `GraphBuilder.build(files): GraphStructure` - Converts list of file data into a schema-compliant node/edge graph.
+**Dependencies:** `src.core.types`
 
 ### `src/analysis/import_scanner.py`
-**Role:** Performs static analysis to extract import targets from source code using AST for Python and Regex for JS/TS.
+**Role:** Statically analyzes file content to extract import statements for Python, JavaScript, and TypeScript.
 **Key Exports:**
-- `scan(path, language): List[str]` - Reads a file and returns a sorted list of unique raw import strings.
-- `_scan_python(content, imports)` - Uses `ast.parse` to find `Import` and `ImportFrom` nodes.
-**Dependencies:** `ast`, `re`, `os`.
+- `ImportScanner.scan(path, language): List[str]` - Returns unique, sorted import targets found in a file.
+**Dependencies:** Built-in `ast` and `re` modules.
 
 ### `src/cli/main.py`
-**Role:** Defines the command-line interface and maps user arguments to the core pipeline controllers.
+**Role:** Entry point for command-line interactions, handling snapshot creation and export triggers.
 **Key Exports:**
-- `main()` - Entry point for CLI execution handling `snapshot`, `export`, and `ui` commands.
-- `_parse_args()` - Configures command-line flags for depth, ignore rules, and export options.
-**Dependencies:** `src.core.controller`, `argparse`.
+- `main()` - Orchestrates execution based on parsed subcommands (`snapshot`, `export`, `ui`).
+**Dependencies:** `src.core.controller`, `src.gui.app`
 
 ### `src/core/controller.py`
-**Role:** The central pipeline orchestrator that sequences scanning, normalization, analysis, and snapshot writing.
+**Role:** The central architectural coordinator that links the scanner, analysis engines, and writers to perform snapshots.
 **Key Exports:**
-- `run_snapshot(...): str` - Executes the full creation pipeline and returns the resulting `snapshot_id`.
-- `run_export_flatten(...): str` - Loads a snapshot and generates a flattened markdown projection.
-**Dependencies:** `src.scanner`, `src.normalize`, `src.fingerprint`, `src.analysis`, `src.structure`, `src.snapshot`, `src.exporters`.
+- `run_snapshot(...) : str` - High-level orchestrator that scans, fingerprints, analyzes, and saves a repository state.
+- `run_export_flatten(...) : str` - Orchestrator for generating text-based exports from existing snapshots.
+**Dependencies:** `src.scanner`, `src.normalize`, `src.fingerprint`, `src.analysis`, `src.snapshot`, `src.structure`, `src.exporters`
 
 ### `src/core/types.py`
-**Role:** Defines the canonical data schemas (TypedDicts) for manifests, file entries, and graph structures.
+**Role:** Defines the core data models and TypeHints used throughout the application to ensure schema consistency.
 **Key Exports:**
-- `FileEntry` - Schema for individual file metadata (path, hash, language, imports).
-- `Manifest` - Schema for the root snapshot metadata file.
-- `GraphStructure` - Schema for the node-and-edge dependency graph.
-**Dependencies:** `typing`.
+- `FileEntry` - Model for file metadata (path, hash, imports, language).
+- `Manifest` - Model for the complete snapshot metadata file.
+- `GraphStructure` - Model for the dependency graph nodes and edges.
+**Dependencies:** None
 
 ### `src/entry_point.py`
-**Role:** Primary system entry point that manages Windows DPI awareness and toggles between CLI and GUI modes.
+**Role:** Primary system execution wrapper that handles GUI DPI awareness and forks between CLI and GUI modes.
 **Key Exports:**
-- `launch()` - Determines runtime mode based on the presence of command-line arguments.
-**Dependencies:** `src.cli.main`, `src.gui.app`, `multiprocessing`.
+- `launch()` - Determines whether to boot the application in terminal or graphical mode.
+**Dependencies:** `src.cli.main`, `src.gui.app`
 
 ### `src/exporters/flatten_markdown_exporter.py`
-**Role:** Generates a deterministic, human-readable markdown representation of a snapshot’s tree and file contents.
+**Role:** Generates human-readable and LLM-ready Markdown representations of a repository's file tree and contents.
 **Key Exports:**
-- `generate_content(repo_root, manifest, options, ...): str` - Produces a markdown string containing the tree and file bodies.
-- `export(...): str` - Physical writer that saves the generated markdown to the snapshot's `exports/` directory.
-**Dependencies:** `dataclasses`, `os`.
+- `FlattenMarkdownExporter.generate_content(...): str` - Produces the raw Markdown string for a set of files.
+- `FlattenOptions` - Data class holding configuration for export scoping and detail level.
+- `TEXT_EXTENSIONS` - Set of file extensions eligible for text-based inclusion in exports.
+**Dependencies:** `src.core.types` (implicit via manifest structure).
 
 ### `src/fingerprint/file_fingerprint.py`
-**Role:** Computes file-level technical metadata, including SHA256 hashes and extension-based language detection.
+**Role:** Generates unique identification data (hashes) and classifies the programming language of individual files.
 **Key Exports:**
-- `fingerprint(path): Dict` - Computes SHA256, file size, and identifies the programming language.
-- `LANGUAGE_MAP` - Static mapping of file extensions to canonical language names.
-**Dependencies:** `hashlib`, `os`.
+- `FileFingerprint.fingerprint(path): Dict` - Returns SHA256 hash, size, and detected language for a file.
+- `LANGUAGE_MAP` - Configuration mapping extensions to canonical language names.
+**Dependencies:** Built-in `hashlib`.
 
 ### `src/gui/app.py`
-**Role:** Main application controller for the graphical user interface, handling threading and UI layout.
+**Role:** Main application controller for the Tkinter GUI, managing window state and background worker threads.
 **Key Exports:**
-- `RepoRunnerApp` - The main Tkinter window class managing the scan/snapshot/export state.
-- `_scan()` - Triggers an asynchronous filesystem scan.
-**Dependencies:** `src.gui.components`, `src.core.controller`, `src.scanner`, `src.normalize`.
+- `RepoRunnerApp` - The root window class containing the UI layout and interaction logic.
+- `run_gui()` - Initializes and starts the Tkinter main loop.
+**Dependencies:** `src.core.controller`, `src.gui.components.*`, `src.scanner`, `src.normalize`
 
 ### `src/gui/components/config_tabs.py`
-**Role:** Provides a tabbed interface for managing scan depths, ignore patterns, and export settings.
+**Role:** GUI component for managing scan parameters, ignore rules, and export configurations.
 **Key Exports:**
-- `ConfigTabs` - UI component for configuring `ignore_names`, `include_extensions`, and snapshot behaviors.
-**Dependencies:** `tkinter.ttk`.
+- `ConfigTabs` - A notebook widget containing `depth_var`, `ignore_var`, and `include_readme_var` state.
+**Dependencies:** Built-in `tkinter.ttk`.
 
 ### `src/gui/components/export_preview.py`
-**Role:** A modal window for inspecting, copying, or saving generated markdown exports.
+**Role:** Modal window providing a preview of the Markdown export and token usage estimations for AI context windows.
 **Key Exports:**
-- `ExportPreviewWindow` - UI component displaying generated text with stats (line/char counts).
-**Dependencies:** `tkinter.ttk`.
+- `ExportPreviewWindow` - Displays generated text and calculates context health based on character counts.
+**Dependencies:** Built-in `tkinter`.
 
 ### `src/gui/components/preview_pane.py`
-**Role:** Displays detailed metadata and source code previews for files selected in the tree view.
+**Role:** Visual component for inspecting individual file metadata and raw contents during the selection process.
 **Key Exports:**
-- `load_file(abs_path, stable_id)` - Updates the pane with a file's fingerprint, imports, and raw content.
-**Dependencies:** `src.fingerprint`, `src.analysis.import_scanner`.
+- `PreviewPanel.load_file(abs_path, stable_id)` - Updates the view with file properties and text preview.
+**Dependencies:** `src.fingerprint`, `src.analysis.import_scanner`
+
+### `src/gui/components/progress_window.py`
+**Role:** Modal overlay used to signal long-running background tasks (scanning, hashing) and provide cancellation hooks.
+**Key Exports:**
+- `ProgressWindow` - Indeterminate progress tracker with messaging and `cancelled` state.
+**Dependencies:** Built-in `tkinter`.
 
 ### `src/gui/components/tree_view.py`
-**Role:** Interactive hierarchical file explorer with checkbox support for manual snapshot selection.
+**Role:** Interactive file explorer with checkbox-based selection for granular snapshot control.
 **Key Exports:**
-- `get_checked_files(): list` - Recursively collects absolute paths of all items marked with a checkmark.
-- `populate(tree_structure)` - Dynamically builds the UI tree from a directory dictionary.
-**Dependencies:** `tkinter.ttk`, `os`.
+- `FileTreePanel` - Tree widget managing checked/unchecked states for files and folders.
+- `get_checked_files(): List[str]` - Returns paths for all items selected in the UI.
+**Dependencies:** Built-in `tkinter`.
 
 ### `src/normalize/path_normalizer.py`
-**Role:** Enforces deterministic path formatting (lowercase, forward slashes) and generates stable identifiers.
+**Role:** Standardizes system paths into a deterministic, repo-relative format used for IDs across all artifacts.
 **Key Exports:**
-- `normalize(absolute_path): str` - Converts absolute local paths into repo-relative, canonical strings.
-- `file_id(normalized_path): str` - Formats the `file:` prefixed stable ID.
-**Dependencies:** `os`.
+- `PathNormalizer.normalize(abs_path): str` - Converts absolute paths to lowercased, forward-slash relative strings.
+- `PathNormalizer.file_id(path): str` - Generates a stable "file:..." URI.
+**Dependencies:** Built-in `os`.
 
 ### `src/scanner/filesystem_scanner.py`
-**Role:** Implements a deterministic, depth-limited directory walker with cycle detection.
+**Role:** Robust directory crawler that handles symlink cycles, permission errors, and depth limits.
 **Key Exports:**
-- `scan(root_paths): List[str]` - Returns a sorted list of absolute paths while respecting ignore rules.
-- `_walk(directory, depth, ...)` - Recursive internal walker with symlink cycle protection.
-**Dependencies:** `os`.
+- `FileSystemScanner.scan(root_paths, progress_callback): List[str]` - Returns a sorted list of all files found within constraints.
+**Dependencies:** Built-in `os`.
 
 ### `src/snapshot/snapshot_loader.py`
-**Role:** Provides utilities for locating and loading existing snapshot metadata from the output root.
+**Role:** Utility for resolving and reading previously saved snapshot manifests and structures from the filesystem.
 **Key Exports:**
-- `resolve_snapshot_dir(snapshot_id): str` - Finds the directory for a specific ID or the `current.json` pointer.
-- `load_manifest(snapshot_dir): dict` - Loads the JSON manifest for a given snapshot.
-**Dependencies:** `json`, `os`.
+- `SnapshotLoader.resolve_snapshot_dir(snapshot_id): str` - Locates the folder for a given ID or the "current" pointer.
+- `load_manifest(snapshot_dir): dict` - Deserializes the manifest JSON.
+**Dependencies:** Built-in `json`.
 
 ### `src/snapshot/snapshot_writer.py`
-**Role:** Handles the atomic creation of snapshot folders and serialization of canonical metadata files.
+**Role:** Persists captured repository states to disk, organizing metadata into versioned JSON files.
 **Key Exports:**
-- `write(manifest, structure, graph, ...): str` - Writes `manifest.json`, `structure.json`, and `graph.json` to an immutable folder.
-**Dependencies:** `json`, `os`, `datetime`.
+- `SnapshotWriter.write(manifest, structure, graph, ...): str` - Saves the core snapshot files and updates the `current.json` pointer.
+**Dependencies:** Built-in `json`, `datetime`.
 
 ### `src/structure/structure_builder.py`
-**Role:** Groups a flat list of file entries into a hierarchical "module" structure based on directory containment.
+**Role:** Logic for grouping flat file lists into a hierarchical module/directory containment structure.
 **Key Exports:**
-- `build(repo_id, files): Dict` - Returns the `structure.json` model representing the repository's logical containment.
-**Dependencies:** `collections.defaultdict`.
+- `StructureBuilder.build(repo_id, files): Dict` - Organizes files into a structured JSON representation of the repo.
+**Dependencies:** None (Self-contained).

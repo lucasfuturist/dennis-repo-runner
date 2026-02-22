@@ -2,7 +2,7 @@
 from src.core.controller import run_snapshot, run_export_flatten
 
 def _parse_args():
-    parser = argparse.ArgumentParser(prog="repo-runner", description="repo-runner v0.1")
+    parser = argparse.ArgumentParser(prog="repo-runner", description="repo-runner v0.2")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # snapshot
@@ -20,6 +20,7 @@ def _parse_args():
     snap.add_argument("--no-include-readme", action="store_false", dest="include_readme")
     snap.add_argument("--write-current-pointer", action="store_true", default=True)
     snap.add_argument("--no-write-current-pointer", action="store_false", dest="write_current_pointer")
+    snap.add_argument("--skip-graph", action="store_true", help="Skip dependency graph generation (faster)")
     snap.add_argument("--export-flatten", action="store_true", help="Automatically generate flatten.md export")
 
     # export
@@ -68,6 +69,7 @@ def main():
             include_extensions=args.include_extensions,
             include_readme=args.include_readme,
             write_current_pointer=args.write_current_pointer,
+            skip_graph=args.skip_graph,
             export_flatten=args.export_flatten,
         )
         print(f"Snapshot created: {snap_id}")

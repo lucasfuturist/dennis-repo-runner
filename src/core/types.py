@@ -24,12 +24,13 @@ class SnapshotConfig(TypedDict):
     include_extensions: List[str]
     include_readme: bool
     tree_only: bool
+    skip_graph: bool  # New field
     manual_override: bool
 
 class SnapshotStats(TypedDict):
     file_count: int
     total_bytes: int
-    external_dependencies: List[str]  # New field
+    external_dependencies: List[str]
 
 class Manifest(TypedDict):
     schema_version: str

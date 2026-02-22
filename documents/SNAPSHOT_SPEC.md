@@ -67,7 +67,7 @@ Required fields:
   },
   "inputs": {
     "repo_root": "normalized path string",
-    "roots":,
+    "roots": ["normalized path string", ...],
     "git": {
       "is_repo": true/false,
       "commit": "string or null"
@@ -75,17 +75,26 @@ Required fields:
   },
   "config": {
     "depth": number,
-    "ignore_names":,
-    "include_extensions":,
+    "ignore_names": ["node_modules", ".git", ...],
+    "include_extensions": [".ts", ".tsx", ...],
     "include_readme": true/false,
-    "tree_only": true/false
+    "tree_only": true/false,
+    "skip_graph": true/false,
+    "manual_override": true/false
   },
   "stats": {
     "file_count": number,
     "total_bytes": number,
-    "external_dependencies":
+    "external_dependencies": ["react", "pandas", ...]
   },
-  "files":
+  "files": [
+    {
+      "stable_id": "file:src/app/page.tsx",
+      "path": "src/app/page.tsx",
+      "sha256": "hex string",
+      "size_bytes": number,
+      "language": "typescript",
+      "imports": ["./layout.tsx", "react"]
     }
   ]
 }
@@ -104,11 +113,14 @@ structure.json is hierarchical containment only.
   "repo": {
     "stable_id": "repo:root",
     "root": "repo-relative root (usually '.')",
-    "modules":[
+    "modules": [
       {
         "stable_id": "module:src/app",
         "path": "src/app",
-        "files":
+        "files": [
+          "file:src/app/page.tsx",
+          "file:src/app/layout.tsx"
+        ]
       }
     ]
   }
@@ -125,8 +137,23 @@ graph.json provides the topological dependency map.
 
 {
   "schema_version": "1.0",
-  "nodes":,
-  "edges":
+  "nodes": [
+    {
+      "id": "file:src/app/page.tsx",
+      "type": "file"
+    },
+    {
+      "id": "external:react",
+      "type": "external"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/app/page.tsx",
+      "target": "external:react",
+      "relation": "imports"
+    }
+  ]
 }
 
 Rules:

@@ -2,7 +2,7 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `76`
+- file_count: `78`
 - tree_only: `True`
 ## Tree
 
@@ -22,6 +22,8 @@
 │   │   │   └── 02-code-conventions-prompt.md
 │   │   └── repo-runner-flattened.md
 │   ├── compressed-context
+│   │   ├── all-documents.md
+│   │   ├── full-tree.md
 │   │   ├── scripts-compressed.md
 │   │   ├── src-compressed.md
 │   │   └── tests-compressed.md
@@ -39,7 +41,9 @@
 │   ├── snapshot_spec.md
 │   ├── testing_strategy.md
 │   └── versioning_policy.md
+├── flattened_repo-runner_2026-02-19.md
 ├── readme.md
+├── repo-runner.code-workspace
 ├── repo-runner.spec
 ├── scripts
 │   ├── build_exe.ps1
@@ -58,6 +62,7 @@
 │   ├── core
 │   │   ├── __init__.py
 │   │   ├── controller.py
+│   │   ├── repo-runner.code-workspace
 │   │   └── types.py
 │   ├── entry_point.py
 │   ├── exporters
@@ -71,6 +76,7 @@
 │   │       ├── config_tabs.py
 │   │       ├── export_preview.py
 │   │       ├── preview_pane.py
+│   │       ├── progress_window.py
 │   │       └── tree_view.py
 │   ├── normalize
 │   │   └── path_normalizer.py
@@ -88,12 +94,6 @@
     │   ├── test_full_snapshot.py
     │   ├── test_robustness.py
     │   └── test_snapshot_flow.py
-    ├── output
-    │   ├── 2026-02-18t21-09-34z
-    │   │   ├── graph.json
-    │   │   ├── manifest.json
-    │   │   └── structure.json
-    │   └── current.json
     └── unit
         ├── __init__.py
         ├── test_filesystem_scanner.py

@@ -33,7 +33,7 @@ class ExportPreviewWindow(tk.Toplevel):
         
         # Context Health Logic
         if est_tokens < 8192:
-            status_color = "green"
+            status_color = "#008000" # Green
             model_hint = "Fits: GPT-4 (8k)"
         elif est_tokens < 32768:
             status_color = "#228B22" # Forest Green
@@ -41,15 +41,15 @@ class ExportPreviewWindow(tk.Toplevel):
         elif est_tokens < 128000:
             status_color = "#B8860B" # Dark Goldenrod
             model_hint = "Fits: GPT-4 Turbo / Claude 3 (128k)"
-        elif est_tokens < 1000000:
+        elif est_tokens < 200000:
             status_color = "#FF8C00" # Dark Orange
-            model_hint = "Fits: Gemini 1.5 Pro (1M)"
-        elif est_tokens < 2000000:
+            model_hint = "Fits: Claude 3.5 Sonnet (200k)"
+        elif est_tokens < 1000000:
             status_color = "#FF4500" # Orange Red
-            model_hint = "Fits: Gemini 1.5 Pro 002 (2M)"
+            model_hint = "Fits: Gemini 1.5 Pro (1M)"
         else:
-            status_color = "red"
-            model_hint = "⚠ EXCEEDS 2M TOKENS (Chunking Required)"
+            status_color = "#FF0000" # Red
+            model_hint = "⚠ EXCEEDS 1M TOKENS (Chunking Required)"
 
         # Stats Display
         stats_frame = ttk.Frame(toolbar)

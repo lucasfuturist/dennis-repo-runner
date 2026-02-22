@@ -39,6 +39,7 @@ def run_snapshot(
     include_extensions: List[str],
     include_readme: bool,
     write_current_pointer: bool,
+    skip_graph: bool = False,
     explicit_file_list: Optional[List[str]] = None,
     export_flatten: bool = False,
 ) -> str:
@@ -126,15 +127,18 @@ def run_snapshot(
         files=file_entries,
     )
 
-    # 2. Build Dependency Graph
-    graph = GraphBuilder().build(file_entries)
+    # 2. Build Dependency Graph (Optional)
+    graph = None
+    external_deps = []
 
-    # Extract external dependencies for Manifest stats
-    external_deps = sorted([
-        n["id"].replace("external:", "") 
-        for n in graph["nodes"] 
-        if n["type"] == "external"
-    ])
+    if not skip_graph:
+        graph = GraphBuilder().build(file_entries)
+        # Extract external dependencies for Manifest stats
+        external_deps = sorted([
+            n["id"].replace("external:", "") 
+            for n in graph["nodes"] 
+            if n["type"] == "external"
+        ])
 
     # 3. Assemble Manifest
     manifest: Manifest = {
@@ -154,6 +158,7 @@ def run_snapshot(
             "include_extensions": include_extensions,
             "include_readme": include_readme,
             "tree_only": False,
+            "skip_graph": skip_graph,
             "manual_override": explicit_file_list is not None
         },
         "stats": {

@@ -32,7 +32,8 @@ class FlattenMarkdownExporter:
         tree_md = self._render_tree([f["path"] for f in files])
         content_md = "" if options.tree_only else self._render_contents(repo_root, files)
 
-        header = [
+        # Header Construction
+        header_lines = [
             f"# {title or 'repo-runner flatten export'}",
             "",
             f"- repo_root: `{repo_root}`",
@@ -42,7 +43,34 @@ class FlattenMarkdownExporter:
             "",
         ]
 
-        return "\n".join(header) + tree_md + ("\n" + content_md if content_md else "")
+        # Body Construction
+        body = "\n".join(header_lines) + tree_md + ("\n" + content_md if content_md else "")
+
+        # Footer Construction (Token Estimation)
+        # We estimate tokens simply as chars / 4 for standard English/Code mix.
+        # This is not exact (tiktoken would be better), but good enough for a rough gauge.
+        total_chars = len(body)
+        est_tokens = total_chars // 4
+        
+        footer_lines = [
+            "",
+            "---",
+            "## Context Stats",
+            f"- **Total Characters:** {total_chars:,}",
+            f"- **Estimated Tokens:** ~{est_tokens:,} (assuming ~4 chars/token)",
+            "- **Model Fit:** " + self._get_model_fit(est_tokens),
+            ""
+        ]
+        
+        return body + "\n".join(footer_lines)
+
+    def _get_model_fit(self, tokens: int) -> str:
+        if tokens < 8000: return "GPT-4 (8k)"
+        if tokens < 32000: return "GPT-4 (32k)"
+        if tokens < 120000: return "GPT-4 Turbo / Claude 3 Haiku (128k)"
+        if tokens < 200000: return "Claude 3.5 Sonnet (200k)"
+        if tokens < 1000000: return "Gemini 1.5 Pro (1M)"
+        return "⚠️ EXCEEDS 1M (Chunking Required)"
 
     def export(
         self,
