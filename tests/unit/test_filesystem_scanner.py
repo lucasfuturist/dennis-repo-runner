@@ -2,6 +2,8 @@
 import tempfile
 import shutil
 import os
+import sys
+from unittest.mock import patch, MagicMock
 from src.scanner.filesystem_scanner import FileSystemScanner
 
 class TestFileSystemScanner(unittest.TestCase):
@@ -36,6 +38,40 @@ class TestFileSystemScanner(unittest.TestCase):
         self.assertIn("src/code.ts", rel_results)
         self.assertFalse(any("config" in p for p in rel_results))
         self.assertFalse(any("bundle.js" in p for p in rel_results))
+
+    # --- Migrated Hardening Tests ---
+
+    def test_symlink_cycle_detection(self):
+        if sys.platform == 'win32':
+            # Windows requires Admin for symlinks usually, safer to skip
+            return
+
+        # Create a cycle: root/link -> root
+        link_path = os.path.join(self.test_dir, "link_to_self")
+        os.symlink(self.test_dir, link_path)
+
+        self._touch("file_a.txt")
+        
+        scanner = FileSystemScanner(depth=10, ignore_names=set())
+        
+        # Should not hang or crash
+        files = scanner.scan([self.test_dir])
+        
+        self.assertTrue(any(f.endswith("file_a.txt") for f in files))
+        # Ensure we didn't recurse infinitely
+        self.assertLess(len(files), 10)
+
+    @patch('os.listdir')
+    def test_permission_error_handling(self, mock_listdir):
+        # Simulate PermissionError on a subdirectory
+        mock_listdir.side_effect = PermissionError("Access Denied")
+        
+        scanner = FileSystemScanner(depth=5, ignore_names=set())
+        
+        # Scan should complete returning empty list (or list of root files if root scan succeeded)
+        files = scanner.scan([self.test_dir])
+        
+        self.assertEqual(files, [])
 
 if __name__ == "__main__":
     unittest.main()
