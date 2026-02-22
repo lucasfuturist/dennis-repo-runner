@@ -1,7 +1,7 @@
 import os
 import json
 import datetime
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, List
 
 from src.core.types import Manifest, GraphStructure
 
@@ -14,6 +14,7 @@ class SnapshotWriter:
         manifest: Manifest,
         structure: Dict,
         graph: Optional[GraphStructure],
+        symbols: Optional[Dict[str, List[str]]] = None,
         write_current_pointer: bool = True
     ) -> str:
         """
@@ -47,6 +48,11 @@ class SnapshotWriter:
         if graph:
             with open(os.path.join(snapshot_dir, "graph.json"), "w") as f:
                 f.write(graph.model_dump_json(indent=2))
+                
+        # Write Symbols Index
+        if symbols is not None:
+            with open(os.path.join(snapshot_dir, "symbols.json"), "w") as f:
+                json.dump(symbols, f, indent=2)
                 
         # Write Exports folder
         os.makedirs(os.path.join(snapshot_dir, "exports"), exist_ok=True)

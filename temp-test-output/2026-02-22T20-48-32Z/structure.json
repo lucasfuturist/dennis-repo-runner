@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.0",
+  "repo": {
+    "stable_id": "repo:root",
+    "root": ".",
+    "modules": [
+      {
+        "stable_id": "module:.",
+        "path": ".",
+        "files": [
+          "file:__init__.py",
+          "file:entry_point.py"
+        ]
+      },
+      {
+        "stable_id": "module:analysis",
+        "path": "analysis",
+        "files": [
+          "file:analysis/__init__.py",
+          "file:analysis/context_slicer.py",
+          "file:analysis/graph_builder.py",
+          "file:analysis/import_scanner.py",
+          "file:analysis/snapshot_comparator.py"
+        ]
+      },
+      {
+        "stable_id": "module:api",
+        "path": "api",
+        "files": [
+          "file:api/init.py",
+          "file:api/server.py"
+        ]
+      },
+      {
+        "stable_id": "module:cli",
+        "path": "cli",
+        "files": [
+          "file:cli/__init__.py",
+          "file:cli/main.py"
+        ]
+      },
+      {
+        "stable_id": "module:core",
+        "path": "core",
+        "files": [
+          "file:core/__init__.py",
+          "file:core/config_loader.py",
+          "file:core/controller.py",
+          "file:core/repo-runner.code-workspace",
+          "file:core/types.py"
+        ]
+      },
+      {
+        "stable_id": "module:exporters",
+        "path": "exporters",
+        "files": [
+          "file:exporters/flatten_markdown_exporter.py"
+        ]
+      },
+      {
+        "stable_id": "module:fingerprint",
+        "path": "fingerprint",
+        "files": [
+          "file:fingerprint/file_fingerprint.py"
+        ]
+      },
+      {
+        "stable_id": "module:gui",
+        "path": "gui",
+        "files": [
+          "file:gui/__init__.py",
+          "file:gui/app.py"
+        ]
+      },
+      {
+        "stable_id": "module:gui/components",
+        "path": "gui/components",
+        "files": [
+          "file:gui/components/config_tabs.py",
+          "file:gui/components/export_preview.py",
+          "file:gui/components/preview_pane.py",
+          "file:gui/components/progress_window.py",
+          "file:gui/components/tree_view.py"
+        ]
+      },
+      {
+        "stable_id": "module:normalize",
+        "path": "normalize",
+        "files": [
+          "file:normalize/path_normalizer.py"
+        ]
+      },
+      {
+        "stable_id": "module:observability",
+        "path": "observability",
+        "files": [
+          "file:observability/init.py",
+          "file:observability/token_telemetry.py"
+        ]
+      },
+      {
+        "stable_id": "module:scanner",
+        "path": "scanner",
+        "files": [
+          "file:scanner/filesystem_scanner.py"
+        ]
+      },
+      {
+        "stable_id": "module:snapshot",
+        "path": "snapshot",
+        "files": [
+          "file:snapshot/snapshot_loader.py",
+          "file:snapshot/snapshot_writer.py"
+        ]
+      },
+      {
+        "stable_id": "module:structure",
+        "path": "structure",
+        "files": [
+          "file:structure/structure_builder.py"
+        ]
+      }
+    ]
+  }
+}

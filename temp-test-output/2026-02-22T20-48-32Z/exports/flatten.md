@@ -1,3 +1,29 @@
+
+## Context Telemetry
+- **Focus:** `symbol:ContextSlicer`
+- **Radius:** 1
+- **Usage:** 1656 tokens
+- **Cycles Included:** 0
+
+
+# Context Slice: symbol:ContextSlicer
+
+- repo_root: `C:\projects\repo-runner\src`
+- snapshot_id: `2026-02-22T20-48-32Z`
+- file_count: `1`
+- tree_only: `False`
+## Tree
+
+```
+└── analysis
+    └── context_slicer.py
+```
+
+## File Contents
+
+### `analysis/context_slicer.py`
+
+```
 from typing import Dict, Any, Union, Set, List, Optional
 from collections import defaultdict
 import logging
@@ -157,3 +183,10 @@ class ContextSlicer:
         }
 
         return sliced_manifest
+```
+
+---
+## Context Stats
+- **Total Characters:** 6,745
+- **Estimated Tokens:** ~1,686 (assuming ~4 chars/token)
+- **Model Fit:** GPT-4 (8k)

@@ -1,6 +1,7 @@
 import os
 import json
-from typing import List, Optional, Set
+from collections import defaultdict
+from typing import List, Optional, Set, Dict
 
 from src.core.types import (
     Manifest, 
@@ -159,6 +160,17 @@ def run_snapshot(
             if n.type == "external"
         ])
 
+    # Extract Global Symbol Index deterministically
+    symbols_index_raw = defaultdict(list)
+    for entry in file_entries:
+        for sym in entry.symbols:
+            symbols_index_raw[sym].append(entry.stable_id)
+            
+    symbols_index = {
+        sym: sorted(paths) 
+        for sym, paths in sorted(symbols_index_raw.items())
+    }
+
     manifest = Manifest(
         tool={"name": "repo-runner", "version": "0.2.0"},
         snapshot={}, 
@@ -192,6 +204,7 @@ def run_snapshot(
         manifest,
         structure,
         graph=graph,
+        symbols=symbols_index,
         write_current_pointer=write_current_pointer,
     )
 
