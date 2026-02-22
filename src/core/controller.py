@@ -57,17 +57,36 @@ def run_snapshot(
     export_flatten: bool = False,
 ) -> str:
     """
-    Creates a snapshot.
+    Creates a snapshot. Automatically ignores the output_root if it is inside the repo_root.
     """
     repo_root_abs = os.path.abspath(repo_root)
+    output_root_abs = os.path.abspath(output_root)
 
     if not os.path.isdir(repo_root_abs):
         raise ValueError(f"Repository root does not exist: {repo_root_abs}")
 
+    # --- Self-Ignore Logic ---
+    # If the output directory is inside the repository, we must ignore it
+    # to avoid recursive snapshots and noise in diffs.
+    effective_ignore = set(ignore)
+    try:
+        # Check if output_root is a child of repo_root
+        if os.path.commonpath([repo_root_abs, output_root_abs]) == repo_root_abs:
+            rel_to_out = os.path.relpath(output_root_abs, repo_root_abs)
+            # We ignore the top-level segment of the output path relative to repo root
+            # e.g., if output is 'out/snapshots', we ignore 'out'
+            top_level_segment = rel_to_out.split(os.sep)[0]
+            if top_level_segment and top_level_segment != '.':
+                effective_ignore.add(top_level_segment)
+    except ValueError:
+        # Handles cases on Windows where paths are on different drives
+        pass
+
     if explicit_file_list is not None:
         absolute_files = [os.path.abspath(f) for f in explicit_file_list]
     else:
-        scanner = FileSystemScanner(depth=depth, ignore_names=set(ignore))
+        # Scanner uses the effective_ignore set which now includes the output folder
+        scanner = FileSystemScanner(depth=depth, ignore_names=effective_ignore)
         absolute_files = scanner.scan([repo_root_abs])
         absolute_files = _filter_by_extensions(absolute_files, include_extensions)
 
@@ -153,7 +172,7 @@ def run_snapshot(
         ),
         config=ManifestConfig(
             depth=depth,
-            ignore_names=ignore,
+            ignore_names=list(effective_ignore),
             include_extensions=include_extensions,
             include_readme=include_readme,
             tree_only=False,
@@ -195,7 +214,6 @@ def run_snapshot(
         )
 
     return snapshot_id
-
 
 def run_export_flatten(
     output_root: str,
