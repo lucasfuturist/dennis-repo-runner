@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "repo": {
+    "stable_id": "repo:root",
+    "root": ".",
+    "modules": [
+      {
+        "stable_id": "module:.",
+        "path": ".",
+        "files": [
+          "file:build_exe.ps1",
+          "file:export-signal.ps1",
+          "file:generate_test_repo.ps1",
+          "file:package-repo.ps1"
+        ]
+      }
+    ]
+  }
+}

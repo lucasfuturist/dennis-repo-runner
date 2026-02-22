@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "tool": {
+    "name": "repo-runner",
+    "version": "0.2.0"
+  },
+  "snapshot": {
+    "snapshot_id": "2026-02-22T18-58-29Z",
+    "created_utc": "2026-02-22T18-58-29Z",
+    "output_root": "out"
+  },
+  "inputs": {
+    "repo_root": "C:/projects/repo-runner/scripts",
+    "roots": [
+      "C:/projects/repo-runner/scripts"
+    ],
+    "git": {
+      "is_repo": false,
+      "commit": null
+    }
+  },
+  "config": {
+    "depth": 25,
+    "ignore_names": [
+      ".git",
+      "node_modules",
+      "__pycache__",
+      "dist",
+      "build",
+      ".next",
+      ".expo",
+      ".venv"
+    ],
+    "include_extensions": [],
+    "include_readme": true,
+    "tree_only": false,
+    "skip_graph": false,
+    "manual_override": false
+  },
+  "stats": {
+    "file_count": 4,
+    "total_bytes": 14030,
+    "external_dependencies": []
+  },
+  "files": [
+    {
+      "path": "build_exe.ps1",
+      "stable_id": "file:build_exe.ps1",
+      "module_path": ".",
+      "sha256": "0651de674fde980f8af470adf328944a322f72cfb8d3fb2d7b3602f6ed13f942",
+      "size_bytes": 2006,
+      "language": "powershell",
+      "imports": []
+    },
+    {
+      "path": "export-signal.ps1",
+      "stable_id": "file:export-signal.ps1",
+      "module_path": ".",
+      "sha256": "48c4a0fa7f56555087e86bab99b08e832e3b714da505d961d760aad6418ba7eb",
+      "size_bytes": 4787,
+      "language": "powershell",
+      "imports": []
+    },
+    {
+      "path": "generate_test_repo.ps1",
+      "stable_id": "file:generate_test_repo.ps1",
+      "module_path": ".",
+      "sha256": "65e8b53197035c2e905d1ae3ae9c5ecf0679d7ae6936beead93dbbe10e468dbf",
+      "size_bytes": 3144,
+      "language": "powershell",
+      "imports": []
+    },
+    {
+      "path": "package-repo.ps1",
+      "stable_id": "file:package-repo.ps1",
+      "module_path": ".",
+      "sha256": "f7b2eaffdd491f2d6893ce0c4dc26b7adb8ab35a2495c409f2f67af409de1771",
+      "size_bytes": 4093,
+      "language": "powershell",
+      "imports": []
+    }
+  ]
+}

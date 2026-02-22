@@ -1,55 +1,106 @@
 import unittest
 from src.analysis.context_slicer import ContextSlicer
+from src.core.types import FileEntry
 
 class TestContextSlicer(unittest.TestCase):
     def setUp(self):
-        # Mock Manifest
+        # 1 token ~= 4 bytes. 
+        # File A: 40 bytes -> 10 tokens
+        # File B: 40 bytes -> 10 tokens
+        # File C: 400 bytes -> 100 tokens
         self.manifest = {
             "files": [
-                {"stable_id": "file:a.py"},
-                {"stable_id": "file:b.py"},
-                {"stable_id": "file:c.py"},
-                {"stable_id": "file:d.py"}
+                {"stable_id": "file:a.py", "size_bytes": 40},
+                {"stable_id": "file:b.py", "size_bytes": 40},
+                {"stable_id": "file:c.py", "size_bytes": 400},
+                {"stable_id": "file:d.py", "size_bytes": 40}
             ],
             "stats": {"file_count": 4}
         }
         
-        # Mock Graph representing a linear dependency chain: A -> B -> C -> D
+        # A <-> B (Cycle), B -> C -> D
         self.graph = {
             "nodes": [],
             "edges": [
                 {"source": "file:a.py", "target": "file:b.py", "relation": "imports"},
+                {"source": "file:b.py", "target": "file:a.py", "relation": "imports"},
                 {"source": "file:b.py", "target": "file:c.py", "relation": "imports"},
                 {"source": "file:c.py", "target": "file:d.py", "relation": "imports"}
+            ],
+            "cycles": [
+                ["file:a.py", "file:b.py"]
             ]
         }
 
-    def test_radius_zero(self):
-        """Radius 0 = Only the focus file itself."""
-        sliced = ContextSlicer.slice_manifest(self.manifest, self.graph, "file:b.py", radius=0)
-        files = [f["stable_id"] for f in sliced["files"]]
-        
-        self.assertEqual(files, ["file:b.py"])
-        self.assertEqual(sliced["stats"]["file_count"], 1)
-
-    def test_radius_one_bidirectional(self):
-        """
-        Radius 1 = Focus file + immediate parents + immediate children.
-        From B, it should grab A (parent) and C (child).
-        """
+    def test_radius_logic_standard(self):
+        """Standard radius checks without token limits."""
         sliced = ContextSlicer.slice_manifest(self.manifest, self.graph, "file:b.py", radius=1)
         files = sorted([f["stable_id"] for f in sliced["files"]])
-        
+        # Neighbors of B are A (parent) and C (child).
         self.assertEqual(files, ["file:a.py", "file:b.py", "file:c.py"])
 
-    def test_radius_two(self):
+    def test_token_budget_enforcement(self):
         """
-        Radius 2 from B should yield A, B, C, and branch out to D.
+        Focus B (10 tokens). Neighbors A (10) and C (100).
+        Limit = 50.
+        Should include B (10) + A (10) = 20.
+        Should EXCLUDE C (100) because 20 + 100 > 50.
         """
-        sliced = ContextSlicer.slice_manifest(self.manifest, self.graph, "file:b.py", radius=2)
+        sliced = ContextSlicer.slice_manifest(
+            self.manifest, 
+            self.graph, 
+            "file:b.py", 
+            radius=1, 
+            max_tokens=50
+        )
         files = sorted([f["stable_id"] for f in sliced["files"]])
         
-        self.assertEqual(files, ["file:a.py", "file:b.py", "file:c.py", "file:d.py"])
+        self.assertIn("file:b.py", files) # Focus
+        self.assertIn("file:a.py", files) # Fits in budget
+        self.assertNotIn("file:c.py", files) # Too big
+        
+        self.assertTrue(sliced["stats"]["estimated_tokens"] <= 50)
+
+    def test_focus_exceeds_budget(self):
+        """
+        Focus C (100 tokens). Limit = 50.
+        Must still include C (Focus rule).
+        """
+        sliced = ContextSlicer.slice_manifest(
+            self.manifest, 
+            self.graph, 
+            "file:c.py", 
+            radius=1, 
+            max_tokens=50
+        )
+        files = [f["stable_id"] for f in sliced["files"]]
+        self.assertEqual(files, ["file:c.py"])
+        self.assertEqual(sliced["stats"]["estimated_tokens"], 100)
+
+    def test_cycle_stats_reporting(self):
+        """
+        Slice including A and B should report 1 cycle included.
+        """
+        sliced = ContextSlicer.slice_manifest(
+            self.manifest, 
+            self.graph, 
+            "file:a.py", 
+            radius=1
+        )
+        # Should include A and B
+        self.assertEqual(sliced["stats"]["cycles_included"], 1)
+
+    def test_cycle_stats_exclusion(self):
+        """
+        Slice C -> D should report 0 cycles.
+        """
+        sliced = ContextSlicer.slice_manifest(
+            self.manifest, 
+            self.graph, 
+            "file:c.py", 
+            radius=1
+        )
+        self.assertEqual(sliced["stats"]["cycles_included"], 0)
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "nodes": [
+    {
+      "id": "file:build_exe.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:export-signal.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:generate_test_repo.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:package-repo.ps1",
+      "type": "file",
+      "metadata": null
+    }
+  ],
+  "edges": [],
+  "cycles": []
+}
