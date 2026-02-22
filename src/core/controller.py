@@ -200,7 +200,8 @@ def run_export_flatten(
     scope: str,
     title: Optional[str],
     focus_id: Optional[str] = None,
-    radius: int = 1
+    radius: int = 1,
+    max_tokens: Optional[int] = None # NEW ARG
 ) -> str:
     """
     Exports a snapshot to Markdown.
@@ -221,9 +222,27 @@ def run_export_flatten(
         with open(graph_path, "r") as f:
             graph_data = json.load(f)
             
-        sliced_manifest = ContextSlicer.slice_manifest(manifest, graph_data, focus_id, radius)
-        telemetry_md = TokenTelemetry.calculate_telemetry(manifest, sliced_manifest, focus_id, radius)
+        # Pass max_tokens to slicer
+        sliced_manifest = ContextSlicer.slice_manifest(
+            manifest=manifest, 
+            graph=graph_data, 
+            focus_id=focus_id, 
+            radius=radius,
+            max_tokens=max_tokens
+        )
         
+        # Telemetry: Use sliced manifest stats for accurate reporting
+        estimated = sliced_manifest.get("stats", {}).get("estimated_tokens", 0)
+        usage_str = TokenTelemetry.format_usage(estimated, max_tokens or 0)
+        cycles = sliced_manifest.get("stats", {}).get("cycles_included", 0)
+        
+        telemetry_md = f"""
+## Context Telemetry
+- **Focus:** `{focus_id}`
+- **Radius:** {radius}
+- **Usage:** {usage_str}
+- **Cycles Included:** {cycles}
+"""
         manifest = sliced_manifest
         
         if not title:

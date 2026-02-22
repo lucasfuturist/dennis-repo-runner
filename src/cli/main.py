@@ -24,6 +24,16 @@ def _parse_args():
     snap.add_argument("--skip-graph", action="store_true", help="Skip dependency graph generation (faster)")
     snap.add_argument("--export-flatten", action="store_true", help="Automatically generate flatten.md export")
 
+    # slice (NEW)
+    slice_cmd = sub.add_parser("slice", help="Generate a context slice (Markdown) from a snapshot")
+    slice_cmd.add_argument("--output-root", required=True, help="Output root directory where snapshots live")
+    slice_cmd.add_argument("--repo-root", required=True, help="Repo root path (used to read file contents)")
+    slice_cmd.add_argument("--snapshot-id", required=False, default=None, help="Snapshot ID (defaults to current)")
+    slice_cmd.add_argument("--focus", required=True, help="Stable ID of the file to focus on (e.g. file:src/app.py)")
+    slice_cmd.add_argument("--radius", type=int, default=1, help="Context radius (hops)")
+    slice_cmd.add_argument("--max-tokens", type=int, default=None, help="Token budget limit")
+    slice_cmd.add_argument("--output", required=False, default=None, help="Output path for the slice markdown")
+
     # export
     exp = sub.add_parser("export", help="Export derived artifacts from a snapshot")
     exp_sub = exp.add_subparsers(dest="export_command", required=True)
@@ -74,7 +84,6 @@ def main():
             export_flatten=args.export_flatten,
         )
         
-        # Make the output path absolute for clickable links in modern terminals
         abs_out = os.path.abspath(os.path.join(args.output_root, snap_id))
         print(f"Snapshot created:\n  {abs_out}")
         
@@ -82,6 +91,24 @@ def main():
             abs_export = os.path.join(abs_out, "exports", "flatten.md")
             print(f"Auto-export flattened:\n  {abs_export}")
             
+        return
+
+    if args.command == "slice":
+        out = run_export_flatten(
+            output_root=args.output_root,
+            repo_root=args.repo_root,
+            snapshot_id=args.snapshot_id,
+            output_path=args.output,
+            tree_only=False,
+            include_readme=True, # Usually we want context to include docs
+            scope="full", # Slice handles pruning; we pass full scope to the exporter but with a pruned manifest
+            title=f"Context Slice: {args.focus}",
+            focus_id=args.focus,
+            radius=args.radius,
+            max_tokens=args.max_tokens
+        )
+        abs_out = os.path.abspath(out) if out else "None"
+        print(f"Slice generated:\n  {abs_out}")
         return
 
     if args.command == "export" and args.export_command == "flatten":
@@ -95,7 +122,6 @@ def main():
             scope=args.scope,
             title=args.title,
         )
-        # Ensure absolute path for terminal clicking
         abs_out = os.path.abspath(out)
         print(f"Wrote Export:\n  {abs_out}")
         return
