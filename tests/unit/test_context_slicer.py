@@ -19,6 +19,11 @@ class TestContextSlicer(unittest.TestCase):
         }
         
         # A <-> B (Cycle), B -> C -> D
+        # Adjacency (Bidirectional):
+        # A: [B]
+        # B: [A, C]
+        # C: [B, D]
+        # D: [C]
         self.graph = {
             "nodes": [],
             "edges": [
@@ -92,12 +97,15 @@ class TestContextSlicer(unittest.TestCase):
 
     def test_cycle_stats_exclusion(self):
         """
-        Slice C -> D should report 0 cycles.
+        Slice D (leaf). Radius 1.
+        Neighbors: C.
+        Cycle (A, B) is at distance 2 from C, so dist 3 from D.
+        Should be clean.
         """
         sliced = ContextSlicer.slice_manifest(
             self.manifest, 
             self.graph, 
-            "file:c.py", 
+            "file:d.py", 
             radius=1
         )
         self.assertEqual(sliced["stats"]["cycles_included"], 0)
