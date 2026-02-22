@@ -6,7 +6,8 @@ import os
 
 class TestIgnoreLogic(unittest.TestCase):
     def setUp(self):
-        self.test_dir = tempfile.mkdtemp()
+        # FIX: Resolve canonical path to prevent test failures on Windows
+        self.test_dir = os.path.realpath(tempfile.mkdtemp())
         
         # Structure:
         # /ok.txt
@@ -20,7 +21,10 @@ class TestIgnoreLogic(unittest.TestCase):
         self._touch("src/code.ts")
 
     def tearDown(self):
-        shutil.rmtree(self.test_dir)
+        try:
+            shutil.rmtree(self.test_dir)
+        except OSError:
+            pass
 
     def _touch(self, path):
         full = os.path.join(self.test_dir, path)

@@ -44,7 +44,12 @@ function Ensure-Dir([string]$Path) {
 }
 
 function RelPath([string]$RepoRoot, [string]$AbsPath) {
-  [System.IO.Path]::GetRelativePath($RepoRoot, $AbsPath)
+  # PS 5.1 Compatible relative path logic
+  $rootFolder = $RepoRoot.TrimEnd('\', '/') + '\'
+  if ($AbsPath.StartsWith($rootFolder, [StringComparison]::OrdinalIgnoreCase)) {
+    return $AbsPath.Substring($rootFolder.Length)
+  }
+  return $AbsPath
 }
 
 function ToForwardSlashes([string]$Path) {
@@ -63,13 +68,13 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 
 Ensure-Dir $OutDir
 
-$FlattenOut = Join-Path $OutDir "flatten-signal.md"
-$ZipOut     = Join-Path $OutDir "signal.zip"
+# Ensure output paths are absolute for terminal clickability
+$OutDirAbs  = (Resolve-Path $OutDir).Path
+$FlattenOut = Join-Path $OutDirAbs "flatten-signal.md"
+$ZipOut     = Join-Path $OutDirAbs "signal.zip"
 
 Write-Host ("repo-root:  {0}" -f $RepoRoot)
-Write-Host ("out-dir:    {0}" -f $OutDir)
-Write-Host ("flatten:    {0}" -f $FlattenOut)
-Write-Host ("zip:        {0}" -f $ZipOut)
+Write-Host ("out-dir:    {0}" -f $OutDirAbs)
 Write-Host ""
 
 $excludeDirRegex = ($ExcludeDirs | ForEach-Object { [Regex]::Escape($_) }) -join "|"
@@ -121,7 +126,6 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine("## Files")
 [void]$sb.AppendLine("")
 
-# FIX: Use single quotes for markdown code blocks to avoid escape sequence errors
 [void]$sb.AppendLine('```') 
 
 foreach ($k in $keys) {
@@ -129,7 +133,6 @@ foreach ($k in $keys) {
   [void]$sb.AppendLine( (ToForwardSlashes $rel) )
 }
 
-# FIX: Use single quotes
 [void]$sb.AppendLine('```')
 [void]$sb.AppendLine("")
 
@@ -149,20 +152,15 @@ foreach ($k in $keys) {
     $content = "[[ERROR: $($_.Exception.Message)]]"
   }
 
-  # FIX: Use single quotes
   [void]$sb.AppendLine('```')
-
-  # FIX: TrimEnd requires char[], or use default TrimEnd() to remove all trailing whitespace
-  # Using [char[]] ensures explicit handling of CR/LF without parser ambiguity
   [void]$sb.AppendLine([string]$content.TrimEnd([char[]]@("`r", "`n")))
-
-  # FIX: Use single quotes
   [void]$sb.AppendLine('```')
   [void]$sb.AppendLine("")
 }
 
 Set-Content -LiteralPath $FlattenOut -Value $sb.ToString() -Encoding UTF8
-Write-Host ("wrote flatten: {0}" -f $FlattenOut)
+Write-Host "wrote flatten:" -ForegroundColor Green
+Write-Host "  $FlattenOut" -ForegroundColor Cyan
 
 # 4) zip the same exact set
 if (Test-Path $ZipOut) {
@@ -171,6 +169,7 @@ if (Test-Path $ZipOut) {
 
 $absPaths = foreach ($k in $keys) { $map[$k] }
 Compress-Archive -Path $absPaths -DestinationPath $ZipOut -CompressionLevel Optimal
-Write-Host ("wrote zip:     {0}" -f $ZipOut)
+Write-Host "wrote zip:" -ForegroundColor Green
+Write-Host "  $ZipOut" -ForegroundColor Cyan
 
 Write-Host "DONE."

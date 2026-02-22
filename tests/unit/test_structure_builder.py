@@ -1,13 +1,15 @@
 ﻿import unittest
 from src.structure.structure_builder import StructureBuilder
+from src.core.types import FileEntry
 
 class TestStructureBuilder(unittest.TestCase):
     def test_build_structure(self):
+        # Refactored to use Pydantic Models instead of raw dicts
         files = [
-            {"stable_id": "file:src/a.ts", "module_path": "src", "path": "src/a.ts"},
-            {"stable_id": "file:src/b.ts", "module_path": "src", "path": "src/b.ts"},
-            {"stable_id": "file:root.md", "module_path": ".", "path": "root.md"},
-            {"stable_id": "file:utils/deep/x.py", "module_path": "utils/deep", "path": "utils/deep/x.py"},
+            FileEntry(stable_id="file:src/a.ts", module_path="src", path="src/a.ts", sha256="x", size_bytes=1),
+            FileEntry(stable_id="file:src/b.ts", module_path="src", path="src/b.ts", sha256="x", size_bytes=1),
+            FileEntry(stable_id="file:root.md", module_path=".", path="root.md", sha256="x", size_bytes=1),
+            FileEntry(stable_id="file:utils/deep/x.py", module_path="utils/deep", path="utils/deep/x.py", sha256="x", size_bytes=1),
         ]
 
         builder = StructureBuilder()

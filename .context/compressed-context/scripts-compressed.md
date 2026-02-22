@@ -1,6 +1,6 @@
-### `repo-runner` Scripts Module: High-Resolution Interface Map
+### `repo-runner` High-Resolution Interface Map
 
-## The Tree
+## 1. The Tree
 ```
 └── scripts
     ├── build_exe.ps1
@@ -9,37 +9,36 @@
     └── package-repo.ps1
 ```
 
-## File Summaries
+## 2. File Summaries
 
 ### `scripts/build_exe.ps1`
-**Role:** Orchestrates the compilation of the Python source code into a standalone Windows executable.
+**Role:** Orchestrates the compilation of the Python source code into a single-file Windows executable using PyInstaller.
 **Key Exports:**
-- `dist/repo-runner.exe` - The primary production artifact containing the bundled application.
-- `$ErrorActionPreference` - Set to `Stop` to ensure build pipeline termination on failure.
-**Dependencies:** `pyinstaller` (external CLI), `src/entry_point.py` (internal entry).
+- `Force-Delete(Path): void` - Safely removes build artifacts, falling back to CMD for deep-path issues.
+- `$ExePath` - Configures the final destination path for the generated `repo-runner.exe`.
+**Dependencies:** `PyInstaller` (External), `src/entry_point.py` (Internal)
 
 ### `scripts/export-signal.ps1`
-**Role:** Aggregates repository source code and documentation into a single flattened Markdown file and a ZIP archive for LLM context or portability.
+**Role:** Generates a "signal" export consisting of a flattened Markdown file (containing all code) and a ZIP archive based on configurable glob patterns.
 **Key Exports:**
-- `$IncludeGlobs` - Defines the whitelist of architectural files (Markdown, Python, PowerShell, JSON, etc.).
-- `$ExcludeDirs` / `$ExcludeExts` - Global blacklist for build artifacts (`dist`, `node_modules`, `.venv`) and binary assets.
-- `flatten-signal.md` - A high-resolution text representation of the entire codebase.
-- `signal.zip` - A compressed archive containing the filtered source tree.
-**Dependencies:** None (Self-contained logic).
+- `RelPath(RepoRoot, AbsPath): string` - Calculates repository-relative paths for consistent mapping.
+- `ToForwardSlashes(Path): string` - Normalizes path separators for cross-platform compatibility in exports.
+- `$IncludeGlobs` - Configures the default set of file patterns to include in the context export.
+- `$ExcludeDirs` / `$ExcludeExts` - Defines the architectural boundaries for what constitutes "noise" (e.g., `.git`, `node_modules`, images).
+**Dependencies:** System.IO, System.Text.StringBuilder
 
-### `scripts/generate_test_repo.ps1` (Test File)
-**Role:** Programmatically generates a mock polyglot repository (Python, TSX, JS) to serve as a fixture for integration testing and snapshot validation.
+### `scripts/generate_test_repo.ps1`
+**Role:** Programmatically constructs a mock repository with Python, TypeScript, and config files to validate the runner's scanning and snapshotting capabilities.
 **Key Exports:**
-- `$BasePath` - Default directory for test fixtures (`tests\fixtures`).
-- `repo_[timestamp]` - A generated directory structure containing synthetic source files and imports.
-- `output/` - Nested directory within the fixture containing the results of a test snapshot run.
-**Dependencies:** `src.cli.main` (Invoked via Python to validate the generated repo).
+- `New-File(RelPath, Content): void` - Utility to simulate file creation within the generated fixture.
+- `$AbsRepoPath` - State representing the location of the dynamically generated test repository.
+- `$SkipSnapshot` - Config toggle to determine if the script should trigger the internal CLI after generation.
+**Dependencies:** `src.cli.main` (Internal Python Module)
 
 ### `scripts/package-repo.ps1`
-**Role:** Creates a clean, distributable copy and ZIP archive of the repository using Robocopy for deterministic file handling.
+**Role:** Creates a clean, distribution-ready copy of the entire repository by mirroring the source to a target directory and zipping the results.
 **Key Exports:**
-- `$CopyFolderName` - Name of the temporary clean directory (`repo-copy`).
-- `$ZipFileName` - Name of the final distribution archive (`repo-runner.zip`).
-- `$ExcludeDirs` - List of directories omitted from the package (`.git`, `dist`, `__pycache__`).
-- `robocopy.log` - Detailed audit log of the packaging process.
-**Dependencies:** `robocopy.exe` (System dependency).
+- `Start-Heartbeat(Message): Job` - Manages a background process to provide visual feedback during long-running IO operations.
+- `$ExcludeDirs` / `$ExcludeFiles` - Configures the blacklist for packaging (e.g., `__pycache__`, `dist`).
+- `$CopyOut` / `$ZipOut` - Defines the destination paths for the mirrored folder and the final archive.
+**Dependencies:** `robocopy` (External OS Utility)

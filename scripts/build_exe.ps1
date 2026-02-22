@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "   Building repo-runner v0.1 Executable   " -ForegroundColor Cyan
+Write-Host "   Building repo-runner v0.2 Executable   " -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
 # Function to handle stubborn directories
@@ -44,9 +44,11 @@ python -m PyInstaller --noconfirm --onefile --console --clean `
     src/entry_point.py
 
 # 4. Success Check
-if (Test-Path "dist/repo-runner.exe") {
+$ExePath = Join-Path (Get-Location).Path "dist\repo-runner.exe"
+if (Test-Path $ExePath) {
     Write-Host "`nBuild Success!" -ForegroundColor Green
-    Write-Host "Executable is ready at: .\dist\repo-runner.exe" -ForegroundColor White
+    Write-Host "Executable is ready at:" -ForegroundColor White
+    Write-Host "  $ExePath" -ForegroundColor Cyan
 } else {
     Write-Error "Build failed. No EXE found in dist/."
 }

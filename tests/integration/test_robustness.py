@@ -8,17 +8,14 @@ from src.snapshot.snapshot_loader import SnapshotLoader
 
 class TestRobustness(unittest.TestCase):
     def setUp(self):
-        self.test_dir = tempfile.mkdtemp()
+        self.test_dir = os.path.realpath(tempfile.mkdtemp())
         self.repo_root = os.path.join(self.test_dir, "repo")
         self.output_root = os.path.join(self.test_dir, "output")
         os.makedirs(self.repo_root)
         os.makedirs(self.output_root)
 
     def tearDown(self):
-        try:
-            shutil.rmtree(self.test_dir)
-        except OSError:
-            pass
+        shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def test_snapshot_with_mixed_health(self):
         # 1. Valid Files
@@ -43,7 +40,8 @@ class TestRobustness(unittest.TestCase):
             ignore=["node_modules"],
             include_extensions=[],
             include_readme=True,
-            write_current_pointer=True
+            write_current_pointer=True,
+            skip_graph=True
         )
 
         # Verify Manifest
@@ -57,8 +55,6 @@ class TestRobustness(unittest.TestCase):
         self.assertNotIn("node_modules/ignore.js", paths)
         
         # Ensure we didn't index the loop infinitely
-        # The loop link itself might be skipped or included as a file depending on classification,
-        # but the cycle must be broken.
         loop_matches = [p for p in paths if "loop" in p]
         self.assertLess(len(loop_matches), 2)
 

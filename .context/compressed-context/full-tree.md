@@ -2,7 +2,7 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `78`
+- file_count: `106`
 - tree_only: `True`
 ## Tree
 
@@ -42,6 +42,26 @@
 │   ├── testing_strategy.md
 │   └── versioning_policy.md
 ├── flattened_repo-runner_2026-02-19.md
+├── out
+│   ├── 2026-02-22t03-46-05z
+│   │   ├── exports
+│   │   │   └── flatten.md
+│   │   ├── graph.json
+│   │   ├── manifest.json
+│   │   └── structure.json
+│   ├── 2026-02-22t03-50-41z
+│   │   ├── exports
+│   │   │   └── flatten.md
+│   │   ├── graph.json
+│   │   ├── manifest.json
+│   │   └── structure.json
+│   ├── 2026-02-22t03-57-03z
+│   │   ├── exports
+│   │   │   └── flatten.md
+│   │   ├── graph.json
+│   │   ├── manifest.json
+│   │   └── structure.json
+│   └── current.json
 ├── readme.md
 ├── repo-runner.code-workspace
 ├── repo-runner.spec
@@ -54,8 +74,13 @@
 │   ├── __init__.py
 │   ├── analysis
 │   │   ├── __init__.py
+│   │   ├── context_slicer.py
 │   │   ├── graph_builder.py
-│   │   └── import_scanner.py
+│   │   ├── import_scanner.py
+│   │   └── snapshot_comparator.py
+│   ├── api
+│   │   ├── init.py
+│   │   └── server.py
 │   ├── cli
 │   │   ├── __init__.py
 │   │   └── main.py
@@ -80,6 +105,9 @@
 │   │       └── tree_view.py
 │   ├── normalize
 │   │   └── path_normalizer.py
+│   ├── observability
+│   │   ├── init.py
+│   │   └── token_telemetry.py
 │   ├── scanner
 │   │   └── filesystem_scanner.py
 │   ├── snapshot
@@ -91,20 +119,35 @@
     ├── __init__.py
     ├── integration
     │   ├── __init__.py
+    │   ├── test_api.py
+    │   ├── test_export_flow.py
     │   ├── test_full_snapshot.py
+    │   ├── test_graph_snapshot.py
     │   ├── test_robustness.py
     │   └── test_snapshot_flow.py
     └── unit
         ├── __init__.py
+        ├── test_context_slicer.py
         ├── test_filesystem_scanner.py
         ├── test_fingerprint_hardening.py
         ├── test_flatten_exporter.py
         ├── test_graph_builder.py
+        ├── test_graph_resolution.py
         ├── test_ignore_logic.py
         ├── test_import_scanner.py
-        ├── test_normalizer.p
+        ├── test_import_scanner_logic.py
+        ├── test_normalizer.py
         ├── test_path_normalizer.py
         ├── test_scanner_hardening.py
+        ├── test_snapshot_comparator.py
         ├── test_structure.py
-        └── test_structure_builder.py
+        ├── test_structure_builder.py
+        ├── test_token_telemetry.py
+        └── test_types.py
 ```
+
+---
+## Context Stats
+- **Total Characters:** 3,881
+- **Estimated Tokens:** ~970 (assuming ~4 chars/token)
+- **Model Fit:** GPT-4 (8k)

@@ -64,23 +64,21 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 
 Ensure-Dir $OutDir
 
-$CopyOut = Join-Path $OutDir $CopyFolderName
-$ZipOut  = Join-Path $OutDir $ZipFileName
-$RoboLog = Join-Path $OutDir "robocopy.log"
+# Ensure absolute paths
+$OutDirAbs = (Resolve-Path $OutDir).Path
+$CopyOut = Join-Path $OutDirAbs $CopyFolderName
+$ZipOut  = Join-Path $OutDirAbs $ZipFileName
+$RoboLog = Join-Path $OutDirAbs "robocopy.log"
 
 Write-Host "repo-root: $RepoRoot"
-Write-Host "out-dir:   $OutDir"
-Write-Host "copy-out:  $CopyOut"
-Write-Host "zip-out:   $ZipOut"
-Write-Host "log:       $RoboLog"
+Write-Host "out-dir:   $OutDirAbs"
 Write-Host ""
 
 # -------------------------
 # 1) CLEAN COPY (robocopy)
 # -------------------------
-Write-Host "==> creating clean copy..."
+Write-Host "==> creating clean copy..." -ForegroundColor Yellow
 
-# Make sure destination exists (robocopy can create it, but this keeps things predictable)
 Ensure-Dir $CopyOut
 
 $robocopyArgs = @(
@@ -99,17 +97,13 @@ if ($ExcludeFiles.Count -gt 0) {
   $robocopyArgs += @("/XF") + $ExcludeFiles
 }
 
-# If not verbose, suppress noisy per-file lines but still show summary + progress
 if (-not $VerboseCopy) {
-  # /NP removes progress percentage; we actually *want* some progress signal, so keep it.
-  # Instead, just reduce file/directory listing noise:
   $robocopyArgs += @("/NFL", "/NDL")
 }
 
-$hb = Start-Heartbeat "  ...still working (robocopy). check $RoboLog for details."
+$hb = Start-Heartbeat "  ...still working (robocopy). check log for details."
 
 try {
-  # robocopy returns non-zero even on success; only >=8 is failure.
   & robocopy @robocopyArgs | Out-Host
   $rc = $LASTEXITCODE
   if ($rc -ge 8) {
@@ -120,13 +114,13 @@ finally {
   Stop-Heartbeat $hb
 }
 
-Write-Host "clean copy done."
+Write-Host "clean copy done." -ForegroundColor Green
 Write-Host ""
 
 # -------------------------
 # 2) CLEAN ZIP (Compress-Archive)
 # -------------------------
-Write-Host "==> creating clean zip..."
+Write-Host "==> creating clean zip..." -ForegroundColor Yellow
 
 if (Test-Path $ZipOut) {
   Remove-Item $ZipOut -Force
@@ -154,9 +148,9 @@ if ($files.Count -eq 0) {
 
 Compress-Archive -Path ($files | Select-Object -ExpandProperty FullName) -DestinationPath $ZipOut -CompressionLevel Optimal
 
-Write-Host "clean zip done."
+Write-Host "clean zip done." -ForegroundColor Green
 Write-Host ""
-Write-Host "DONE."
-Write-Host "copy: $CopyOut"
-Write-Host "zip:  $ZipOut"
-Write-Host "log:  $RoboLog"
+Write-Host "DONE." -ForegroundColor Green
+Write-Host "copy: " -NoNewline; Write-Host $CopyOut -ForegroundColor Cyan
+Write-Host "zip:  " -NoNewline; Write-Host $ZipOut -ForegroundColor Cyan
+Write-Host "log:  " -NoNewline; Write-Host $RoboLog -ForegroundColor Cyan

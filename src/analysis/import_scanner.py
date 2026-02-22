@@ -1,13 +1,14 @@
 import re
 import ast
-import os
 from typing import List, Set
 
 class ImportScanner:
     # --- JavaScript / TypeScript Patterns (Regex) ---
     
-    # 1. import ... from 'x' (Supports multi-line via [\s\S]*?)
-    _JS_IMPORT_FROM = re.compile(r'import\s+[\s\S]*?from\s+[\'"]([^\'"]+)[\'"]')
+    # 1. import ... from 'x' 
+    # Hardened: limited wildcard to 1000 chars to prevent catastrophic backtracking (ReDoS)
+    # if a file has 'import' but is missing the 'from' keyword.
+    _JS_IMPORT_FROM = re.compile(r'import\s+[\s\S]{0,1000}?\s+from\s+[\'"]([^\'"]+)[\'"]')
     
     # 2. import 'x' (Side effect)
     _JS_IMPORT_SIDE_EFFECT = re.compile(r'import\s+[\'"]([^\'"]+)[\'"]')
@@ -16,7 +17,8 @@ class ImportScanner:
     _JS_REQUIRE = re.compile(r'require\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
 
     # 4. export ... from 'x' (Re-exports)
-    _JS_EXPORT_FROM = re.compile(r'export\s+[\s\S]*?from\s+[\'"]([^\'"]+)[\'"]')
+    # Hardened: limited wildcard to 1000 chars
+    _JS_EXPORT_FROM = re.compile(r'export\s+[\s\S]{0,1000}?\s+from\s+[\'"]([^\'"]+)[\'"]')
 
     # 5. import('x') (Dynamic imports)
     _JS_DYNAMIC_IMPORT = re.compile(r'import\s*\(\s*[\'"]([^\'"]+)[\'"]\s*\)')
@@ -35,19 +37,27 @@ class ImportScanner:
             return []
 
         try:
-            # Limit read size to 1MB
-            # Use 'utf-8-sig' to automatically consume BOM on Windows files
+            # Limit read size to 250KB for dependency scanning.
+            # Files larger than this are almost always minified bundles, compiled outputs, 
+            # or data dictionaries. Parsing them risks MemoryErrors and ReDoS hangs.
             with open(path, 'r', encoding='utf-8-sig', errors='ignore') as f:
-                content = f.read(1_000_000)
+                content = f.read(250_000)
         except OSError:
             return []
 
         imports: Set[str] = set()
 
-        if language == "python":
-            ImportScanner._scan_python(content, imports)
-        elif language in ("javascript", "typescript"):
-            ImportScanner._scan_js(content, imports)
+        # Hardened Execution Boundary
+        # We must never crash the SnapshotWriter just because a single file has 
+        # malformed syntax, recursive AST loops, or regex blowups.
+        try:
+            if language == "python":
+                ImportScanner._scan_python(content, imports)
+            elif language in ("javascript", "typescript"):
+                ImportScanner._scan_js(content, imports)
+        except Exception:
+            # Fail safely. A partial/missing import graph is better than a failed snapshot.
+            pass
 
         return sorted(list(imports))
 
@@ -60,7 +70,6 @@ class ImportScanner:
             tree = ast.parse(content)
         except SyntaxError:
             # If the file is invalid Python, we simply skip scanning imports
-            # rather than crashing the tool.
             return
 
         for node in ast.walk(tree):
@@ -69,18 +78,13 @@ class ImportScanner:
                     imports.add(alias.name)
             
             elif isinstance(node, ast.ImportFrom):
-                # Handle 'from x import y' -> module='x'
-                # Handle 'from . import y' -> module=None, level=1
-                
                 module_name = node.module or ""
                 
                 # Reconstruct relative imports
-                # level 1 = ., level 2 = .., etc.
                 if node.level > 0:
                     prefix = "." * node.level
                     
                     # Special Case: 'from . import sibling'
-                    # If module is empty but we have a level, the 'names' are likely submodules.
                     if not module_name:
                         for alias in node.names:
                             imports.add(prefix + alias.name)
@@ -101,26 +105,19 @@ class ImportScanner:
         clean_content = ImportScanner._JS_LINE_COMMENT.sub('', clean_content)
 
         # 2. Run Regex on the full cleaned content
-        
-        # import ... from '...'
         for match in ImportScanner._JS_IMPORT_FROM.finditer(clean_content):
             imports.add(match.group(1))
             
-        # import '...' (side effect)
         for match in ImportScanner._JS_IMPORT_SIDE_EFFECT.finditer(clean_content):
             full_match = match.group(0)
-            # Heuristic: avoid capturing the "import" part of a "from" statement
             if "from" not in full_match: 
                 imports.add(match.group(1))
 
-        # require('...')
         for match in ImportScanner._JS_REQUIRE.finditer(clean_content):
             imports.add(match.group(1))
 
-        # export ... from '...'
         for match in ImportScanner._JS_EXPORT_FROM.finditer(clean_content):
             imports.add(match.group(1))
 
-        # import('...')
         for match in ImportScanner._JS_DYNAMIC_IMPORT.finditer(clean_content):
             imports.add(match.group(1))

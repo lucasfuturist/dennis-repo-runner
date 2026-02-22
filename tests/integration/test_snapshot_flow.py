@@ -2,13 +2,12 @@
 import tempfile
 import shutil
 import os
-import json
 from src.cli.main import run_snapshot
 from src.snapshot.snapshot_loader import SnapshotLoader
 
 class TestSnapshotFlow(unittest.TestCase):
     def setUp(self):
-        self.test_dir = tempfile.mkdtemp()
+        self.test_dir = os.path.realpath(tempfile.mkdtemp())
         self.repo_root = os.path.join(self.test_dir, "my_repo")
         self.output_root = os.path.join(self.test_dir, "output")
         os.makedirs(self.repo_root)
@@ -19,7 +18,7 @@ class TestSnapshotFlow(unittest.TestCase):
         self._create_file("node_modules/bad_file.js", "ignore me")
 
     def tearDown(self):
-        shutil.rmtree(self.test_dir)
+        shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def _create_file(self, path, content):
         full_path = os.path.join(self.repo_root, path)
@@ -35,7 +34,8 @@ class TestSnapshotFlow(unittest.TestCase):
             ignore=["node_modules"],
             include_extensions=[".py", ".md"],
             include_readme=True,
-            write_current_pointer=True
+            write_current_pointer=True,
+            skip_graph=True
         )
 
         snap_dir = os.path.join(self.output_root, snapshot_id)

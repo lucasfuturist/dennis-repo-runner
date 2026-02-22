@@ -2,29 +2,26 @@ import unittest
 import tempfile
 import shutil
 import os
-import json
-from src.cli.main import run_snapshot
+from src.core.controller import run_snapshot
 from src.snapshot.snapshot_loader import SnapshotLoader
 
 class TestFullSnapshot(unittest.TestCase):
     def setUp(self):
-        # Create a temp directory for the "Repo"
-        self.test_dir = tempfile.mkdtemp()
+        # Resolve real path immediately to avoid Windows 8.3 short-path / relpath bugs
+        self.test_dir = os.path.realpath(tempfile.mkdtemp())
         self.repo_root = os.path.join(self.test_dir, "my_repo")
         self.output_root = os.path.join(self.test_dir, "output")
         
         os.makedirs(self.repo_root)
         os.makedirs(self.output_root)
 
-        # Create dummy repo content
         self._create_file("README.md", "# Hello")
-        # main.py imports 'os' (external)
         self._create_file("src/main.py", "import os\nprint('hello')")
         self._create_file("src/utils.py", "def add(a,b): return a+b")
-        self._create_file("node_modules/bad_file.js", "ignore me") # Should be ignored
+        self._create_file("node_modules/bad_file.js", "ignore me")
 
     def tearDown(self):
-        shutil.rmtree(self.test_dir)
+        shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def _create_file(self, path, content):
         full_path = os.path.join(self.repo_root, path)
@@ -32,8 +29,8 @@ class TestFullSnapshot(unittest.TestCase):
         with open(full_path, "w") as f:
             f.write(content)
 
-    def test_snapshot_creation(self):
-        # 1. Run Snapshot
+    def test_snapshot_creation_with_graph_and_auto_export(self):
+        # 1. Run Snapshot with v0.2 features enabled
         snapshot_id = run_snapshot(
             repo_root=self.repo_root,
             output_root=self.output_root,
@@ -41,43 +38,50 @@ class TestFullSnapshot(unittest.TestCase):
             ignore=["node_modules"],
             include_extensions=[".py", ".md"],
             include_readme=True,
-            write_current_pointer=True
+            write_current_pointer=True,
+            skip_graph=False,
+            export_flatten=True
         )
 
-        # 2. Verify Output Directory Structure
         snap_dir = os.path.join(self.output_root, snapshot_id)
+        
+        # 2. Verify Output Directory Structure
         self.assertTrue(os.path.isdir(snap_dir))
         self.assertTrue(os.path.isfile(os.path.join(snap_dir, "manifest.json")))
         self.assertTrue(os.path.isfile(os.path.join(snap_dir, "structure.json")))
-        self.assertTrue(os.path.isfile(os.path.join(self.output_root, "current.json")))
+        self.assertTrue(os.path.isfile(os.path.join(snap_dir, "graph.json")), "Graph should be generated")
+        self.assertTrue(os.path.isfile(os.path.join(snap_dir, "exports", "flatten.md")), "Auto-export should exist")
 
-        # 3. Verify Manifest Content
+        # 3. Verify Manifest Stats (External Deps)
         loader = SnapshotLoader(self.output_root)
         manifest = loader.load_manifest(snap_dir)
-        
-        # Check Config
-        self.assertEqual(manifest["config"]["depth"], 5)
-        self.assertIn("node_modules", manifest["config"]["ignore_names"])
-
-        # Check Files
-        files = manifest["files"]
-        paths = [f["path"] for f in files]
-        
-        self.assertIn("readme.md", paths)
-        self.assertIn("src/main.py", paths)
-        self.assertIn("src/utils.py", paths)
-        self.assertNotIn("node_modules/bad_file.js", paths)
-
-        # 4. Verify External Dependencies (New Feature)
         stats = manifest["stats"]
-        self.assertIn("external_dependencies", stats)
-        # 'os' should be detected from src/main.py
-        self.assertIn("os", stats["external_dependencies"])
+        self.assertIn("os", stats.get("external_dependencies", []))
 
-        # 5. Verify Determinism (Hash)
-        main_py_entry = next(f for f in files if f["path"] == "src/main.py")
-        self.assertEqual(main_py_entry["language"], "python")
-        self.assertTrue(len(main_py_entry["sha256"]) == 64)
+    def test_snapshot_skip_graph(self):
+        # 1. Run Snapshot with Graph Skipped
+        snapshot_id = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=5,
+            ignore=["node_modules"],
+            include_extensions=[".py", ".md"],
+            include_readme=True,
+            write_current_pointer=True,
+            skip_graph=True,
+            export_flatten=False
+        )
+
+        snap_dir = os.path.join(self.output_root, snapshot_id)
+        
+        # 2. Verify Graph Absence
+        self.assertFalse(os.path.exists(os.path.join(snap_dir, "graph.json")), "Graph should NOT be generated")
+        
+        # 3. Verify Manifest Reflects Config
+        loader = SnapshotLoader(self.output_root)
+        manifest = loader.load_manifest(snap_dir)
+        self.assertTrue(manifest["config"]["skip_graph"])
+        self.assertEqual(manifest["stats"].get("external_dependencies", []), [])
 
 if __name__ == "__main__":
     unittest.main()

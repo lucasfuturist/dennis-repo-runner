@@ -10,21 +10,24 @@ $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $RepoName = "repo_$Timestamp"
 $RepoPath = Join-Path $BasePath $RepoName
 
+# Ensure absolute resolution for clickable links
+$RepoRoot = (Resolve-Path ".").Path
+$AbsRepoPath = Join-Path $RepoRoot $RepoPath
+
 # Ensure directory exists
-if (-not (Test-Path $RepoPath)) {
-    New-Item -ItemType Directory -Path $RepoPath -Force | Out-Null
+if (-not (Test-Path $AbsRepoPath)) {
+    New-Item -ItemType Directory -Path $AbsRepoPath -Force | Out-Null
 }
 
-Write-Host "Generating random test repo at: $RepoPath" -ForegroundColor Cyan
+Write-Host "Generating random test repo at: $AbsRepoPath" -ForegroundColor Cyan
 
 # Helper to write files
 function New-File($RelPath, $Content) {
-    $Full = Join-Path $RepoPath $RelPath
+    $Full = Join-Path $AbsRepoPath $RelPath
     $Dir = Split-Path -Parent $Full
     if (-not (Test-Path $Dir)) {
         New-Item -ItemType Directory -Path $Dir -Force | Out-Null
     }
-    # Note: PowerShell 5.1 'UTF8' adds BOM. This effectively tests our BOM stripping logic!
     Set-Content -Path $Full -Value $Content -Encoding UTF8
     Write-Host "  + $RelPath" -ForegroundColor Gray
 }
@@ -73,7 +76,7 @@ const path = require('path');
 // require('ignored');
 "@
 
-# 4. Nested Deep Logic (Ignored by default configs usually, but let's check imports)
+# 4. Nested Deep Logic
 New-File "scripts\deploy.py" @"
 import boto3
 import json
@@ -84,26 +87,20 @@ Write-Host "`nGeneration Done." -ForegroundColor Green
 if (-not $SkipSnapshot) {
     Write-Host "`nRunning Snapshot Capture..." -ForegroundColor Yellow
     
-    # Define output folder inside the fixture
-    $OutputDir = Join-Path $RepoPath "output"
+    $OutputDir = Join-Path $AbsRepoPath "output"
     
-    # Determine Project Root (parent of 'scripts') to run python module correctly
     $ScriptDir = Split-Path -Parent $PSCommandPath
     $ProjectRoot = (Resolve-Path (Join-Path $ScriptDir "..")).Path
     
-    # We must ignore the output directory so the scanner doesn't scan the results
-    # Standard ignores + 'output'
     $Ignores = @(".git", "node_modules", "__pycache__", "dist", "build", ".next", ".expo", ".venv", "output")
     
     Push-Location $ProjectRoot
     try {
-        # Run src.cli.main with --export-flatten
-        # We assume 'python' is in PATH.
-        python -m src.cli.main snapshot "$RepoPath" --output-root "$OutputDir" --ignore $Ignores --export-flatten
+        # Note: The output format is now handled by src.cli.main directly, 
+        # which will print the absolute paths for the folder and the export.
+        python -m src.cli.main snapshot "$AbsRepoPath" --output-root "$OutputDir" --ignore $Ignores --export-flatten
         
         Write-Host "`nSnapshot Success!" -ForegroundColor Green
-        Write-Host "Output located at: $OutputDir" -ForegroundColor Gray
-        Write-Host "Flattened export:  $OutputDir\<SNAPSHOT_ID>\exports\flatten.md" -ForegroundColor Gray
     }
     catch {
         Write-Error "Failed to run snapshot: $_"
@@ -113,6 +110,4 @@ if (-not $SkipSnapshot) {
     }
 } else {
     Write-Host "Skipping snapshot run." -ForegroundColor Gray
-    Write-Host "To run manually:" -ForegroundColor Yellow
-    Write-Host "python -m src.cli.main snapshot $RepoPath --output-root $RepoPath/output --export-flatten" -ForegroundColor White
 }

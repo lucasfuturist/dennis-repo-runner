@@ -1,4 +1,5 @@
 ﻿import argparse
+import os
 from src.core.controller import run_snapshot, run_export_flatten
 
 def _parse_args():
@@ -72,7 +73,15 @@ def main():
             skip_graph=args.skip_graph,
             export_flatten=args.export_flatten,
         )
-        print(f"Snapshot created: {snap_id}")
+        
+        # Make the output path absolute for clickable links in modern terminals
+        abs_out = os.path.abspath(os.path.join(args.output_root, snap_id))
+        print(f"Snapshot created:\n  {abs_out}")
+        
+        if args.export_flatten:
+            abs_export = os.path.join(abs_out, "exports", "flatten.md")
+            print(f"Auto-export flattened:\n  {abs_export}")
+            
         return
 
     if args.command == "export" and args.export_command == "flatten":
@@ -86,7 +95,9 @@ def main():
             scope=args.scope,
             title=args.title,
         )
-        print(f"Wrote: {out}")
+        # Ensure absolute path for terminal clicking
+        abs_out = os.path.abspath(out)
+        print(f"Wrote Export:\n  {abs_out}")
         return
     
     if args.command == "ui":
