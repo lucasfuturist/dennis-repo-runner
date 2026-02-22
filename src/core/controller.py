@@ -8,11 +8,14 @@ from src.core.types import (
     ManifestInputs, 
     ManifestConfig, 
     ManifestStats, 
-    GitMetadata
+    GitMetadata,
+    GraphStructure,
+    SnapshotDiffReport
 )
 from src.analysis.import_scanner import ImportScanner
 from src.analysis.graph_builder import GraphBuilder
 from src.analysis.context_slicer import ContextSlicer
+from src.analysis.snapshot_comparator import SnapshotComparator
 from src.observability.token_telemetry import TokenTelemetry
 from src.exporters.flatten_markdown_exporter import (
     FlattenMarkdownExporter,
@@ -113,7 +116,7 @@ def run_snapshot(
                 size_bytes=fp["size_bytes"],
                 language=fp["language"],
                 imports=imports,
-                symbols=symbols # Include extracted symbols
+                symbols=symbols
             )
             file_entries.append(entry)
         except OSError:
@@ -209,7 +212,6 @@ def run_export_flatten(
 ) -> str:
     """
     Exports a snapshot to Markdown.
-    Injects Token Telemetry header if Context Slicing is utilized.
     """
     loader = SnapshotLoader(output_root)
     snapshot_dir = loader.resolve_snapshot_dir(snapshot_id)
@@ -273,3 +275,33 @@ def run_export_flatten(
             f.write(telemetry_md + "\n\n" + content)
 
     return out_path
+
+
+def run_compare(
+    output_root: str,
+    base_id: str,
+    target_id: str
+) -> SnapshotDiffReport:
+    """
+    Loads two snapshots and performs a structural diff.
+    """
+    loader = SnapshotLoader(output_root)
+    
+    dir_a = loader.resolve_snapshot_dir(base_id)
+    dir_b = loader.resolve_snapshot_dir(target_id)
+    
+    manifest_a = Manifest.model_validate(loader.load_manifest(dir_a))
+    manifest_b = Manifest.model_validate(loader.load_manifest(dir_b))
+    
+    ga_path = os.path.join(dir_a, "graph.json")
+    gb_path = os.path.join(dir_b, "graph.json")
+    
+    g_a, g_b = None, None
+    if os.path.exists(ga_path):
+        with open(ga_path, "r") as f:
+            g_a = GraphStructure.model_validate(json.load(f))
+    if os.path.exists(gb_path):
+        with open(gb_path, "r") as f:
+            g_b = GraphStructure.model_validate(json.load(f))
+
+    return SnapshotComparator.compare(manifest_a, manifest_b, g_a, g_b)

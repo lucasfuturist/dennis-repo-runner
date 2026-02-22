@@ -1,0 +1,2251 @@
+{
+  "schema_version": "1.0",
+  "tool": {
+    "name": "repo-runner",
+    "version": "0.2.0"
+  },
+  "snapshot": {
+    "snapshot_id": "2026-02-22T19-44-05Z",
+    "created_utc": "2026-02-22T19-44-05Z",
+    "output_root": "out"
+  },
+  "inputs": {
+    "repo_root": "C:/projects/repo-runner",
+    "roots": [
+      "C:/projects/repo-runner"
+    ],
+    "git": {
+      "is_repo": true,
+      "commit": null
+    }
+  },
+  "config": {
+    "depth": 25,
+    "ignore_names": [
+      ".git",
+      "node_modules",
+      "__pycache__",
+      "dist",
+      "build",
+      ".next",
+      ".expo",
+      ".venv"
+    ],
+    "include_extensions": [],
+    "include_readme": true,
+    "tree_only": false,
+    "skip_graph": false,
+    "manual_override": false
+  },
+  "stats": {
+    "file_count": 153,
+    "total_bytes": 1265175,
+    "external_dependencies": [
+      "argparse",
+      "ast",
+      "boto3",
+      "collections",
+      "ctypes",
+      "dataclasses",
+      "datetime",
+      "fastapi",
+      "fs",
+      "hashlib",
+      "json",
+      "logging",
+      "multiprocessing",
+      "os",
+      "path",
+      "pydantic",
+      "re",
+      "react",
+      "shutil",
+      "sys",
+      "tempfile",
+      "threading",
+      "time",
+      "tkinter",
+      "typing",
+      "unittest"
+    ]
+  },
+  "files": [
+    {
+      "path": ".context/.dev-prompts/.context-compressor-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/.context-compressor-prompt.md",
+      "module_path": ".context/.dev-prompts",
+      "sha256": "e8e661900b943509027020ba21f63977834b083eff66dc6ee50c34f745ea056c",
+      "size_bytes": 1505,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/commands.md",
+      "stable_id": "file:.context/.dev-prompts/commands.md",
+      "module_path": ".context/.dev-prompts",
+      "sha256": "9899eaad76bd00bc3c9accbacd79867b8f2a035f9155e329cf0f71f9100e235a",
+      "size_bytes": 293,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/compressed/00-compressed-codebase-ingest-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/compressed/00-compressed-codebase-ingest-prompt.md",
+      "module_path": ".context/.dev-prompts/compressed",
+      "sha256": "63d3eaaf3207ec9d7ec453d395e21463ea33a59d1481cc2aa1acb6468281540d",
+      "size_bytes": 3977,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/compressed/01-next-steps-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/compressed/01-next-steps-prompt.md",
+      "module_path": ".context/.dev-prompts/compressed",
+      "sha256": "2fa76833d0e40802205a207d3b10a26f979ab4160d34fa83fcbbdc51daf5c77f",
+      "size_bytes": 2339,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/compressed/02-requested-files.md",
+      "stable_id": "file:.context/.dev-prompts/compressed/02-requested-files.md",
+      "module_path": ".context/.dev-prompts/compressed",
+      "sha256": "174725158f2b8b81431012721d26d9be1fe6683ca0031b5ef49c42de94d4659e",
+      "size_bytes": 909,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/compressed/03-code-conventions-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/compressed/03-code-conventions-prompt.md",
+      "module_path": ".context/.dev-prompts/compressed",
+      "sha256": "51f12afabae95de900fb55e3abcb6dd3a259d0d8aeb933f3d7cb2cf5f9842cc5",
+      "size_bytes": 3317,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/raw/00-raw-codebase-ingest-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/raw/00-raw-codebase-ingest-prompt.md",
+      "module_path": ".context/.dev-prompts/raw",
+      "sha256": "8831f022322eaf08a35386bf6650f5d963e77f7a78ca3e5903f3fddcb6246d7a",
+      "size_bytes": 3397,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/raw/01-next-steps-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/raw/01-next-steps-prompt.md",
+      "module_path": ".context/.dev-prompts/raw",
+      "sha256": "2fa76833d0e40802205a207d3b10a26f979ab4160d34fa83fcbbdc51daf5c77f",
+      "size_bytes": 2339,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/raw/02-code-conventions-prompt.md",
+      "stable_id": "file:.context/.dev-prompts/raw/02-code-conventions-prompt.md",
+      "module_path": ".context/.dev-prompts/raw",
+      "sha256": "d3c87b6ba786d1954e38c512f9ceabbcb621d5c22dda044d7ee2154c865246f8",
+      "size_bytes": 3041,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/.dev-prompts/repo-runner-flattened.md",
+      "stable_id": "file:.context/.dev-prompts/repo-runner-flattened.md",
+      "module_path": ".context/.dev-prompts",
+      "sha256": "235a27c1c00658330f9db5666588ca87fd6b5595841619cc1bda1a72f7ae924c",
+      "size_bytes": 318976,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/compressed-context/all-documents.md",
+      "stable_id": "file:.context/compressed-context/all-documents.md",
+      "module_path": ".context/compressed-context",
+      "sha256": "708a3e44adc52eaa05ca390656360017ce49b97450b2d47fba900bdf2d928bc7",
+      "size_bytes": 23326,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/compressed-context/full-tree.md",
+      "stable_id": "file:.context/compressed-context/full-tree.md",
+      "module_path": ".context/compressed-context",
+      "sha256": "25c375257f76a9b0d247d876354311d468c9cabeb8c50d471fd5a251551e9b38",
+      "size_bytes": 5343,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/compressed-context/scripts-compressed.md",
+      "stable_id": "file:.context/compressed-context/scripts-compressed.md",
+      "module_path": ".context/compressed-context",
+      "sha256": "855f545300470b01cc6fa2dda5a18e41803433afeb92713e2c3b3984589460e7",
+      "size_bytes": 2604,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/compressed-context/src-compressed.md",
+      "stable_id": "file:.context/compressed-context/src-compressed.md",
+      "module_path": ".context/compressed-context",
+      "sha256": "800fe5eb59f14a07674b34fadf5b1fd72b28ba75dd9d1c511ff248ff43f3801b",
+      "size_bytes": 8715,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/compressed-context/tests-compressed.md",
+      "stable_id": "file:.context/compressed-context/tests-compressed.md",
+      "module_path": ".context/compressed-context",
+      "sha256": "833278ece89efa6c6f35874e378276024f4791dedd8d50dc7c485b9965291a35",
+      "size_bytes": 5843,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".context/repo-runner-flattened.md",
+      "stable_id": "file:.context/repo-runner-flattened.md",
+      "module_path": ".context",
+      "sha256": "bd1de97d4ce1e045465f2476a8e0b8bd66b6f94e1a1bdb4b10dec4462707e961",
+      "size_bytes": 87313,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": ".gitignore",
+      "stable_id": "file:.gitignore",
+      "module_path": ".",
+      "sha256": "4c882269714bdafe79e60315d771498357db1c174355537e3092245cf7786ee6",
+      "size_bytes": 205,
+      "language": "unknown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/architecture.md",
+      "stable_id": "file:documents/architecture.md",
+      "module_path": "documents",
+      "sha256": "294be9cbea23e35ded02553c9943f7b3c475da828074dcb2c063852a878ba69b",
+      "size_bytes": 3213,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/config_spec.md",
+      "stable_id": "file:documents/config_spec.md",
+      "module_path": "documents",
+      "sha256": "ee1be6e40a4cae2ea61a8fccc01db218c8a5f8a08d3b1f5b95ab339580a17261",
+      "size_bytes": 1771,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/contributing.md",
+      "stable_id": "file:documents/contributing.md",
+      "module_path": "documents",
+      "sha256": "83f3c48f3111827e06291fe34f2b4dfc3129073df3db8ff3503e598fe4de86f4",
+      "size_bytes": 1010,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/determinism_rules.md",
+      "stable_id": "file:documents/determinism_rules.md",
+      "module_path": "documents",
+      "sha256": "d0792e3efa7900b045dfb0fbf4631c5ab969a783d87d5bee6df11a468c714f0a",
+      "size_bytes": 1295,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/id_spec.md",
+      "stable_id": "file:documents/id_spec.md",
+      "module_path": "documents",
+      "sha256": "5152f5b500e96188054c4a783e00707c0874c8a5b8e7ff45bc48946fa6683d7d",
+      "size_bytes": 1783,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/language_support.md",
+      "stable_id": "file:documents/language_support.md",
+      "module_path": "documents",
+      "sha256": "71f2fc9d899dd0ebc06646bdbb567b7540297de6adaad5279562cf0b86a5ad66",
+      "size_bytes": 914,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/repo_layout.md",
+      "stable_id": "file:documents/repo_layout.md",
+      "module_path": "documents",
+      "sha256": "bc9da198dd99cb2a5321374c25b01e4fe7d4cca24cb91ec4d9bd519add781480",
+      "size_bytes": 2846,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/roadmap.md",
+      "stable_id": "file:documents/roadmap.md",
+      "module_path": "documents",
+      "sha256": "67e83da7c9717a085fef8a12d5e565b1c7bd92a87a5c42ffd65044be7c215450",
+      "size_bytes": 1931,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/snapshot_spec.md",
+      "stable_id": "file:documents/snapshot_spec.md",
+      "module_path": "documents",
+      "sha256": "275fb49d8282b4a593a54b8acefe36c670ed7a964ac3c6ae8720464145aa2c4a",
+      "size_bytes": 4519,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/testing_strategy.md",
+      "stable_id": "file:documents/testing_strategy.md",
+      "module_path": "documents",
+      "sha256": "b158bdbc29ee1fa00f86f56b76423667959afa776c3ea4020dd4be57580bbbe5",
+      "size_bytes": 1426,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "documents/versioning_policy.md",
+      "stable_id": "file:documents/versioning_policy.md",
+      "module_path": "documents",
+      "sha256": "12af6d4f2d42b2ef050c1bbff3aaa7849e96bd18b38276a651f4714221034528",
+      "size_bytes": 1366,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "drift_test.py",
+      "stable_id": "file:drift_test.py",
+      "module_path": ".",
+      "sha256": "f8af4ee2347df2c63f14ab0b3176ce77737f44065172aa98e8faa60f51069a07",
+      "size_bytes": 24,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "flattened_repo-runner_2026-02-19.md",
+      "stable_id": "file:flattened_repo-runner_2026-02-19.md",
+      "module_path": ".",
+      "sha256": "31fcbc38f7600e18677105777160f5d394ad8d9117b54ab8ed3b0241895864f0",
+      "size_bytes": 148262,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-46-05z/exports/flatten.md",
+      "stable_id": "file:out/2026-02-22t03-46-05z/exports/flatten.md",
+      "module_path": "out/2026-02-22t03-46-05z/exports",
+      "sha256": "ab948f9c666512f48e3a26d2980601de5c94775727f30c7223c0159d4159709e",
+      "size_bytes": 11423,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-46-05z/graph.json",
+      "stable_id": "file:out/2026-02-22t03-46-05z/graph.json",
+      "module_path": "out/2026-02-22t03-46-05z",
+      "sha256": "a11c4095908c79dbb9b63f8ab213b9cbc8c33420f542623019899b2ad48d56f6",
+      "size_bytes": 3170,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-46-05z/manifest.json",
+      "stable_id": "file:out/2026-02-22t03-46-05z/manifest.json",
+      "module_path": "out/2026-02-22t03-46-05z",
+      "sha256": "6d26db5288f9e9fda149186e7483034c445bb2e39fd9cec5b01c600cfded31d0",
+      "size_bytes": 5757,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-46-05z/structure.json",
+      "stable_id": "file:out/2026-02-22t03-46-05z/structure.json",
+      "module_path": "out/2026-02-22t03-46-05z",
+      "sha256": "acb8664465aae8b16a44598cf9b4c35bbf8bfacbb98586aa1c79c46b7c9ea17b",
+      "size_bytes": 1903,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-50-41z/exports/flatten.md",
+      "stable_id": "file:out/2026-02-22t03-50-41z/exports/flatten.md",
+      "module_path": "out/2026-02-22t03-50-41z/exports",
+      "sha256": "5dbce728958ed6bff3c3f301a0654171c3e45e6652e215cc396ca753e69779f7",
+      "size_bytes": 11423,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-50-41z/graph.json",
+      "stable_id": "file:out/2026-02-22t03-50-41z/graph.json",
+      "module_path": "out/2026-02-22t03-50-41z",
+      "sha256": "a11c4095908c79dbb9b63f8ab213b9cbc8c33420f542623019899b2ad48d56f6",
+      "size_bytes": 3170,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-50-41z/manifest.json",
+      "stable_id": "file:out/2026-02-22t03-50-41z/manifest.json",
+      "module_path": "out/2026-02-22t03-50-41z",
+      "sha256": "952ab93c3112deb12129e72564002cbef498980e4eb93ef914005feae4183a20",
+      "size_bytes": 5757,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-50-41z/structure.json",
+      "stable_id": "file:out/2026-02-22t03-50-41z/structure.json",
+      "module_path": "out/2026-02-22t03-50-41z",
+      "sha256": "acb8664465aae8b16a44598cf9b4c35bbf8bfacbb98586aa1c79c46b7c9ea17b",
+      "size_bytes": 1903,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-57-03z/exports/flatten.md",
+      "stable_id": "file:out/2026-02-22t03-57-03z/exports/flatten.md",
+      "module_path": "out/2026-02-22t03-57-03z/exports",
+      "sha256": "fc31720a696e1f4978feca7e2a155e12426c3c063a1037ea57ff800da0962467",
+      "size_bytes": 11815,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-57-03z/graph.json",
+      "stable_id": "file:out/2026-02-22t03-57-03z/graph.json",
+      "module_path": "out/2026-02-22t03-57-03z",
+      "sha256": "5c8c2778394b31bdbe2ce96725fb7d7360bee5d31e043e5d354a684869a8223f",
+      "size_bytes": 3737,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-57-03z/manifest.json",
+      "stable_id": "file:out/2026-02-22t03-57-03z/manifest.json",
+      "module_path": "out/2026-02-22t03-57-03z",
+      "sha256": "05026cb3a331c77b7ddd738cfcc712ef0ffdd4b6b04311b19869f1ee412c7ebe",
+      "size_bytes": 6593,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t03-57-03z/structure.json",
+      "stable_id": "file:out/2026-02-22t03-57-03z/structure.json",
+      "module_path": "out/2026-02-22t03-57-03z",
+      "sha256": "769ed6b0dba4f93c8c2054a247f56b29eabefe85e9ce0d274f1f8ae1b5114dab",
+      "size_bytes": 2571,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t18-58-29z/graph.json",
+      "stable_id": "file:out/2026-02-22t18-58-29z/graph.json",
+      "module_path": "out/2026-02-22t18-58-29z",
+      "sha256": "975034a1243d34218776911ecc1b4ec8f88022f4eec348e7051a2c21c43fa628",
+      "size_bytes": 487,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t18-58-29z/manifest.json",
+      "stable_id": "file:out/2026-02-22t18-58-29z/manifest.json",
+      "module_path": "out/2026-02-22t18-58-29z",
+      "sha256": "9a418953a86394df04d7f824de9235c88da2f1b3c9358a1d76a568dbb9f34dec",
+      "size_bytes": 2076,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t18-58-29z/structure.json",
+      "stable_id": "file:out/2026-02-22t18-58-29z/structure.json",
+      "module_path": "out/2026-02-22t18-58-29z",
+      "sha256": "7e57e5565fdd7e071e463091373e323e3a79a9399fe766ed2ff7bcf3871f4aab",
+      "size_bytes": 376,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-14-09z/graph.json",
+      "stable_id": "file:out/2026-02-22t19-14-09z/graph.json",
+      "module_path": "out/2026-02-22t19-14-09z",
+      "sha256": "903cd8bdbfc984083cc6219729dd46fd1b79689f53476aabc894385c35f50f1b",
+      "size_bytes": 50969,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-14-09z/manifest.json",
+      "stable_id": "file:out/2026-02-22t19-14-09z/manifest.json",
+      "module_path": "out/2026-02-22t19-14-09z",
+      "sha256": "df7a99236106f99f7de8ab4087de0ffa445ffafaf901e109a14969dd8cda96b8",
+      "size_bytes": 55515,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-14-09z/structure.json",
+      "stable_id": "file:out/2026-02-22t19-14-09z/structure.json",
+      "module_path": "out/2026-02-22t19-14-09z",
+      "sha256": "960add1afc6a5918c7810cf26901d255695df29881194e1d7f06ebfc14940d17",
+      "size_bytes": 16203,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-30-36z/exports/flatten.md",
+      "stable_id": "file:out/2026-02-22t19-30-36z/exports/flatten.md",
+      "module_path": "out/2026-02-22t19-30-36z/exports",
+      "sha256": "52022717155b799d2310c2663b78f30ea61588e95687dd664fc2a0f5d719e398",
+      "size_bytes": 6750,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-30-36z/graph.json",
+      "stable_id": "file:out/2026-02-22t19-30-36z/graph.json",
+      "module_path": "out/2026-02-22t19-30-36z",
+      "sha256": "0cf285c6c9ced930e35a048d316eeb75a58cc9b72870199a0cce7cb4b785f1d3",
+      "size_bytes": 17573,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-30-36z/manifest.json",
+      "stable_id": "file:out/2026-02-22t19-30-36z/manifest.json",
+      "module_path": "out/2026-02-22t19-30-36z",
+      "sha256": "17d8179b11596af57614856c930f7fbf12861d7b3d1526625723bded67be56e1",
+      "size_bytes": 18060,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-30-36z/structure.json",
+      "stable_id": "file:out/2026-02-22t19-30-36z/structure.json",
+      "module_path": "out/2026-02-22t19-30-36z",
+      "sha256": "c732a7ccd48e83cbe209380f98f17eb1df8ff7d615b769712458991add680cc0",
+      "size_bytes": 3150,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-43-34z/graph.json",
+      "stable_id": "file:out/2026-02-22t19-43-34z/graph.json",
+      "module_path": "out/2026-02-22t19-43-34z",
+      "sha256": "bc805520db9df847f8e7fb365c23ccfe1bc1321ce91e33e404c401e4bc45fa1d",
+      "size_bytes": 54807,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-43-34z/manifest.json",
+      "stable_id": "file:out/2026-02-22t19-43-34z/manifest.json",
+      "module_path": "out/2026-02-22t19-43-34z",
+      "sha256": "01ddfd9f0bd0d06acf1f0bd188c065331555c268d12b82c9b483a69d80fb4175",
+      "size_bytes": 71378,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/2026-02-22t19-43-34z/structure.json",
+      "stable_id": "file:out/2026-02-22t19-43-34z/structure.json",
+      "module_path": "out/2026-02-22t19-43-34z",
+      "sha256": "32b4079ad0bd02c2fe0924742bcd03d0d61fce6801c93326c2c8229959c03fca",
+      "size_bytes": 17259,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "out/current.json",
+      "stable_id": "file:out/current.json",
+      "module_path": "out",
+      "sha256": "e7616db68e1dc28bddcb7c807fe7bd055240e9344de7ccf5e1e79e4a2360f015",
+      "size_bytes": 116,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "readme.md",
+      "stable_id": "file:readme.md",
+      "module_path": ".",
+      "sha256": "6969a22c822d1e057d81b80b66325c7870782205802d496d86ebfc4a5207db95",
+      "size_bytes": 6129,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "repo-runner.code-workspace",
+      "stable_id": "file:repo-runner.code-workspace",
+      "module_path": ".",
+      "sha256": "cb0f9e5b51d5de3a3fd4c84d51ecb6518b513f06366462515770619e0b629740",
+      "size_bytes": 92,
+      "language": "unknown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "repo-runner.spec",
+      "stable_id": "file:repo-runner.spec",
+      "module_path": ".",
+      "sha256": "ee44039862f189410bafd72ed3e6b22c47086ae324bad9eec03a10c70bd3d34c",
+      "size_bytes": 947,
+      "language": "unknown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "scripts/build_exe.ps1",
+      "stable_id": "file:scripts/build_exe.ps1",
+      "module_path": "scripts",
+      "sha256": "0651de674fde980f8af470adf328944a322f72cfb8d3fb2d7b3602f6ed13f942",
+      "size_bytes": 2006,
+      "language": "powershell",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "scripts/export-signal.ps1",
+      "stable_id": "file:scripts/export-signal.ps1",
+      "module_path": "scripts",
+      "sha256": "48c4a0fa7f56555087e86bab99b08e832e3b714da505d961d760aad6418ba7eb",
+      "size_bytes": 4787,
+      "language": "powershell",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "scripts/generate_test_repo.ps1",
+      "stable_id": "file:scripts/generate_test_repo.ps1",
+      "module_path": "scripts",
+      "sha256": "65e8b53197035c2e905d1ae3ae9c5ecf0679d7ae6936beead93dbbe10e468dbf",
+      "size_bytes": 3144,
+      "language": "powershell",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "scripts/package-repo.ps1",
+      "stable_id": "file:scripts/package-repo.ps1",
+      "module_path": "scripts",
+      "sha256": "f7b2eaffdd491f2d6893ce0c4dc26b7adb8ab35a2495c409f2f67af409de1771",
+      "size_bytes": 4093,
+      "language": "powershell",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "slice_preview.md",
+      "stable_id": "file:slice_preview.md",
+      "module_path": ".",
+      "sha256": "0569de22c38ae7cefb9c202e418b10f1733a8881826fbbbb13b3f6ad5913ad3d",
+      "size_bytes": 19983,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/__init__.py",
+      "stable_id": "file:src/__init__.py",
+      "module_path": "src",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/analysis/__init__.py",
+      "stable_id": "file:src/analysis/__init__.py",
+      "module_path": "src/analysis",
+      "sha256": "608b73d119f0938ef0cd122f9c273fb02e2e076b6e38823f9fc0f2c6d2dfbeb4",
+      "size_bytes": 26,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/analysis/context_slicer.py",
+      "stable_id": "file:src/analysis/context_slicer.py",
+      "module_path": "src/analysis",
+      "sha256": "b18b8d7c8b23df6118b3fde4299993533d29e2aaa0724155e1f84043fa7d72e6",
+      "size_bytes": 6164,
+      "language": "python",
+      "imports": [
+        "collections",
+        "logging",
+        "src.observability.token_telemetry",
+        "typing"
+      ],
+      "symbols": [
+        "ContextSlicer",
+        "slice_manifest"
+      ]
+    },
+    {
+      "path": "src/analysis/graph_builder.py",
+      "stable_id": "file:src/analysis/graph_builder.py",
+      "module_path": "src/analysis",
+      "sha256": "272fbd01b464a3386212bef58cdc8361df8ea5910af85d2ce6cdf1e34262674f",
+      "size_bytes": 7768,
+      "language": "python",
+      "imports": [
+        "os",
+        "src.core.types",
+        "typing"
+      ],
+      "symbols": [
+        "GraphBuilder",
+        "_build_adjacency",
+        "_detect_cycles",
+        "_resolve_external",
+        "_resolve_import",
+        "_resolve_js",
+        "_resolve_python",
+        "build",
+        "dfs"
+      ]
+    },
+    {
+      "path": "src/analysis/import_scanner.py",
+      "stable_id": "file:src/analysis/import_scanner.py",
+      "module_path": "src/analysis",
+      "sha256": "4b8806871802ea5a250cc8c8b2a0f99a81609ef92a13e958359e918f87929201",
+      "size_bytes": 4903,
+      "language": "python",
+      "imports": [
+        "ast",
+        "re",
+        "typing"
+      ],
+      "symbols": [
+        "ImportScanner",
+        "_scan_js",
+        "_scan_python",
+        "scan"
+      ]
+    },
+    {
+      "path": "src/analysis/snapshot_comparator.py",
+      "stable_id": "file:src/analysis/snapshot_comparator.py",
+      "module_path": "src/analysis",
+      "sha256": "fa1d6a2f9aad4bda3a9ef8a64f577a5443d4f283dcc5c590b401e2a80e34c09c",
+      "size_bytes": 3510,
+      "language": "python",
+      "imports": [
+        "src.core.types",
+        "typing"
+      ],
+      "symbols": [
+        "SnapshotComparator",
+        "compare"
+      ]
+    },
+    {
+      "path": "src/api/init.py",
+      "stable_id": "file:src/api/init.py",
+      "module_path": "src/api",
+      "sha256": "a3c6e58c31ac694cd8fbbb545be474c2133dc389f6e79bf3861806e3574788e8",
+      "size_bytes": 12,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/api/server.py",
+      "stable_id": "file:src/api/server.py",
+      "module_path": "src/api",
+      "sha256": "aa562efc74ad30ec8cd148de03304bd92848c24541aa2f548884d65742ff6858",
+      "size_bytes": 5420,
+      "language": "python",
+      "imports": [
+        "fastapi",
+        "fastapi.responses",
+        "json",
+        "os",
+        "pydantic",
+        "src.analysis.context_slicer",
+        "src.analysis.snapshot_comparator",
+        "src.core.controller",
+        "src.core.types",
+        "src.observability.token_telemetry",
+        "src.snapshot.snapshot_loader",
+        "typing"
+      ],
+      "symbols": [
+        "CompareRequest",
+        "SliceRequest",
+        "SnapshotRequest",
+        "compare_snapshots",
+        "create_snapshot",
+        "root",
+        "slice_snapshot"
+      ]
+    },
+    {
+      "path": "src/cli/__init__.py",
+      "stable_id": "file:src/cli/__init__.py",
+      "module_path": "src/cli",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/cli/main.py",
+      "stable_id": "file:src/cli/main.py",
+      "module_path": "src/cli",
+      "sha256": "c9952b01b31aeeaf7596d174ee110d4cc522034e3956774f21e787d38b1cbc07",
+      "size_bytes": 7563,
+      "language": "python",
+      "imports": [
+        "argparse",
+        "os",
+        "src.core.config_loader",
+        "src.core.controller",
+        "src.gui.app",
+        "sys"
+      ],
+      "symbols": [
+        "_parse_args",
+        "main"
+      ]
+    },
+    {
+      "path": "src/core/__init__.py",
+      "stable_id": "file:src/core/__init__.py",
+      "module_path": "src/core",
+      "sha256": "9c6d7c1c3db7e9f0921e4a5b5c5884f536883a20a35d4aa69f37c587ee854a03",
+      "size_bytes": 22,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/core/config_loader.py",
+      "stable_id": "file:src/core/config_loader.py",
+      "module_path": "src/core",
+      "sha256": "78fca0183d63dc27ee939d7835e27ece50cd401a3e8c02b552617d354b067984",
+      "size_bytes": 1241,
+      "language": "python",
+      "imports": [
+        "json",
+        "os",
+        "src.core.types",
+        "typing"
+      ],
+      "symbols": [
+        "ConfigLoader",
+        "load_config"
+      ]
+    },
+    {
+      "path": "src/core/controller.py",
+      "stable_id": "file:src/core/controller.py",
+      "module_path": "src/core",
+      "sha256": "0fc57fc4be8135b00e37da2ef53520e528e5451e71f320fbc5321fa4edd42c2b",
+      "size_bytes": 9511,
+      "language": "python",
+      "imports": [
+        "json",
+        "os",
+        "src.analysis.context_slicer",
+        "src.analysis.graph_builder",
+        "src.analysis.import_scanner",
+        "src.analysis.snapshot_comparator",
+        "src.core.types",
+        "src.exporters.flatten_markdown_exporter",
+        "src.fingerprint.file_fingerprint",
+        "src.normalize.path_normalizer",
+        "src.observability.token_telemetry",
+        "src.scanner.filesystem_scanner",
+        "src.snapshot.snapshot_loader",
+        "src.snapshot.snapshot_writer",
+        "src.structure.structure_builder",
+        "typing"
+      ],
+      "symbols": [
+        "_filter_by_extensions",
+        "run_compare",
+        "run_export_flatten",
+        "run_snapshot"
+      ]
+    },
+    {
+      "path": "src/core/repo-runner.code-workspace",
+      "stable_id": "file:src/core/repo-runner.code-workspace",
+      "module_path": "src/core",
+      "sha256": "d2d74463448ea28dcae6edeb7fd9e4cbf8177c6f46e03ee3c64b1f6f8a7ba8ed",
+      "size_bytes": 117,
+      "language": "unknown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/core/types.py",
+      "stable_id": "file:src/core/types.py",
+      "module_path": "src/core",
+      "sha256": "3f8a354662cae35f1ff158569edeb74f4d1df166dc19564c0fadbe8e2c26db9c",
+      "size_bytes": 3660,
+      "language": "python",
+      "imports": [
+        "pydantic",
+        "typing"
+      ],
+      "symbols": [
+        "EdgeDiff",
+        "FileDiff",
+        "FileEntry",
+        "GitMetadata",
+        "GraphEdge",
+        "GraphNode",
+        "GraphStructure",
+        "Manifest",
+        "ManifestConfig",
+        "ManifestInputs",
+        "ManifestStats",
+        "RepoRunnerConfig",
+        "SnapshotDiffReport",
+        "validate_path_normalization",
+        "validate_stable_id"
+      ]
+    },
+    {
+      "path": "src/entry_point.py",
+      "stable_id": "file:src/entry_point.py",
+      "module_path": "src",
+      "sha256": "89c4293a24521a2925c96d9f8e683cb84b5729f485c9c5b42847100235c3841b",
+      "size_bytes": 472,
+      "language": "python",
+      "imports": [
+        "ctypes",
+        "multiprocessing",
+        "src.cli.main",
+        "src.gui.app",
+        "sys"
+      ],
+      "symbols": [
+        "launch"
+      ]
+    },
+    {
+      "path": "src/exporters/flatten_markdown_exporter.py",
+      "stable_id": "file:src/exporters/flatten_markdown_exporter.py",
+      "module_path": "src/exporters",
+      "sha256": "d97ae12c8197edac16b3b93d6d4ec7d4179932bfd25cad4756f7ac0d165e4237",
+      "size_bytes": 7335,
+      "language": "python",
+      "imports": [
+        "dataclasses",
+        "os",
+        "typing"
+      ],
+      "symbols": [
+        "FlattenMarkdownExporter",
+        "FlattenOptions",
+        "_apply_scope",
+        "_binary_placeholder",
+        "_canonical_files_from_manifest",
+        "_get_model_fit",
+        "_render_contents",
+        "_render_tree",
+        "_sniff_binary",
+        "_tree_lines",
+        "export",
+        "generate_content"
+      ]
+    },
+    {
+      "path": "src/fingerprint/file_fingerprint.py",
+      "stable_id": "file:src/fingerprint/file_fingerprint.py",
+      "module_path": "src/fingerprint",
+      "sha256": "7f2d1c849f2aeea4956c5a031af25b42a21593cee487f2ffef4e5b557da2fceb",
+      "size_bytes": 1487,
+      "language": "python",
+      "imports": [
+        "hashlib",
+        "os",
+        "typing"
+      ],
+      "symbols": [
+        "FileFingerprint",
+        "fingerprint"
+      ]
+    },
+    {
+      "path": "src/gui/__init__.py",
+      "stable_id": "file:src/gui/__init__.py",
+      "module_path": "src/gui",
+      "sha256": "4bf6cbbee9e095a754445a167646754a7f4f50d1bfeb448a472c875dd7b945e9",
+      "size_bytes": 21,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/gui/app.py",
+      "stable_id": "file:src/gui/app.py",
+      "module_path": "src/gui",
+      "sha256": "f3c97718a6c50f554f557619d164af0c9bc349a0ea4d223096a368271e3971a4",
+      "size_bytes": 11933,
+      "language": "python",
+      "imports": [
+        "ctypes",
+        "datetime",
+        "os",
+        "src.core.controller",
+        "src.exporters.flatten_markdown_exporter",
+        "src.gui.components.config_tabs",
+        "src.gui.components.export_preview",
+        "src.gui.components.preview_pane",
+        "src.gui.components.progress_window",
+        "src.gui.components.tree_view",
+        "src.normalize.path_normalizer",
+        "src.scanner.filesystem_scanner",
+        "threading",
+        "time",
+        "tkinter"
+      ],
+      "symbols": [
+        "RepoRunnerApp",
+        "__init__",
+        "_browse",
+        "_build_ui",
+        "_on_file_selected",
+        "_quick_export",
+        "_quick_export_done",
+        "_quick_export_fail",
+        "_scan_cancelled",
+        "_scan_done",
+        "_scan_fail",
+        "_scan_thread",
+        "_snapshot",
+        "_snapshot_done",
+        "_snapshot_fail",
+        "_start_scan",
+        "on_progress",
+        "run",
+        "run_export",
+        "run_gui"
+      ]
+    },
+    {
+      "path": "src/gui/components/config_tabs.py",
+      "stable_id": "file:src/gui/components/config_tabs.py",
+      "module_path": "src/gui/components",
+      "sha256": "5b34cb4ac2d37553f563ce7d9d60007d074959a040f104dbc75dea77e7ecbe93",
+      "size_bytes": 3460,
+      "language": "python",
+      "imports": [
+        "tkinter"
+      ],
+      "symbols": [
+        "ConfigTabs",
+        "__init__",
+        "_build_ignore_tab",
+        "_build_output_tab",
+        "_build_scan_tab",
+        "sync_var"
+      ]
+    },
+    {
+      "path": "src/gui/components/export_preview.py",
+      "stable_id": "file:src/gui/components/export_preview.py",
+      "module_path": "src/gui/components",
+      "sha256": "3ea88a0d69c5fb1d0a92f4d8a8373d35950b2ba96ae39bb6a96197fdd50e5fd0",
+      "size_bytes": 5541,
+      "language": "python",
+      "imports": [
+        "tkinter"
+      ],
+      "symbols": [
+        "ExportPreviewWindow",
+        "__init__",
+        "_build_ui",
+        "_copy",
+        "_save"
+      ]
+    },
+    {
+      "path": "src/gui/components/preview_pane.py",
+      "stable_id": "file:src/gui/components/preview_pane.py",
+      "module_path": "src/gui/components",
+      "sha256": "bffe6a74b1fa60b4d618d2dcb21c92aabe7df61496577028e669da6e218c5a72",
+      "size_bytes": 5251,
+      "language": "python",
+      "imports": [
+        "src.analysis.import_scanner",
+        "src.fingerprint.file_fingerprint",
+        "tkinter"
+      ],
+      "symbols": [
+        "PreviewPanel",
+        "__init__",
+        "_highlight_syntax",
+        "clear",
+        "load_file"
+      ]
+    },
+    {
+      "path": "src/gui/components/progress_window.py",
+      "stable_id": "file:src/gui/components/progress_window.py",
+      "module_path": "src/gui/components",
+      "sha256": "0bcc37cb38bf68915a74c361a428518f2023110816b1cd3c1dbcf7db7646231a",
+      "size_bytes": 1668,
+      "language": "python",
+      "imports": [
+        "tkinter"
+      ],
+      "symbols": [
+        "ProgressWindow",
+        "__init__",
+        "_build_ui",
+        "cancel",
+        "close",
+        "update_message"
+      ]
+    },
+    {
+      "path": "src/gui/components/tree_view.py",
+      "stable_id": "file:src/gui/components/tree_view.py",
+      "module_path": "src/gui/components",
+      "sha256": "8d6facbd3b0b4682489cf87ef251c79587b1a423229afbd0d6867dfd784cdc55",
+      "size_bytes": 7190,
+      "language": "python",
+      "imports": [
+        "os",
+        "tkinter"
+      ],
+      "symbols": [
+        "FileTreePanel",
+        "__init__",
+        "_bulk_toggle",
+        "_on_click",
+        "_on_selection_change",
+        "_set_check_recursive",
+        "_toggle_item",
+        "clear",
+        "get_checked_files",
+        "insert_node",
+        "populate"
+      ]
+    },
+    {
+      "path": "src/normalize/path_normalizer.py",
+      "stable_id": "file:src/normalize/path_normalizer.py",
+      "module_path": "src/normalize",
+      "sha256": "3e7df13f0cd079c030624bc71b51644f43149befce8ebe6bb4e0a36d1e423885",
+      "size_bytes": 2444,
+      "language": "python",
+      "imports": [
+        "os"
+      ],
+      "symbols": [
+        "PathNormalizer",
+        "__init__",
+        "file_id",
+        "module_id",
+        "module_path",
+        "normalize",
+        "repo_id"
+      ]
+    },
+    {
+      "path": "src/observability/init.py",
+      "stable_id": "file:src/observability/init.py",
+      "module_path": "src/observability",
+      "sha256": "6422838902105e57530d37ad605c9f97adf9ad5de7ebe222d325e0a51ae1d3c2",
+      "size_bytes": 112,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "src/observability/token_telemetry.py",
+      "stable_id": "file:src/observability/token_telemetry.py",
+      "module_path": "src/observability",
+      "sha256": "63bfeb21943d0d7c3d5b81e4180c56d1321a7d06a81edb941a850205ab4d5486",
+      "size_bytes": 962,
+      "language": "python",
+      "imports": [
+        "typing"
+      ],
+      "symbols": [
+        "TokenTelemetry",
+        "estimate_tokens",
+        "format_usage"
+      ]
+    },
+    {
+      "path": "src/scanner/filesystem_scanner.py",
+      "stable_id": "file:src/scanner/filesystem_scanner.py",
+      "module_path": "src/scanner",
+      "sha256": "d3b6c2896b82f3b8d04b32f8087d3c5d3e0817c03d2982365ebbf00acae06a2b",
+      "size_bytes": 3125,
+      "language": "python",
+      "imports": [
+        "os",
+        "typing"
+      ],
+      "symbols": [
+        "FileSystemScanner",
+        "__init__",
+        "_walk",
+        "scan"
+      ]
+    },
+    {
+      "path": "src/snapshot/snapshot_loader.py",
+      "stable_id": "file:src/snapshot/snapshot_loader.py",
+      "module_path": "src/snapshot",
+      "sha256": "1729439d54f5c8896e1fe682e3491603ba9bd2b97b6cd07d04b77c8c45949cb3",
+      "size_bytes": 1793,
+      "language": "python",
+      "imports": [
+        "json",
+        "os",
+        "typing"
+      ],
+      "symbols": [
+        "SnapshotLoader",
+        "__init__",
+        "load_manifest",
+        "load_structure",
+        "resolve_snapshot_dir"
+      ]
+    },
+    {
+      "path": "src/snapshot/snapshot_writer.py",
+      "stable_id": "file:src/snapshot/snapshot_writer.py",
+      "module_path": "src/snapshot",
+      "sha256": "0497c0fe083b0f8d51b9dd427aef1e1d2d44278db9adf017b631f2a69aa28464",
+      "size_bytes": 2248,
+      "language": "python",
+      "imports": [
+        "datetime",
+        "json",
+        "os",
+        "src.core.types",
+        "typing"
+      ],
+      "symbols": [
+        "SnapshotWriter",
+        "__init__",
+        "write"
+      ]
+    },
+    {
+      "path": "src/structure/structure_builder.py",
+      "stable_id": "file:src/structure/structure_builder.py",
+      "module_path": "src/structure",
+      "sha256": "e1cd22bb57dd2bd62196e48c884a76a2ed56628e634bcc3d3344ea1ea9efab53",
+      "size_bytes": 1259,
+      "language": "python",
+      "imports": [
+        "src.core.types",
+        "typing"
+      ],
+      "symbols": [
+        "StructureBuilder",
+        "build"
+      ]
+    },
+    {
+      "path": "tests/__init__.py",
+      "stable_id": "file:tests/__init__.py",
+      "module_path": "tests",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/frontend/app.tsx",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/frontend/app.tsx",
+      "module_path": "tests/fixtures/repo_20260221_223954/frontend",
+      "sha256": "c4e3f3274e7c43d41ab16610884d5b6bb58dee24e764a5ad46743661b53213bb",
+      "size_bytes": 142,
+      "language": "typescript",
+      "imports": [
+        "./components/Button",
+        "./styles.css",
+        "react"
+      ],
+      "symbols": [
+        "App"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/frontend/components/button.tsx",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/frontend/components/button.tsx",
+      "module_path": "tests/fixtures/repo_20260221_223954/frontend/components",
+      "sha256": "e66b5591313c4a023c378a8301b8f5d4bfe93f97902f4006897253a587e59534",
+      "size_bytes": 91,
+      "language": "typescript",
+      "imports": [
+        "react"
+      ],
+      "symbols": [
+        "Button"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/frontend/legacy.js",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/frontend/legacy.js",
+      "module_path": "tests/fixtures/repo_20260221_223954/frontend",
+      "sha256": "6066685d1ea34d639ec83d9ef46f64a86dce63e0ee5c5126ec5da0eb143c50bd",
+      "size_bytes": 85,
+      "language": "javascript",
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/exports/flatten.md",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/exports/flatten.md",
+      "module_path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/exports",
+      "sha256": "412dd17cfffe71761210493c6aa44ea59600ef1e35c34d7f1302b0076961bd64",
+      "size_bytes": 1522,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/graph.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/graph.json",
+      "module_path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z",
+      "sha256": "b56073d715d0f4750a4dc29690adbc8b66f9eff7911033d7fc63c3ba7ed2f1d9",
+      "size_bytes": 2689,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/manifest.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/manifest.json",
+      "module_path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z",
+      "sha256": "15037d10242933b699f2b240dc3e48425a10f2a1f3ddf5de05e4d913abdf0cdc",
+      "size_bytes": 4071,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/structure.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/structure.json",
+      "module_path": "tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z",
+      "sha256": "bfbd73fcb696980e5fdb793082b9a189b843d09dd8168555ecb1dc8e13f7b63c",
+      "size_bytes": 1172,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/output/current.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/output/current.json",
+      "module_path": "tests/fixtures/repo_20260221_223954/output",
+      "sha256": "33520f0bf942679292e71d25b9fea4f77aa0ce7188584189ef1b49ff4e935506",
+      "size_bytes": 116,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/readme.md",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/readme.md",
+      "module_path": "tests/fixtures/repo_20260221_223954",
+      "sha256": "b2a54c079bde2b3d7d164921f3a169f2856a486ed7dabbe59ee38f3e81873c22",
+      "size_bytes": 72,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/requirements.txt",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/requirements.txt",
+      "module_path": "tests/fixtures/repo_20260221_223954",
+      "sha256": "fa45fe2d500fbfcacd606225bcc56c4ee9f9e199dd03908ac6a323fe4e3baf54",
+      "size_bytes": 26,
+      "language": "unknown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/scripts/deploy.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/scripts/deploy.py",
+      "module_path": "tests/fixtures/repo_20260221_223954/scripts",
+      "sha256": "af9507ef7830ef0854f7ffe81e042d35e319e3609a33a7057c6241d51a791b47",
+      "size_bytes": 30,
+      "language": "python",
+      "imports": [
+        "boto3",
+        "json"
+      ],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/src/main.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/src/main.py",
+      "module_path": "tests/fixtures/repo_20260221_223954/src",
+      "sha256": "39ed434953dad5ae0cb2f106c6a8adfafd7315cbfe1dafbc1ed26c9bc2541996",
+      "size_bytes": 121,
+      "language": "python",
+      "imports": [
+        "os",
+        "sys",
+        "utils.logger"
+      ],
+      "symbols": [
+        "main"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/src/utils/__init__.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/src/utils/__init__.py",
+      "module_path": "tests/fixtures/repo_20260221_223954/src/utils",
+      "sha256": "f01a374e9c81e3db89b3a42940c4d6a5447684986a1296e42bf13f196eed6295",
+      "size_bytes": 5,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_223954/src/utils/logger.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_223954/src/utils/logger.py",
+      "module_path": "tests/fixtures/repo_20260221_223954/src/utils",
+      "sha256": "a64e73ac733dc461d08ed36a17799d72dacc023ca64f65a8b8b40aa5cab1edee",
+      "size_bytes": 108,
+      "language": "python",
+      "imports": [
+        "datetime"
+      ],
+      "symbols": [
+        "log_msg"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/frontend/app.tsx",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/frontend/app.tsx",
+      "module_path": "tests/fixtures/repo_20260221_225829/frontend",
+      "sha256": "c4e3f3274e7c43d41ab16610884d5b6bb58dee24e764a5ad46743661b53213bb",
+      "size_bytes": 142,
+      "language": "typescript",
+      "imports": [
+        "./components/Button",
+        "./styles.css",
+        "react"
+      ],
+      "symbols": [
+        "App"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/frontend/components/button.tsx",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/frontend/components/button.tsx",
+      "module_path": "tests/fixtures/repo_20260221_225829/frontend/components",
+      "sha256": "e66b5591313c4a023c378a8301b8f5d4bfe93f97902f4006897253a587e59534",
+      "size_bytes": 91,
+      "language": "typescript",
+      "imports": [
+        "react"
+      ],
+      "symbols": [
+        "Button"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/frontend/legacy.js",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/frontend/legacy.js",
+      "module_path": "tests/fixtures/repo_20260221_225829/frontend",
+      "sha256": "6066685d1ea34d639ec83d9ef46f64a86dce63e0ee5c5126ec5da0eb143c50bd",
+      "size_bytes": 85,
+      "language": "javascript",
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/exports/flatten.md",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/exports/flatten.md",
+      "module_path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/exports",
+      "sha256": "6db81d4a686bc762af4f9387a8ae5c7cbb2788caf5d0839face16099aef87808",
+      "size_bytes": 1657,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/graph.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/graph.json",
+      "module_path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z",
+      "sha256": "b56073d715d0f4750a4dc29690adbc8b66f9eff7911033d7fc63c3ba7ed2f1d9",
+      "size_bytes": 2689,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/manifest.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/manifest.json",
+      "module_path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z",
+      "sha256": "71ec93446f7a2ebb66275f6498a2e32b7964fc3cb0461c385dce8d809ae4296b",
+      "size_bytes": 4098,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/structure.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/structure.json",
+      "module_path": "tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z",
+      "sha256": "bfbd73fcb696980e5fdb793082b9a189b843d09dd8168555ecb1dc8e13f7b63c",
+      "size_bytes": 1172,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/output/current.json",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/output/current.json",
+      "module_path": "tests/fixtures/repo_20260221_225829/output",
+      "sha256": "28def82fd063350a83409cd31971664a3a1529cee80daff04b37829fdd43ecfe",
+      "size_bytes": 116,
+      "language": "json",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/readme.md",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/readme.md",
+      "module_path": "tests/fixtures/repo_20260221_225829",
+      "sha256": "406f6bfaa7fd9c83ac4fe9678f99ae7d0e5d76c13111e0b81bde53f563031916",
+      "size_bytes": 72,
+      "language": "markdown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/requirements.txt",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/requirements.txt",
+      "module_path": "tests/fixtures/repo_20260221_225829",
+      "sha256": "fa45fe2d500fbfcacd606225bcc56c4ee9f9e199dd03908ac6a323fe4e3baf54",
+      "size_bytes": 26,
+      "language": "unknown",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/scripts/deploy.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/scripts/deploy.py",
+      "module_path": "tests/fixtures/repo_20260221_225829/scripts",
+      "sha256": "af9507ef7830ef0854f7ffe81e042d35e319e3609a33a7057c6241d51a791b47",
+      "size_bytes": 30,
+      "language": "python",
+      "imports": [
+        "boto3",
+        "json"
+      ],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/src/main.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/src/main.py",
+      "module_path": "tests/fixtures/repo_20260221_225829/src",
+      "sha256": "39ed434953dad5ae0cb2f106c6a8adfafd7315cbfe1dafbc1ed26c9bc2541996",
+      "size_bytes": 121,
+      "language": "python",
+      "imports": [
+        "os",
+        "sys",
+        "utils.logger"
+      ],
+      "symbols": [
+        "main"
+      ]
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/src/utils/__init__.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/src/utils/__init__.py",
+      "module_path": "tests/fixtures/repo_20260221_225829/src/utils",
+      "sha256": "f01a374e9c81e3db89b3a42940c4d6a5447684986a1296e42bf13f196eed6295",
+      "size_bytes": 5,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/fixtures/repo_20260221_225829/src/utils/logger.py",
+      "stable_id": "file:tests/fixtures/repo_20260221_225829/src/utils/logger.py",
+      "module_path": "tests/fixtures/repo_20260221_225829/src/utils",
+      "sha256": "a64e73ac733dc461d08ed36a17799d72dacc023ca64f65a8b8b40aa5cab1edee",
+      "size_bytes": 108,
+      "language": "python",
+      "imports": [
+        "datetime"
+      ],
+      "symbols": [
+        "log_msg"
+      ]
+    },
+    {
+      "path": "tests/integration/__init__.py",
+      "stable_id": "file:tests/integration/__init__.py",
+      "module_path": "tests/integration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/integration/test_api.py",
+      "stable_id": "file:tests/integration/test_api.py",
+      "module_path": "tests/integration",
+      "sha256": "70e66cd35b581f3ff7605f419cb0e20659b32b6eb9d5a91770e2136cd3af9479",
+      "size_bytes": 5293,
+      "language": "python",
+      "imports": [
+        "fastapi.testclient",
+        "os",
+        "shutil",
+        "src.api.server",
+        "tempfile",
+        "time",
+        "unittest"
+      ],
+      "symbols": [
+        "TestAPI",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_full_api_lifecycle",
+        "test_slice_with_token_limit"
+      ]
+    },
+    {
+      "path": "tests/integration/test_export_flow.py",
+      "stable_id": "file:tests/integration/test_export_flow.py",
+      "module_path": "tests/integration",
+      "sha256": "adab4795bbd1a77e7bb82fad5385f0218fd876e5688fbcfd89ac92bced33a06e",
+      "size_bytes": 3288,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.core.controller",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestExportFlow",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_export_full_with_tokens",
+        "test_export_scoped"
+      ]
+    },
+    {
+      "path": "tests/integration/test_full_snapshot.py",
+      "stable_id": "file:tests/integration/test_full_snapshot.py",
+      "module_path": "tests/integration",
+      "sha256": "ccd08f215af725c125b0220b25ec6aaadc266e72e664ed8f7293e2b01685da07",
+      "size_bytes": 3545,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.core.controller",
+        "src.snapshot.snapshot_loader",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestFullSnapshot",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_snapshot_creation_with_graph_and_auto_export",
+        "test_snapshot_skip_graph"
+      ]
+    },
+    {
+      "path": "tests/integration/test_graph_snapshot.py",
+      "stable_id": "file:tests/integration/test_graph_snapshot.py",
+      "module_path": "tests/integration",
+      "sha256": "e323d3369bc408c118bf516a6191df01b45f143d94f318024482fe856282fe10",
+      "size_bytes": 3036,
+      "language": "python",
+      "imports": [
+        "json",
+        "os",
+        "shutil",
+        "src.core.controller",
+        "src.snapshot.snapshot_loader",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestGraphSnapshot",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_end_to_end_graph_generation"
+      ]
+    },
+    {
+      "path": "tests/integration/test_robustness.py",
+      "stable_id": "file:tests/integration/test_robustness.py",
+      "module_path": "tests/integration",
+      "sha256": "37fcee4b0218aa79fb9df4a326251eabbaa7cfd6e31480f8e3e64afda70b9908",
+      "size_bytes": 2149,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.core.controller",
+        "src.snapshot.snapshot_loader",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestRobustness",
+        "setUp",
+        "tearDown",
+        "test_snapshot_with_mixed_health"
+      ]
+    },
+    {
+      "path": "tests/integration/test_snapshot_flow.py",
+      "stable_id": "file:tests/integration/test_snapshot_flow.py",
+      "module_path": "tests/integration",
+      "sha256": "84f4738f9030d809dad7ab467424c764450eebd42cf945d42c5b3ed155643e6d",
+      "size_bytes": 1895,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.cli.main",
+        "src.snapshot.snapshot_loader",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestSnapshotFlow",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_snapshot_creation"
+      ]
+    },
+    {
+      "path": "tests/unit/__init__.py",
+      "stable_id": "file:tests/unit/__init__.py",
+      "module_path": "tests/unit",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "language": "python",
+      "imports": [],
+      "symbols": []
+    },
+    {
+      "path": "tests/unit/test_cli_diff.py",
+      "stable_id": "file:tests/unit/test_cli_diff.py",
+      "module_path": "tests/unit",
+      "sha256": "a1d24933c12cd287309d3368050c7ba33cbcc4366fe77c94b337550deede678b",
+      "size_bytes": 1161,
+      "language": "python",
+      "imports": [
+        "src.cli.main",
+        "sys",
+        "unittest",
+        "unittest.mock"
+      ],
+      "symbols": [
+        "TestCLIDiff",
+        "test_diff_command_parsing"
+      ]
+    },
+    {
+      "path": "tests/unit/test_cli_slice.py",
+      "stable_id": "file:tests/unit/test_cli_slice.py",
+      "module_path": "tests/unit",
+      "sha256": "54a272880c217d27825c3970db6443fe3983520fd89016a255a11d036921d28e",
+      "size_bytes": 1929,
+      "language": "python",
+      "imports": [
+        "src.cli.main",
+        "sys",
+        "unittest",
+        "unittest.mock"
+      ],
+      "symbols": [
+        "TestCLISlice",
+        "test_slice_command_invocation",
+        "test_slice_defaults"
+      ]
+    },
+    {
+      "path": "tests/unit/test_config_loader.py",
+      "stable_id": "file:tests/unit/test_config_loader.py",
+      "module_path": "tests/unit",
+      "sha256": "d79fe9091155f155daef387b5095d18011f8be148ad3791f66ca0614ea3a50c9",
+      "size_bytes": 2151,
+      "language": "python",
+      "imports": [
+        "json",
+        "os",
+        "shutil",
+        "src.core.config_loader",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestConfigLoader",
+        "setUp",
+        "tearDown",
+        "test_ignore_invalid_json",
+        "test_ignore_schema_mismatch",
+        "test_load_custom_config",
+        "test_load_default_when_missing"
+      ]
+    },
+    {
+      "path": "tests/unit/test_context_slicer.py",
+      "stable_id": "file:tests/unit/test_context_slicer.py",
+      "module_path": "tests/unit",
+      "sha256": "12214ff8ea79d1ce605664bdb0263d15e48b93ff7ff071b8be24001e74745b6e",
+      "size_bytes": 5213,
+      "language": "python",
+      "imports": [
+        "src.analysis.context_slicer",
+        "src.core.types",
+        "unittest"
+      ],
+      "symbols": [
+        "TestContextSlicer",
+        "setUp",
+        "test_cycle_stats_exclusion",
+        "test_cycle_stats_reporting",
+        "test_focus_exceeds_budget",
+        "test_radius_logic_standard",
+        "test_symbol_focus_resolution",
+        "test_symbol_not_found",
+        "test_token_budget_enforcement"
+      ]
+    },
+    {
+      "path": "tests/unit/test_filesystem_scanner.py",
+      "stable_id": "file:tests/unit/test_filesystem_scanner.py",
+      "module_path": "tests/unit",
+      "sha256": "29efeb520baf8912965582e2e817748fe6b4f379abe59baefdd8d5b65e099931",
+      "size_bytes": 1365,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.scanner.filesystem_scanner",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestFileSystemScanner",
+        "_touch",
+        "setUp",
+        "tearDown",
+        "test_scanner_ignores"
+      ]
+    },
+    {
+      "path": "tests/unit/test_fingerprint_hardening.py",
+      "stable_id": "file:tests/unit/test_fingerprint_hardening.py",
+      "module_path": "tests/unit",
+      "sha256": "62d5ea8eb925a21f2e7140da70af9fc1160ed92f783cc3fb0dc22f673d40f3ad",
+      "size_bytes": 1445,
+      "language": "python",
+      "imports": [
+        "hashlib",
+        "os",
+        "shutil",
+        "src.fingerprint.file_fingerprint",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestFingerprintHardening",
+        "setUp",
+        "tearDown",
+        "test_empty_file",
+        "test_locked_or_missing_file",
+        "test_valid_file"
+      ]
+    },
+    {
+      "path": "tests/unit/test_flatten_exporter.py",
+      "stable_id": "file:tests/unit/test_flatten_exporter.py",
+      "module_path": "tests/unit",
+      "sha256": "df1b9c2cc271c9ccb17fa57cf7f7283a23504c0393b26c888f2bd125d1f1d1fc",
+      "size_bytes": 1967,
+      "language": "python",
+      "imports": [
+        "os",
+        "src.exporters.flatten_markdown_exporter",
+        "unittest"
+      ],
+      "symbols": [
+        "TestFlattenExporter",
+        "setUp",
+        "test_binary_placeholder",
+        "test_scope_filtering",
+        "test_tree_generation"
+      ]
+    },
+    {
+      "path": "tests/unit/test_graph_builder.py",
+      "stable_id": "file:tests/unit/test_graph_builder.py",
+      "module_path": "tests/unit",
+      "sha256": "8e782b8097f6f5df5235fc1ae8e3b7243c111441abc1f5725818e2d23a8045e7",
+      "size_bytes": 5441,
+      "language": "python",
+      "imports": [
+        "src.analysis.graph_builder",
+        "src.core.types",
+        "unittest"
+      ],
+      "symbols": [
+        "TestGraphBuilder",
+        "setUp",
+        "test_cycle_detection_self_loop",
+        "test_cycle_detection_simple",
+        "test_cycle_detection_triangular",
+        "test_graph_determinism",
+        "test_no_false_positive_diamond",
+        "test_scoped_and_deep_external_packages"
+      ]
+    },
+    {
+      "path": "tests/unit/test_graph_resolution.py",
+      "stable_id": "file:tests/unit/test_graph_resolution.py",
+      "module_path": "tests/unit",
+      "sha256": "ac2fe805aafb199458b65ad67e87a680cb8c71b12f77ad3e5d1312cba66d8806",
+      "size_bytes": 2944,
+      "language": "python",
+      "imports": [
+        "src.analysis.graph_builder",
+        "src.core.types",
+        "unittest"
+      ],
+      "symbols": [
+        "TestGraphResolution",
+        "setUp",
+        "test_external_node_creation",
+        "test_js_index_resolution",
+        "test_python_internal_resolution"
+      ]
+    },
+    {
+      "path": "tests/unit/test_ignore_logic.py",
+      "stable_id": "file:tests/unit/test_ignore_logic.py",
+      "module_path": "tests/unit",
+      "sha256": "2b610ca511e272417a586fba4a864524155fcb405ccaeb2a6ee1e6aa81808230",
+      "size_bytes": 1666,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.scanner.filesystem_scanner",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestIgnoreLogic",
+        "_touch",
+        "setUp",
+        "tearDown",
+        "test_scanner_ignores"
+      ]
+    },
+    {
+      "path": "tests/unit/test_import_scanner.py",
+      "stable_id": "file:tests/unit/test_import_scanner.py",
+      "module_path": "tests/unit",
+      "sha256": "ea2b409497a080214c49b7fc282aaedc37787c2358bc9b3ed170eb26c8623f6a",
+      "size_bytes": 5351,
+      "language": "python",
+      "imports": [
+        "src.analysis.import_scanner",
+        "unittest"
+      ],
+      "symbols": [
+        "TestImportScanner",
+        "test_js_edge_cases",
+        "test_js_standard_imports",
+        "test_js_symbols",
+        "test_python_complex_structure",
+        "test_python_relative_imports",
+        "test_python_scope_and_strings",
+        "test_python_symbols",
+        "test_python_syntax_error",
+        "test_ts_type_imports"
+      ]
+    },
+    {
+      "path": "tests/unit/test_import_scanner_logic.py",
+      "stable_id": "file:tests/unit/test_import_scanner_logic.py",
+      "module_path": "tests/unit",
+      "sha256": "e3b45c40f4ea544b32ef56e3c961b4764d9002dbda399649267735a6ce0dc645",
+      "size_bytes": 2762,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.analysis.import_scanner",
+        "tempfile",
+        "unittest"
+      ],
+      "symbols": [
+        "TestImportScannerLogic",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_js_regex_extraction",
+        "test_large_file_skip",
+        "test_python_ast_extraction",
+        "test_syntax_error_resilience",
+        "test_unknown_language_safety"
+      ]
+    },
+    {
+      "path": "tests/unit/test_normalizer.py",
+      "stable_id": "file:tests/unit/test_normalizer.py",
+      "module_path": "tests/unit",
+      "sha256": "cf9cf8c5f3b281c3a5a0bc2129cfedd4f23d96ab841e060faf8c366159d98cd8",
+      "size_bytes": 1866,
+      "language": "python",
+      "imports": [
+        "os",
+        "src.normalize.path_normalizer",
+        "unittest"
+      ],
+      "symbols": [
+        "TestPathNormalizer",
+        "setUp",
+        "test_basic_normalization",
+        "test_casing_policy",
+        "test_id_generation",
+        "test_windows_separator_handling"
+      ]
+    },
+    {
+      "path": "tests/unit/test_path_normalizer.py",
+      "stable_id": "file:tests/unit/test_path_normalizer.py",
+      "module_path": "tests/unit",
+      "sha256": "c493dc69190508dde070419db7fc135cfd49a133f0d28a49c23ba9451feb2113",
+      "size_bytes": 2341,
+      "language": "python",
+      "imports": [
+        "os",
+        "src.normalize.path_normalizer",
+        "unittest"
+      ],
+      "symbols": [
+        "TestPathNormalizer",
+        "setUp",
+        "test_basic_normalization",
+        "test_casing_policy",
+        "test_id_generation",
+        "test_messy_path_normalization",
+        "test_parent_traversal",
+        "test_windows_separator_handling"
+      ]
+    },
+    {
+      "path": "tests/unit/test_scanner_hardening.py",
+      "stable_id": "file:tests/unit/test_scanner_hardening.py",
+      "module_path": "tests/unit",
+      "sha256": "7581ebb0822f937ecf272ef7cb1e3ea2baa9e004bad6f467770f0b5edc4a7c86",
+      "size_bytes": 2840,
+      "language": "python",
+      "imports": [
+        "os",
+        "shutil",
+        "src.scanner.filesystem_scanner",
+        "sys",
+        "tempfile",
+        "unittest",
+        "unittest.mock"
+      ],
+      "symbols": [
+        "TestScannerHardening",
+        "_create_file",
+        "setUp",
+        "tearDown",
+        "test_permission_error_handling",
+        "test_symlink_cycle_detection",
+        "test_vanished_directory"
+      ]
+    },
+    {
+      "path": "tests/unit/test_snapshot_comparator.py",
+      "stable_id": "file:tests/unit/test_snapshot_comparator.py",
+      "module_path": "tests/unit",
+      "sha256": "d514cbb9d22b5ffc8076e7d7cff8a0611e081bd468730e24041ac7cd349610ed",
+      "size_bytes": 4056,
+      "language": "python",
+      "imports": [
+        "src.analysis.snapshot_comparator",
+        "src.core.types",
+        "unittest"
+      ],
+      "symbols": [
+        "TestSnapshotComparator",
+        "_create_manifest",
+        "setUp",
+        "test_file_diffing",
+        "test_graph_diffing"
+      ]
+    },
+    {
+      "path": "tests/unit/test_structure.py",
+      "stable_id": "file:tests/unit/test_structure.py",
+      "module_path": "tests/unit",
+      "sha256": "6766e92a279319c98ee47bbff3010843e81087727c8f6a8bbf285cab6c6b1a23",
+      "size_bytes": 1538,
+      "language": "python",
+      "imports": [
+        "src.core.types",
+        "src.structure.structure_builder",
+        "unittest"
+      ],
+      "symbols": [
+        "TestStructureBuilder",
+        "test_build_structure"
+      ]
+    },
+    {
+      "path": "tests/unit/test_structure_builder.py",
+      "stable_id": "file:tests/unit/test_structure_builder.py",
+      "module_path": "tests/unit",
+      "sha256": "ebf7b9f0a523f7b7165fd70a4087a8fa99ba77614b7456b98b7111cf34ac4d16",
+      "size_bytes": 1496,
+      "language": "python",
+      "imports": [
+        "src.core.types",
+        "src.structure.structure_builder",
+        "unittest"
+      ],
+      "symbols": [
+        "TestStructureBuilder",
+        "test_build_structure"
+      ]
+    },
+    {
+      "path": "tests/unit/test_token_telemetry.py",
+      "stable_id": "file:tests/unit/test_token_telemetry.py",
+      "module_path": "tests/unit",
+      "sha256": "763e4a8e02bd09e4d6657b3e63fccb3430fbc0b733500911e4cd3590432efdcb",
+      "size_bytes": 1381,
+      "language": "python",
+      "imports": [
+        "src.observability.token_telemetry",
+        "unittest"
+      ],
+      "symbols": [
+        "TestTokenTelemetry",
+        "setUp",
+        "test_telemetry_calculations"
+      ]
+    },
+    {
+      "path": "tests/unit/test_types.py",
+      "stable_id": "file:tests/unit/test_types.py",
+      "module_path": "tests/unit",
+      "sha256": "ce5277be09c6f5b95a8924755b1a0ce68e73ad9fe924fbd55aee94c66e3fcc00",
+      "size_bytes": 1252,
+      "language": "python",
+      "imports": [
+        "pydantic",
+        "src.core.types",
+        "unittest"
+      ],
+      "symbols": [
+        "TestTypes",
+        "test_path_normalization_validator",
+        "test_stable_id_validation"
+      ]
+    }
+  ]
+}

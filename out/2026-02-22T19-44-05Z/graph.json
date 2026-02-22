@@ -1,0 +1,2083 @@
+{
+  "schema_version": "1.0",
+  "nodes": [
+    {
+      "id": "external:argparse",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:ast",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:boto3",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:collections",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:ctypes",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:dataclasses",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:datetime",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:fastapi",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:fs",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:hashlib",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:json",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:logging",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:multiprocessing",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:os",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:path",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:pydantic",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:re",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:react",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:shutil",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:sys",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:tempfile",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:threading",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:time",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:tkinter",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:typing",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:unittest",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/.context-compressor-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/commands.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/compressed/00-compressed-codebase-ingest-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/compressed/01-next-steps-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/compressed/02-requested-files.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/compressed/03-code-conventions-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/raw/00-raw-codebase-ingest-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/raw/01-next-steps-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/raw/02-code-conventions-prompt.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/.dev-prompts/repo-runner-flattened.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/compressed-context/all-documents.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/compressed-context/full-tree.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/compressed-context/scripts-compressed.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/compressed-context/src-compressed.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/compressed-context/tests-compressed.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.context/repo-runner-flattened.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.gitignore",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/architecture.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/config_spec.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/contributing.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/determinism_rules.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/id_spec.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/language_support.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/repo_layout.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/roadmap.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/snapshot_spec.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/testing_strategy.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:documents/versioning_policy.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:drift_test.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:flattened_repo-runner_2026-02-19.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-46-05z/exports/flatten.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-46-05z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-46-05z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-46-05z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-50-41z/exports/flatten.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-50-41z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-50-41z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-50-41z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-57-03z/exports/flatten.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-57-03z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-57-03z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t03-57-03z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t18-58-29z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t18-58-29z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t18-58-29z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-14-09z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-14-09z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-14-09z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-30-36z/exports/flatten.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-30-36z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-30-36z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-30-36z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-43-34z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-43-34z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/2026-02-22t19-43-34z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:out/current.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:readme.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:repo-runner.code-workspace",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:repo-runner.spec",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/build_exe.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/export-signal.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/generate_test_repo.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/package-repo.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:slice_preview.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/context_slicer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/graph_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/import_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/snapshot_comparator.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/api/init.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/api/server.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/cli/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/cli/main.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/config_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/controller.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/repo-runner.code-workspace",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/types.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/entry_point.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/exporters/flatten_markdown_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/fingerprint/file_fingerprint.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/app.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/config_tabs.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/export_preview.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/preview_pane.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/progress_window.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/tree_view.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/normalize/path_normalizer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/observability/init.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/observability/token_telemetry.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/scanner/filesystem_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/snapshot/snapshot_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/snapshot/snapshot_writer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/structure/structure_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/frontend/app.tsx",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/frontend/components/button.tsx",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/frontend/legacy.js",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/exports/flatten.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/output/2026-02-22t03-39-54z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/output/current.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/readme.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/requirements.txt",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/scripts/deploy.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/src/main.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/src/utils/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_223954/src/utils/logger.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/frontend/app.tsx",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/frontend/components/button.tsx",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/frontend/legacy.js",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/exports/flatten.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/graph.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/manifest.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/output/2026-02-22t03-58-29z/structure.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/output/current.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/readme.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/requirements.txt",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/scripts/deploy.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/src/main.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/src/utils/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/fixtures/repo_20260221_225829/src/utils/logger.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_api.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_export_flow.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_full_snapshot.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_graph_snapshot.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_robustness.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_snapshot_flow.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_cli_diff.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_cli_slice.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_config_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_context_slicer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_filesystem_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_fingerprint_hardening.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_flatten_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_graph_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_graph_resolution.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_ignore_logic.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_import_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_import_scanner_logic.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_normalizer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_path_normalizer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_scanner_hardening.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_snapshot_comparator.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_structure.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_structure_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_token_telemetry.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_types.py",
+      "type": "file",
+      "metadata": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "external:collections",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "external:logging",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/graph_builder.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/graph_builder.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/graph_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/import_scanner.py",
+      "target": "external:ast",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/import_scanner.py",
+      "target": "external:re",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/import_scanner.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/snapshot_comparator.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/snapshot_comparator.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:fastapi",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:fastapi",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:pydantic",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/analysis/context_slicer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/analysis/snapshot_comparator.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "external:argparse",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "file:src/core/config_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "file:src/gui/app.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/context_slicer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/graph_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/snapshot_comparator.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/exporters/flatten_markdown_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/fingerprint/file_fingerprint.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/snapshot/snapshot_writer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/structure/structure_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/types.py",
+      "target": "external:pydantic",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/types.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "external:ctypes",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "external:multiprocessing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "file:src/gui/app.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/flatten_markdown_exporter.py",
+      "target": "external:dataclasses",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/flatten_markdown_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/flatten_markdown_exporter.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/fingerprint/file_fingerprint.py",
+      "target": "external:hashlib",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/fingerprint/file_fingerprint.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/fingerprint/file_fingerprint.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:ctypes",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:datetime",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:threading",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:time",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/exporters/flatten_markdown_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/config_tabs.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/export_preview.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/preview_pane.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/progress_window.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/tree_view.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/config_tabs.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/export_preview.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/preview_pane.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/preview_pane.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/preview_pane.py",
+      "target": "file:src/fingerprint/file_fingerprint.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/progress_window.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/tree_view.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/tree_view.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/normalize/path_normalizer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/observability/token_telemetry.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/scanner/filesystem_scanner.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/scanner/filesystem_scanner.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_loader.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_loader.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_loader.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:datetime",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/structure/structure_builder.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/structure/structure_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/frontend/app.tsx",
+      "target": "external:react",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/frontend/app.tsx",
+      "target": "file:tests/fixtures/repo_20260221_223954/frontend/components/button.tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/frontend/components/button.tsx",
+      "target": "external:react",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/frontend/legacy.js",
+      "target": "external:fs",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/frontend/legacy.js",
+      "target": "external:path",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/scripts/deploy.py",
+      "target": "external:boto3",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/scripts/deploy.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/src/main.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/src/main.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/src/main.py",
+      "target": "file:tests/fixtures/repo_20260221_223954/src/utils/logger.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_223954/src/utils/logger.py",
+      "target": "external:datetime",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/frontend/app.tsx",
+      "target": "external:react",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/frontend/app.tsx",
+      "target": "file:tests/fixtures/repo_20260221_225829/frontend/components/button.tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/frontend/components/button.tsx",
+      "target": "external:react",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/frontend/legacy.js",
+      "target": "external:fs",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/frontend/legacy.js",
+      "target": "external:path",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/scripts/deploy.py",
+      "target": "external:boto3",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/scripts/deploy.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/src/main.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/src/main.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/src/main.py",
+      "target": "file:tests/fixtures/repo_20260221_225829/src/utils/logger.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/fixtures/repo_20260221_225829/src/utils/logger.py",
+      "target": "external:datetime",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:fastapi",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:time",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "file:src/api/server.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_full_snapshot.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_full_snapshot.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_full_snapshot.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_full_snapshot.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_full_snapshot.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_full_snapshot.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_snapshot_flow.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_snapshot_flow.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_snapshot_flow.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_snapshot_flow.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_snapshot_flow.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_snapshot_flow.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_diff.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_diff.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_diff.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_diff.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_slice.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_slice.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_slice.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_cli_slice.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "file:src/core/config_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_context_slicer.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_context_slicer.py",
+      "target": "file:src/analysis/context_slicer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_context_slicer.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_fingerprint_hardening.py",
+      "target": "external:hashlib",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_fingerprint_hardening.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_fingerprint_hardening.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_fingerprint_hardening.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_fingerprint_hardening.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_fingerprint_hardening.py",
+      "target": "file:src/fingerprint/file_fingerprint.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_flatten_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_flatten_exporter.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_flatten_exporter.py",
+      "target": "file:src/exporters/flatten_markdown_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder.py",
+      "target": "file:src/analysis/graph_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_resolution.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_resolution.py",
+      "target": "file:src/analysis/graph_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_resolution.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner_logic.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner_logic.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner_logic.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner_logic.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner_logic.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_normalizer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_normalizer.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_normalizer.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_path_normalizer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_path_normalizer.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_path_normalizer.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_hardening.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_snapshot_comparator.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_snapshot_comparator.py",
+      "target": "file:src/analysis/snapshot_comparator.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_snapshot_comparator.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure.py",
+      "target": "file:src/structure/structure_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure_builder.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure_builder.py",
+      "target": "file:src/structure/structure_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_token_telemetry.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_token_telemetry.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_types.py",
+      "target": "external:pydantic",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_types.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_types.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    }
+  ],
+  "cycles": []
+}
