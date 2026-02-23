@@ -34,20 +34,21 @@ def _parse_args():
     slice_cmd.add_argument("--max-tokens", type=int, default=None)
     slice_cmd.add_argument("--output", required=False, default=None)
 
-    # diff (NEW)
+    # diff
     diff_cmd = sub.add_parser("diff", help="Compare two structural snapshots")
     diff_cmd.add_argument("--base", required=True, help="Base snapshot ID or 'current'")
     diff_cmd.add_argument("--target", required=True, help="Target snapshot ID or 'current'")
     diff_cmd.add_argument("--output-root", required=False, default=None)
     diff_cmd.add_argument("--repo-root", required=False, default=".", help="Repo root to search for config")
 
-    # diagram (NEW)
-    diag_cmd = sub.add_parser("diagram", help="Generate a Mermaid visualization")
+    # diagram 
+    diag_cmd = sub.add_parser("diagram", help="Generate a visual architecture diagram")
     diag_cmd.add_argument("--repo-root", required=True)
     diag_cmd.add_argument("--output-root", required=False, default=None)
     diag_cmd.add_argument("--snapshot-id", required=False, default=None)
     diag_cmd.add_argument("--output", required=False, default=None)
     diag_cmd.add_argument("--title", required=False, default=None)
+    diag_cmd.add_argument("--format", choices=["mermaid", "drawio"], default="mermaid", help="Output format (default: mermaid)")
 
     # export
     exp = sub.add_parser("export", help="Export derived artifacts")
@@ -137,6 +138,11 @@ def main():
     if args.command == "slice":
         config = ConfigLoader.load_config(args.repo_root)
         output_root = args.output_root if args.output_root is not None else config.output_root
+        # Added validation check
+        if not output_root:
+            print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
+            sys.exit(1)
+
         out = run_export_flatten(
             output_root=output_root,
             repo_root=args.repo_root,
@@ -157,7 +163,6 @@ def main():
     if args.command == "diagram":
         config = ConfigLoader.load_config(args.repo_root)
         output_root = args.output_root if args.output_root is not None else config.output_root
-        # Validation Fix: Ensure output_root is present
         if not output_root:
             print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
             sys.exit(1)
@@ -167,14 +172,20 @@ def main():
             repo_root=args.repo_root,
             snapshot_id=args.snapshot_id,
             output_path=args.output,
-            title=args.title
+            title=args.title,
+            format=args.format
         )
-        print(f"Diagram generated:\n  {os.path.abspath(out)}")
+        print(f"Diagram generated ({args.format}):\n  {os.path.abspath(out)}")
         return
 
     if args.command == "export":
         config = ConfigLoader.load_config(args.repo_root)
         output_root = args.output_root if args.output_root is not None else config.output_root
+        # Added validation check
+        if not output_root:
+            print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
+            sys.exit(1)
+
         out = run_export_flatten(
             output_root=output_root,
             repo_root=args.repo_root,

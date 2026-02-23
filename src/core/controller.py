@@ -23,6 +23,7 @@ from src.exporters.flatten_markdown_exporter import (
     FlattenOptions,
 )
 from src.exporters.mermaid_exporter import MermaidExporter
+from src.exporters.drawio_exporter import DrawioExporter
 from src.fingerprint.file_fingerprint import FileFingerprint
 from src.normalize.path_normalizer import PathNormalizer
 from src.scanner.filesystem_scanner import FileSystemScanner
@@ -341,10 +342,11 @@ def run_export_diagram(
     repo_root: str,
     snapshot_id: Optional[str],
     output_path: Optional[str],
-    title: Optional[str]
+    title: Optional[str],
+    format: str = "mermaid"
 ) -> str:
     """
-    Orchestrates the creation of a Mermaid diagram from an existing snapshot.
+    Orchestrates the creation of a visual diagram from an existing snapshot.
     """
     loader = SnapshotLoader(output_root)
     snapshot_dir = loader.resolve_snapshot_dir(snapshot_id)
@@ -358,7 +360,13 @@ def run_export_diagram(
         
     graph = GraphStructure.model_validate(graph_data)
     
-    exporter = MermaidExporter()
+    if format == "mermaid":
+        exporter = MermaidExporter()
+    elif format == "drawio":
+        exporter = DrawioExporter()
+    else:
+        raise ValueError(f"Unknown format: {format}")
+        
     return exporter.export(snapshot_dir, graph, output_path, title)
 
 

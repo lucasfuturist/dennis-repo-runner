@@ -41,11 +41,16 @@ class PreviewPanel(ttk.Frame):
             fp = FileFingerprint.fingerprint(abs_path)
             
             # 2. Scan Imports (Lazy load on click using detected language)
-            imports = ImportScanner.scan(abs_path, fp['language'])
+            scan_res = ImportScanner.scan(abs_path, fp['language'])
+            
+            # Extract the actual lists from the dictionary
+            actual_imports = scan_res.get('imports', [])
+            actual_symbols = scan_res.get('symbols', [])
             
             # 3. Update Brief Header Label
-            import_count = len(imports)
-            self.lbl_meta.config(text=f" ID: {stable_id}  |  {fp['language']}  |  {import_count} Imports")
+            import_count = len(actual_imports)
+            symbol_count = len(actual_symbols)
+            self.lbl_meta.config(text=f" ID: {stable_id}  |  {fp['language']}  |  {import_count} Imports  |  {symbol_count} Symbols")
 
             # 4. Construct Detailed Metadata Header
             header_lines = [
@@ -56,9 +61,18 @@ class PreviewPanel(ttk.Frame):
                 "IMPORTS FOUND:",
             ]
             
-            if imports:
-                for imp in imports:
+            if actual_imports:
+                for imp in actual_imports:
                     header_lines.append(f"  • {imp}")
+            else:
+                header_lines.append("  (none)")
+                
+            header_lines.append("")
+            header_lines.append("SYMBOLS DEFINED:")
+            
+            if actual_symbols:
+                for sym in actual_symbols:
+                    header_lines.append(f"  ♦ {sym}")
             else:
                 header_lines.append("  (none)")
                 

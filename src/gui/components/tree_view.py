@@ -141,7 +141,8 @@ class FileTreePanel(ttk.Frame):
                 else:
                     icon = "📁 "
 
-                item_id = self.tree.insert(parent_id, "end", text=f"{icon}{name}", values=values, open=True)
+                # CHANGED: open=False so folders start collapsed
+                item_id = self.tree.insert(parent_id, "end", text=f"{icon}{name}", values=values, open=False)
                 
                 if is_file:
                     self.tree.item(item_id, tags=(node_data['__metadata__']['abs_path'], "file"))
