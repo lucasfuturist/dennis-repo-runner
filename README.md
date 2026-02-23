@@ -1,337 +1,133 @@
+# `README.md`
+
 # repo-runner
 
-Deterministic repository structure compiler.
+**Deterministic repository structure compiler and context engineering substrate.**
 
-repo-runner scans a repository, produces an immutable structural snapshot, and exports derived context artifacts (such as a flattened markdown tree) for downstream systems like Dennis.
-
-It is not an LLM tool.
-It is a structural substrate generator.
+`repo-runner` freezes dynamic codebases into immutable, topologically accurate snapshots. It is designed to provide a high-resolution structural substrate for AI Agents (like Dennis) to navigate, understand, and modify code without the overhead of raw filesystem scanning or the hallucinations of unstable file paths.
 
 ---
 
-## Design Goals
+## 🚀 Core Capabilities
 
-* Deterministic outputs
-* Stable IDs
-* Append-only snapshots
-* Canonical structure first, exports second
-* No semantic interpretation
-* No mutation of past snapshots
-
-repo-runner is built to be a foundational layer in a larger AI ecosystem, but remains completely standalone.
+- **Deterministic Ingestion:** Byte-for-byte reproducible snapshots across Windows, macOS, and Linux.
+- **Semantic Graph Layer:** AST-derived dependency mapping (Python) and Regex-based scanning (JS/TS).
+- **Context Slicing:** BFS-driven graph traversal to isolate specific features and their dependencies within a strict token budget.
+- **Stable ID System:** Canonical, lowercased, repo-relative identifiers for files, modules, and external packages.
+- **Architectural Visualization:** One-command exports to Mermaid.js and Draw.io (Advanced CSV with auto-layout).
+- **Agent-Ready SOPs:** Integrated telemetry and diffing tools to verify structural impact after code changes.
 
 ---
 
-## Core Concepts
+## 🛠️ Installation
 
-### 1. Snapshot-First Architecture
+```bash
+# Clone the repository
+git clone https://github.com/your-repo/repo-runner.git
+cd repo-runner
 
-Every operation begins with a snapshot.
+# Install dependencies
+pip install -r requirements.txt
 
+# (Optional) Verify the environment
+python -m pytest
 ```
-Filesystem
-  → snapshot
-    → manifest.json
-    → structure.json
-    → exports/
-```
-
-Snapshots are immutable.
-The `current.json` pointer references the latest snapshot.
-
-Exports are derived projections of a snapshot — never of the live filesystem.
 
 ---
 
-### 2. Determinism
+## 🕹️ Usage
 
-Given:
+### 1. The GUI (Control Panel)
+Launch the interactive dashboard to browse the repo, select files, and trigger snapshots or visual previews.
+```bash
+python -m src.entry_point ui
+```
 
-* the same repository state
-* the same configuration
-* the same repo-runner version
+### 2. The CLI (SOPs)
 
-You will get:
+#### **SOP A: Indexing (Snapshot)**
+Create an immutable record of the repository structure and dependency graph.
+```bash
+python -m src.entry_point snapshot . --output-root ./snapshots --ignore node_modules .git
+```
 
-* identical manifest.json
-* identical structure.json
-* identical flatten exports (byte-for-byte)
+#### **SOP B: Targeted Context (Slicing)**
+Generate a compressed Markdown context centered on a specific symbol (Class/Function) or file.
+```bash
+python -m src.entry_point slice --repo-root . --focus "symbol:GraphBuilder" --radius 1 --max-tokens 4000
+```
 
-repo-runner does not rely on:
+#### **SOP C: Visualization (Diagram)**
+Project the dependency graph into a Mermaid or Draw.io-compatible format.
+```bash
+# Generate Mermaid.js code
+python -m src.entry_point diagram --repo-root . --format mermaid
 
-* timestamps inside exports
-* random IDs
-* UUIDs
-* unordered traversal
+# Generate Draw.io Auto-Layout CSV
+python -m src.entry_point diagram --repo-root . --format drawio
+```
 
-All ordering is lexicographically deterministic.
+#### **SOP D: Verification (Diff)**
+Compare the structural drift between two snapshots to verify changes.
+```bash
+python -m src.entry_point diff --base current --target {new_snapshot_id}
+```
 
 ---
 
-### 3. Stable IDs
+## 🧠 Design Philosophy
 
-Files use canonical normalized paths:
+### Determinism
+Given the same repository state and configuration, `repo-runner` produces bit-for-byte identical `manifest.json` and `graph.json` files. It eliminates non-determinism caused by OS-specific file ordering, random UUIDs, or timestamps in exports.
 
-```
-file:src/app/page.tsx
-module:src/app
-repo:root
-```
+### Stable IDs
+`repo-runner` enforces a strict naming convention to prevent ID "shimmering":
+*   **Files:** `file:src/core/controller.py` (Lowercase, forward-slash).
+*   **Symbols:** `symbol:GraphBuilder` (Directly indexed in `symbols.json`).
+*   **External:** `external:pandas` (Canonicalized root package names).
 
-Path normalization:
-
-* repo-relative
-* forward slashes
-* preserves leading dots (e.g., `.context-docs`)
-* lowercase normalized IDs
-* collision detection enforced
-
-Stable IDs never use random values.
+### Append-Only Snapshots
+Snapshots are never overwritten. Every run produces a unique, timestamped folder. Only the `current.json` pointer is updated to reference the latest state.
 
 ---
 
-## Commands
+## 📂 Snapshot Artifacts
 
-### Create a Snapshot
+Each snapshot folder contains the following JSON ground-truth artifacts:
 
-```powershell
-python -m src.cli.main snapshot C:\projects\caffeine-melts-website `
-  --output-root C:\repo-runner-output `
-  --depth 10 `
-  --ignore node_modules .expo .git __pycache__ dist build .next
-```
-
-Produces:
-
-```
-C:\repo-runner-output\
-  2026-02-18T06-16-09Z\
-    manifest.json
-    structure.json
-    exports\
-  current.json
-```
-
-`current.json` is automatically updated unless disabled.
+1.  **`manifest.json`**: File fingerprints (SHA256), sizes, and raw import/symbol lists.
+2.  **`graph.json`**: The topological map. Includes nodes, edges, and cycle detection flags.
+3.  **`structure.json`**: The hierarchical directory tree representation.
+4.  **`symbols.json`**: A global inverted index mapping symbols to their defining files.
+5.  **`exports/`**: Derived projections like `flatten.md`, `graph.mmd`, or `graph.drawio.csv`.
 
 ---
 
-### Export Flatten (list_tree replacement)
-
-Export from the current snapshot:
-
-```powershell
-python -m src.cli.main export flatten `
-  --output-root C:\repo-runner-output `
-  --repo-root C:\projects\caffeine-melts-website
+## 📡 API Interface
+`repo-runner` includes a FastAPI server for remote tool-calling by LLM agents.
+```bash
+# Start the server
+uvicorn src.api.server:app --reload
 ```
-
-Writes:
-
-```
-<snapshot>\exports\flatten.md
-```
-
-This replaces manual `list_tree.py` workflows.
+**Endpoints:**
+*   `POST /snapshots`: Ingest a repository.
+*   `POST /snapshots/{id}/slice`: Request a context window.
+*   `POST /snapshots/compare`: Diff structural states.
 
 ---
 
-### Export Tree Only
+## 🗺️ Roadmap Status
 
-```powershell
-python -m src.cli.main export flatten `
-  --output-root C:\repo-runner-output `
-  --repo-root C:\projects\caffeine-melts-website `
-  --tree-only
-```
-
-Equivalent to your old `--tree-only` usage.
+- [x] **v0.1:** Deterministic scanning, fingerprinting, and flattened exports.
+- [x] **v0.2:** Semantic graph layer, symbol indexing, and token telemetry.
+- [x] **v0.3:** Hardened canonicalization, visual diagram exporters (Mermaid/Draw.io), and GUI.
+- [ ] **v0.4:** Diagram Projection (Native `.drawio` XML engine).
+- [ ] **v0.5:** Parallelized fingerprinting and scanning for ultra-large repos.
 
 ---
 
-### Export From a Specific Snapshot
-
-```powershell
-python -m src.cli.main export flatten `
-  --output-root C:\repo-runner-output `
-  --repo-root C:\projects\caffeine-melts-website `
-  --snapshot-id 2026-02-18T06-16-09Z
-```
-
-If `--snapshot-id` is not provided, repo-runner defaults to `current.json`.
+## ⚖️ License
+Internal use only.
 
 ---
-
-## Flatten Export Behavior
-
-The flatten exporter:
-
-* uses the canonical file set from `manifest.json`
-* renders a deterministic tree
-* optionally concatenates file contents
-* skips binary files by default
-* emits stable placeholders for binary files:
-
-```
-<<BINARY_OR_SKIPPED_FILE>>
-language: unknown
-size_bytes: 182343
-sha256: ...
-```
-
-No binary garbage is ever inlined.
-
----
-
-## Snapshot Contents
-
-### manifest.json
-
-Contains:
-
-* schema_version
-* tool metadata
-* inputs
-* config
-* stats
-* canonical file list (with sha256, size, language)
-* snapshot metadata
-
-### structure.json
-
-Contains:
-
-* schema_version
-* repository node
-* modules
-* file containment
-
-structure.json is structural only — no imports, no semantics.
-
----
-
-## What repo-runner Is Not
-
-* Not an LLM summarizer
-* Not a semantic analyzer (yet)
-* Not a code modifier
-* Not a refactoring engine
-* Not tied to Dennis
-
-repo-runner produces deterministic structure.
-Dennis consumes it.
-
----
-
-## Architecture Overview
-
-```
-scanner/
-normalize/
-fingerprint/
-structure/
-snapshot/
-exporters/
-cli/
-```
-
-Flow:
-
-```
-filesystem
-  → scanner
-    → normalizer
-      → fingerprint
-        → structure builder
-          → snapshot writer
-            → exporter
-```
-
-Exports are projections of snapshot state.
-
----
-
-## Determinism Rules
-
-* Files sorted lexicographically
-* Modules sorted lexicographically
-* No random UUIDs
-* No nondeterministic traversal
-* No implicit filesystem rescans during export
-* Exporters consume manifest, not filesystem discovery
-
----
-
-## Versioning
-
-repo-runner follows semantic versioning:
-
-MAJOR.MINOR.PATCH
-
-Breaking changes include:
-
-* stable ID format changes
-* path normalization changes
-* snapshot schema changes
-* manifest/structure schema changes
-
-Backward-compatible additions increment MINOR.
-
----
-
-## Why This Exists
-
-repo-runner exists to create a clean, stable structural substrate for:
-
-* context assembly
-* dependency graph generation
-* change impact analysis
-* semantic layering
-* AI orchestration
-
-But v0.1 intentionally does only structure and flatten export.
-
-Graph generation is planned for a future version.
-
----
-
-## Roadmap (High-Level)
-
-v0.1
-
-* deterministic snapshot
-* flatten exporter
-
-v0.2
-
-* import graph
-* external dependency edges
-* graph.json
-
-v0.3
-
-* draw.io exporter
-* subgraph exports
-* scoped context export
-
----
-
-## Development Philosophy
-
-* Deterministic first
-* Structure before semantics
-* Append-only snapshots
-* Explicit contracts
-* No hidden magic
-
-repo-runner is infrastructure.
-
----
-
-If you want, next we can:
-
-* write a minimal CONTRIBUTING.md aligned to this readme
-* or implement `--scope module:` support to eliminate your manual PowerShell zoo entirely
-* or move into graph layer design cleanly without contaminating determinism
-
-You’ve got a real substrate now.
+*Built for Dennis.*
