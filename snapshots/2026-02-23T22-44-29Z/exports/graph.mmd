@@ -1,0 +1,421 @@
+graph TD
+    %% Styles
+    classDef file fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef cycle fill:#ffebee,stroke:#c62828,stroke-width:4px;
+
+    %% External Dependencies
+    external_argparse([argparse]):::external
+    external_ast([ast]):::external
+    external_collections([collections]):::external
+    external_ctypes([ctypes]):::external
+    external_dataclasses([dataclasses]):::external
+    external_datetime([datetime]):::external
+    external_fastapi([fastapi]):::external
+    external_hashlib([hashlib]):::external
+    external_json([json]):::external
+    external_logging([logging]):::external
+    external_matplotlib([matplotlib]):::external
+    external_multiprocessing([multiprocessing]):::external
+    external_os([os]):::external
+    external_pandas([pandas]):::external
+    external_pathlib([pathlib]):::external
+    external_pydantic([pydantic]):::external
+    external_pytest([pytest]):::external
+    external_re([re]):::external
+    external_shutil([shutil]):::external
+    external_sys([sys]):::external
+    external_tempfile([tempfile]):::external
+    external_threading([threading]):::external
+    external_time([time]):::external
+    external_tkinter([tkinter]):::external
+    external_typing([typing]):::external
+    external_unittest([unittest]):::external
+
+    %% Internal Modules
+    subgraph subgraph__context [.context]
+        direction TB
+        file__context_repo_runner_flattened_md[repo-runner-flattened.md]:::file
+    end
+    subgraph subgraph__context__dev_prompts [.context/.dev-prompts]
+        direction TB
+        file__context__dev_prompts__context_compressor_prompt_md[.context-compressor-prompt.md]:::file
+        file__context__dev_prompts_commands_md[commands.md]:::file
+        file__context__dev_prompts_repo_runner_flattened_md[repo-runner-flattened.md]:::file
+    end
+    subgraph subgraph__context__dev_prompts_compressed [.context/.dev-prompts/compressed]
+        direction TB
+        file__context__dev_prompts_compressed_00_compressed_codebase_ingest_prompt_md[00-compressed-codebase-ingest-prompt.md]:::file
+        file__context__dev_prompts_compressed_01_next_steps_prompt_md[01-next-steps-prompt.md]:::file
+        file__context__dev_prompts_compressed_02_requested_files_md[02-requested-files.md]:::file
+        file__context__dev_prompts_compressed_03_code_conventions_prompt_md[03-code-conventions-prompt.md]:::file
+    end
+    subgraph subgraph__context__dev_prompts_raw [.context/.dev-prompts/raw]
+        direction TB
+        file__context__dev_prompts_raw_00_raw_codebase_ingest_prompt_md[00-raw-codebase-ingest-prompt.md]:::file
+        file__context__dev_prompts_raw_01_next_steps_prompt_md[01-next-steps-prompt.md]:::file
+        file__context__dev_prompts_raw_02_code_conventions_prompt_md[02-code-conventions-prompt.md]:::file
+    end
+    subgraph subgraph__context_compressed_context [.context/compressed-context]
+        direction TB
+        file__context_compressed_context_all_documents_md[all-documents.md]:::file
+        file__context_compressed_context_full_tree_md[full-tree.md]:::file
+        file__context_compressed_context_scripts_compressed_md[scripts-compressed.md]:::file
+        file__context_compressed_context_src_compressed_md[src-compressed.md]:::file
+        file__context_compressed_context_tests_compressed_md[tests-compressed.md]:::file
+    end
+    subgraph subgraph__pytest_cache [.pytest_cache]
+        direction TB
+        file__pytest_cache__gitignore[.gitignore]:::file
+        file__pytest_cache_cachedir_tag[cachedir.tag]:::file
+        file__pytest_cache_readme_md[readme.md]:::file
+    end
+    subgraph subgraph__pytest_cache_v_cache [.pytest_cache/v/cache]
+        direction TB
+        file__pytest_cache_v_cache_lastfailed[lastfailed]:::file
+        file__pytest_cache_v_cache_nodeids[nodeids]:::file
+    end
+    subgraph subgraph_documents [documents]
+        direction TB
+        file_documents_agent_md[agent.md]:::file
+        file_documents_architecture_md[architecture.md]:::file
+        file_documents_config_spec_md[config_spec.md]:::file
+        file_documents_contributing_md[contributing.md]:::file
+        file_documents_determinism_rules_md[determinism_rules.md]:::file
+        file_documents_id_spec_md[id_spec.md]:::file
+        file_documents_language_support_md[language_support.md]:::file
+        file_documents_repo_layout_md[repo_layout.md]:::file
+        file_documents_roadmap_md[roadmap.md]:::file
+        file_documents_snapshot_spec_md[snapshot_spec.md]:::file
+        file_documents_testing_strategy_md[testing_strategy.md]:::file
+        file_documents_versioning_policy_md[versioning_policy.md]:::file
+    end
+    subgraph subgraph_root [root]
+        direction TB
+        file__gitignore[.gitignore]:::file
+        file_probe_py[probe.py]:::file
+        file_pytest_ini[pytest.ini]:::file
+        file_readme_md[readme.md]:::file
+        file_repo_runner_code_workspace[repo-runner.code-workspace]:::file
+        file_repo_runner_spec[repo-runner.spec]:::file
+        file_requirements_txt[requirements.txt]:::file
+    end
+    subgraph subgraph_scripts [scripts]
+        direction TB
+        file_scripts_build_exe_ps1[build_exe.ps1]:::file
+        file_scripts_export_signal_ps1[export-signal.ps1]:::file
+        file_scripts_package_repo_ps1[package-repo.ps1]:::file
+        file_scripts_verify_ps1[verify.ps1]:::file
+    end
+    subgraph subgraph_src [src]
+        direction TB
+        file_src___init___py[__init__.py]:::file
+        file_src_entry_point_py[entry_point.py]:::file
+    end
+    subgraph subgraph_src_analysis [src/analysis]
+        direction TB
+        file_src_analysis___init___py[__init__.py]:::file
+        file_src_analysis_context_slicer_py[context_slicer.py]:::file
+        file_src_analysis_graph_builder_py[graph_builder.py]:::file
+        file_src_analysis_import_scanner_py[import_scanner.py]:::file
+        file_src_analysis_snapshot_comparator_py[snapshot_comparator.py]:::file
+    end
+    subgraph subgraph_src_api [src/api]
+        direction TB
+        file_src_api_init_py[init.py]:::file
+        file_src_api_server_py[server.py]:::file
+    end
+    subgraph subgraph_src_cli [src/cli]
+        direction TB
+        file_src_cli___init___py[__init__.py]:::file
+        file_src_cli_main_py[main.py]:::file
+    end
+    subgraph subgraph_src_core [src/core]
+        direction TB
+        file_src_core___init___py[__init__.py]:::file
+        file_src_core_config_loader_py[config_loader.py]:::file
+        file_src_core_controller_py[controller.py]:::file
+        file_src_core_repo_runner_code_workspace[repo-runner.code-workspace]:::file
+        file_src_core_types_py[types.py]:::file
+    end
+    subgraph subgraph_src_exporters [src/exporters]
+        direction TB
+        file_src_exporters_flatten_markdown_exporter_py[flatten_markdown_exporter.py]:::file
+    end
+    subgraph subgraph_src_fingerprint [src/fingerprint]
+        direction TB
+        file_src_fingerprint_file_fingerprint_py[file_fingerprint.py]:::file
+    end
+    subgraph subgraph_src_gui [src/gui]
+        direction TB
+        file_src_gui___init___py[__init__.py]:::file
+        file_src_gui_app_py[app.py]:::file
+    end
+    subgraph subgraph_src_gui_components [src/gui/components]
+        direction TB
+        file_src_gui_components_config_tabs_py[config_tabs.py]:::file
+        file_src_gui_components_export_preview_py[export_preview.py]:::file
+        file_src_gui_components_preview_pane_py[preview_pane.py]:::file
+        file_src_gui_components_progress_window_py[progress_window.py]:::file
+        file_src_gui_components_tree_view_py[tree_view.py]:::file
+    end
+    subgraph subgraph_src_normalize [src/normalize]
+        direction TB
+        file_src_normalize_path_normalizer_py[path_normalizer.py]:::file
+    end
+    subgraph subgraph_src_observability [src/observability]
+        direction TB
+        file_src_observability_init_py[init.py]:::file
+        file_src_observability_token_telemetry_py[token_telemetry.py]:::file
+    end
+    subgraph subgraph_src_scanner [src/scanner]
+        direction TB
+        file_src_scanner_filesystem_scanner_py[filesystem_scanner.py]:::file
+    end
+    subgraph subgraph_src_snapshot [src/snapshot]
+        direction TB
+        file_src_snapshot_snapshot_loader_py[snapshot_loader.py]:::file
+        file_src_snapshot_snapshot_writer_py[snapshot_writer.py]:::file
+    end
+    subgraph subgraph_src_structure [src/structure]
+        direction TB
+        file_src_structure_structure_builder_py[structure_builder.py]:::file
+    end
+    subgraph subgraph_tests [tests]
+        direction TB
+        file_tests___init___py[__init__.py]:::file
+        file_tests_conftest_py[conftest.py]:::file
+    end
+    subgraph subgraph_tests_integration [tests/integration]
+        direction TB
+        file_tests_integration___init___py[__init__.py]:::file
+        file_tests_integration_test_api_py[test_api.py]:::file
+        file_tests_integration_test_cli_diff_py[test_cli_diff.py]:::file
+        file_tests_integration_test_cli_slice_py[test_cli_slice.py]:::file
+        file_tests_integration_test_e2e_snapshot_py[test_e2e_snapshot.py]:::file
+        file_tests_integration_test_export_flow_py[test_export_flow.py]:::file
+        file_tests_integration_test_graph_snapshot_py[test_graph_snapshot.py]:::file
+        file_tests_integration_test_robustness_py[test_robustness.py]:::file
+    end
+    subgraph subgraph_tests_unit [tests/unit]
+        direction TB
+        file_tests_unit___init___py[__init__.py]:::file
+        file_tests_unit_test_config_loader_py[test_config_loader.py]:::file
+        file_tests_unit_test_context_slicer_py[test_context_slicer.py]:::file
+        file_tests_unit_test_file_fingerprint_py[test_file_fingerprint.py]:::file
+        file_tests_unit_test_filesystem_scanner_py[test_filesystem_scanner.py]:::file
+        file_tests_unit_test_flatten_exporter_py[test_flatten_exporter.py]:::file
+        file_tests_unit_test_graph_builder_py[test_graph_builder.py]:::file
+        file_tests_unit_test_ignore_logic_py[test_ignore_logic.py]:::file
+        file_tests_unit_test_import_scanner_py[test_import_scanner.py]:::file
+        file_tests_unit_test_path_normalizer_py[test_path_normalizer.py]:::file
+        file_tests_unit_test_snapshot_comparator_py[test_snapshot_comparator.py]:::file
+        file_tests_unit_test_snapshot_loader_py[test_snapshot_loader.py]:::file
+        file_tests_unit_test_structure_builder_py[test_structure_builder.py]:::file
+        file_tests_unit_test_token_telemetry_py[test_token_telemetry.py]:::file
+        file_tests_unit_test_types_py[test_types.py]:::file
+    end
+
+    %% Relationships
+    file_probe_py --> external_matplotlib
+    file_probe_py --> external_os
+    file_probe_py --> external_pandas
+    file_src_analysis_context_slicer_py --> external_collections
+    file_src_analysis_context_slicer_py --> external_logging
+    file_src_analysis_context_slicer_py --> external_typing
+    file_src_analysis_context_slicer_py --> file_src_observability_token_telemetry_py
+    file_src_analysis_graph_builder_py --> external_os
+    file_src_analysis_graph_builder_py --> external_typing
+    file_src_analysis_graph_builder_py --> file_src_core_types_py
+    file_src_analysis_import_scanner_py --> external_ast
+    file_src_analysis_import_scanner_py --> external_re
+    file_src_analysis_import_scanner_py --> external_typing
+    file_src_analysis_snapshot_comparator_py --> external_typing
+    file_src_analysis_snapshot_comparator_py --> file_src_core_types_py
+    file_src_api_server_py --> external_fastapi
+    file_src_api_server_py --> external_fastapi
+    file_src_api_server_py --> external_json
+    file_src_api_server_py --> external_os
+    file_src_api_server_py --> external_pydantic
+    file_src_api_server_py --> external_typing
+    file_src_api_server_py --> file_src_analysis_context_slicer_py
+    file_src_api_server_py --> file_src_analysis_snapshot_comparator_py
+    file_src_api_server_py --> file_src_core_controller_py
+    file_src_api_server_py --> file_src_core_types_py
+    file_src_api_server_py --> file_src_observability_token_telemetry_py
+    file_src_api_server_py --> file_src_snapshot_snapshot_loader_py
+    file_src_cli_main_py --> external_argparse
+    file_src_cli_main_py --> external_os
+    file_src_cli_main_py --> external_sys
+    file_src_cli_main_py --> file_src_core_config_loader_py
+    file_src_cli_main_py --> file_src_core_controller_py
+    file_src_cli_main_py --> file_src_gui_app_py
+    file_src_core_config_loader_py --> external_json
+    file_src_core_config_loader_py --> external_os
+    file_src_core_config_loader_py --> external_typing
+    file_src_core_config_loader_py --> file_src_core_types_py
+    file_src_core_controller_py --> external_collections
+    file_src_core_controller_py --> external_json
+    file_src_core_controller_py --> external_os
+    file_src_core_controller_py --> external_typing
+    file_src_core_controller_py --> file_src_analysis_context_slicer_py
+    file_src_core_controller_py --> file_src_analysis_graph_builder_py
+    file_src_core_controller_py --> file_src_analysis_import_scanner_py
+    file_src_core_controller_py --> file_src_analysis_snapshot_comparator_py
+    file_src_core_controller_py --> file_src_core_types_py
+    file_src_core_controller_py --> file_src_exporters_flatten_markdown_exporter_py
+    file_src_core_controller_py --> file_src_fingerprint_file_fingerprint_py
+    file_src_core_controller_py --> file_src_normalize_path_normalizer_py
+    file_src_core_controller_py --> file_src_observability_token_telemetry_py
+    file_src_core_controller_py --> file_src_scanner_filesystem_scanner_py
+    file_src_core_controller_py --> file_src_snapshot_snapshot_loader_py
+    file_src_core_controller_py --> file_src_snapshot_snapshot_writer_py
+    file_src_core_controller_py --> file_src_structure_structure_builder_py
+    file_src_core_types_py --> external_pydantic
+    file_src_core_types_py --> external_typing
+    file_src_entry_point_py --> external_ctypes
+    file_src_entry_point_py --> external_multiprocessing
+    file_src_entry_point_py --> external_sys
+    file_src_entry_point_py --> file_src_cli_main_py
+    file_src_entry_point_py --> file_src_gui_app_py
+    file_src_exporters_flatten_markdown_exporter_py --> external_dataclasses
+    file_src_exporters_flatten_markdown_exporter_py --> external_os
+    file_src_exporters_flatten_markdown_exporter_py --> external_typing
+    file_src_fingerprint_file_fingerprint_py --> external_hashlib
+    file_src_fingerprint_file_fingerprint_py --> external_os
+    file_src_fingerprint_file_fingerprint_py --> external_typing
+    file_src_gui_app_py --> external_ctypes
+    file_src_gui_app_py --> external_datetime
+    file_src_gui_app_py --> external_os
+    file_src_gui_app_py --> external_threading
+    file_src_gui_app_py --> external_time
+    file_src_gui_app_py --> external_tkinter
+    file_src_gui_app_py --> file_src_core_controller_py
+    file_src_gui_app_py --> file_src_exporters_flatten_markdown_exporter_py
+    file_src_gui_app_py --> file_src_gui_components_config_tabs_py
+    file_src_gui_app_py --> file_src_gui_components_export_preview_py
+    file_src_gui_app_py --> file_src_gui_components_preview_pane_py
+    file_src_gui_app_py --> file_src_gui_components_progress_window_py
+    file_src_gui_app_py --> file_src_gui_components_tree_view_py
+    file_src_gui_app_py --> file_src_normalize_path_normalizer_py
+    file_src_gui_app_py --> file_src_scanner_filesystem_scanner_py
+    file_src_gui_components_config_tabs_py --> external_tkinter
+    file_src_gui_components_export_preview_py --> external_tkinter
+    file_src_gui_components_preview_pane_py --> external_tkinter
+    file_src_gui_components_preview_pane_py --> file_src_analysis_import_scanner_py
+    file_src_gui_components_preview_pane_py --> file_src_fingerprint_file_fingerprint_py
+    file_src_gui_components_progress_window_py --> external_tkinter
+    file_src_gui_components_tree_view_py --> external_os
+    file_src_gui_components_tree_view_py --> external_tkinter
+    file_src_normalize_path_normalizer_py --> external_os
+    file_src_observability_token_telemetry_py --> external_typing
+    file_src_scanner_filesystem_scanner_py --> external_os
+    file_src_scanner_filesystem_scanner_py --> external_typing
+    file_src_snapshot_snapshot_loader_py --> external_json
+    file_src_snapshot_snapshot_loader_py --> external_os
+    file_src_snapshot_snapshot_loader_py --> external_typing
+    file_src_snapshot_snapshot_writer_py --> external_datetime
+    file_src_snapshot_snapshot_writer_py --> external_json
+    file_src_snapshot_snapshot_writer_py --> external_os
+    file_src_snapshot_snapshot_writer_py --> external_typing
+    file_src_snapshot_snapshot_writer_py --> file_src_core_types_py
+    file_src_structure_structure_builder_py --> external_typing
+    file_src_structure_structure_builder_py --> file_src_core_types_py
+    file_tests_conftest_py --> external_os
+    file_tests_conftest_py --> external_pathlib
+    file_tests_conftest_py --> external_pytest
+    file_tests_conftest_py --> external_shutil
+    file_tests_conftest_py --> external_tempfile
+    file_tests_conftest_py --> external_typing
+    file_tests_integration_test_api_py --> external_fastapi
+    file_tests_integration_test_api_py --> external_os
+    file_tests_integration_test_api_py --> external_shutil
+    file_tests_integration_test_api_py --> external_tempfile
+    file_tests_integration_test_api_py --> external_time
+    file_tests_integration_test_api_py --> external_unittest
+    file_tests_integration_test_api_py --> file_src_api_server_py
+    file_tests_integration_test_cli_diff_py --> external_sys
+    file_tests_integration_test_cli_diff_py --> external_unittest
+    file_tests_integration_test_cli_diff_py --> external_unittest
+    file_tests_integration_test_cli_diff_py --> file_src_cli_main_py
+    file_tests_integration_test_cli_slice_py --> external_sys
+    file_tests_integration_test_cli_slice_py --> external_unittest
+    file_tests_integration_test_cli_slice_py --> external_unittest
+    file_tests_integration_test_cli_slice_py --> file_src_cli_main_py
+    file_tests_integration_test_e2e_snapshot_py --> external_os
+    file_tests_integration_test_e2e_snapshot_py --> external_shutil
+    file_tests_integration_test_e2e_snapshot_py --> external_tempfile
+    file_tests_integration_test_e2e_snapshot_py --> external_unittest
+    file_tests_integration_test_e2e_snapshot_py --> file_src_core_controller_py
+    file_tests_integration_test_e2e_snapshot_py --> file_src_snapshot_snapshot_loader_py
+    file_tests_integration_test_export_flow_py --> external_os
+    file_tests_integration_test_export_flow_py --> external_shutil
+    file_tests_integration_test_export_flow_py --> external_tempfile
+    file_tests_integration_test_export_flow_py --> external_unittest
+    file_tests_integration_test_export_flow_py --> file_src_core_controller_py
+    file_tests_integration_test_graph_snapshot_py --> external_json
+    file_tests_integration_test_graph_snapshot_py --> external_os
+    file_tests_integration_test_graph_snapshot_py --> external_shutil
+    file_tests_integration_test_graph_snapshot_py --> external_tempfile
+    file_tests_integration_test_graph_snapshot_py --> external_unittest
+    file_tests_integration_test_graph_snapshot_py --> file_src_core_controller_py
+    file_tests_integration_test_graph_snapshot_py --> file_src_snapshot_snapshot_loader_py
+    file_tests_integration_test_robustness_py --> external_os
+    file_tests_integration_test_robustness_py --> external_shutil
+    file_tests_integration_test_robustness_py --> external_sys
+    file_tests_integration_test_robustness_py --> external_tempfile
+    file_tests_integration_test_robustness_py --> external_unittest
+    file_tests_integration_test_robustness_py --> file_src_core_controller_py
+    file_tests_integration_test_robustness_py --> file_src_snapshot_snapshot_loader_py
+    file_tests_unit_test_config_loader_py --> external_json
+    file_tests_unit_test_config_loader_py --> external_os
+    file_tests_unit_test_config_loader_py --> external_shutil
+    file_tests_unit_test_config_loader_py --> external_tempfile
+    file_tests_unit_test_config_loader_py --> external_unittest
+    file_tests_unit_test_config_loader_py --> file_src_core_config_loader_py
+    file_tests_unit_test_context_slicer_py --> external_unittest
+    file_tests_unit_test_context_slicer_py --> file_src_analysis_context_slicer_py
+    file_tests_unit_test_context_slicer_py --> file_src_core_types_py
+    file_tests_unit_test_file_fingerprint_py --> external_hashlib
+    file_tests_unit_test_file_fingerprint_py --> external_os
+    file_tests_unit_test_file_fingerprint_py --> external_shutil
+    file_tests_unit_test_file_fingerprint_py --> external_tempfile
+    file_tests_unit_test_file_fingerprint_py --> external_unittest
+    file_tests_unit_test_file_fingerprint_py --> file_src_fingerprint_file_fingerprint_py
+    file_tests_unit_test_filesystem_scanner_py --> external_os
+    file_tests_unit_test_filesystem_scanner_py --> external_shutil
+    file_tests_unit_test_filesystem_scanner_py --> external_sys
+    file_tests_unit_test_filesystem_scanner_py --> external_tempfile
+    file_tests_unit_test_filesystem_scanner_py --> external_unittest
+    file_tests_unit_test_filesystem_scanner_py --> external_unittest
+    file_tests_unit_test_filesystem_scanner_py --> file_src_scanner_filesystem_scanner_py
+    file_tests_unit_test_flatten_exporter_py --> external_os
+    file_tests_unit_test_flatten_exporter_py --> external_unittest
+    file_tests_unit_test_flatten_exporter_py --> file_src_exporters_flatten_markdown_exporter_py
+    file_tests_unit_test_graph_builder_py --> external_unittest
+    file_tests_unit_test_graph_builder_py --> file_src_analysis_graph_builder_py
+    file_tests_unit_test_graph_builder_py --> file_src_core_types_py
+    file_tests_unit_test_ignore_logic_py --> external_os
+    file_tests_unit_test_ignore_logic_py --> external_shutil
+    file_tests_unit_test_ignore_logic_py --> external_tempfile
+    file_tests_unit_test_ignore_logic_py --> external_unittest
+    file_tests_unit_test_ignore_logic_py --> file_src_scanner_filesystem_scanner_py
+    file_tests_unit_test_import_scanner_py --> external_os
+    file_tests_unit_test_import_scanner_py --> external_shutil
+    file_tests_unit_test_import_scanner_py --> external_tempfile
+    file_tests_unit_test_import_scanner_py --> external_unittest
+    file_tests_unit_test_import_scanner_py --> file_src_analysis_import_scanner_py
+    file_tests_unit_test_path_normalizer_py --> external_os
+    file_tests_unit_test_path_normalizer_py --> external_unittest
+    file_tests_unit_test_path_normalizer_py --> file_src_normalize_path_normalizer_py
+    file_tests_unit_test_snapshot_comparator_py --> external_unittest
+    file_tests_unit_test_snapshot_comparator_py --> file_src_analysis_snapshot_comparator_py
+    file_tests_unit_test_snapshot_comparator_py --> file_src_core_types_py
+    file_tests_unit_test_structure_builder_py --> external_unittest
+    file_tests_unit_test_structure_builder_py --> file_src_core_types_py
+    file_tests_unit_test_structure_builder_py --> file_src_structure_structure_builder_py
+    file_tests_unit_test_token_telemetry_py --> external_unittest
+    file_tests_unit_test_token_telemetry_py --> file_src_observability_token_telemetry_py
+    file_tests_unit_test_types_py --> external_pydantic
+    file_tests_unit_test_types_py --> external_unittest
+    file_tests_unit_test_types_py --> file_src_core_types_py

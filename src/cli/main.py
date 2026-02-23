@@ -1,7 +1,7 @@
 ﻿import argparse
 import os
 import sys
-from src.core.controller import run_snapshot, run_export_flatten, run_compare
+from src.core.controller import run_snapshot, run_export_flatten, run_compare, run_export_diagram
 from src.core.config_loader import ConfigLoader
 
 def _parse_args():
@@ -39,8 +39,15 @@ def _parse_args():
     diff_cmd.add_argument("--base", required=True, help="Base snapshot ID or 'current'")
     diff_cmd.add_argument("--target", required=True, help="Target snapshot ID or 'current'")
     diff_cmd.add_argument("--output-root", required=False, default=None)
-    # Allows locating repo-runner.json to find output-root if not provided
     diff_cmd.add_argument("--repo-root", required=False, default=".", help="Repo root to search for config")
+
+    # diagram (NEW)
+    diag_cmd = sub.add_parser("diagram", help="Generate a Mermaid visualization")
+    diag_cmd.add_argument("--repo-root", required=True)
+    diag_cmd.add_argument("--output-root", required=False, default=None)
+    diag_cmd.add_argument("--snapshot-id", required=False, default=None)
+    diag_cmd.add_argument("--output", required=False, default=None)
+    diag_cmd.add_argument("--title", required=False, default=None)
 
     # export
     exp = sub.add_parser("export", help="Export derived artifacts")
@@ -71,7 +78,6 @@ def cli_progress(phase: str, current: int, total: int):
     else:
         msg = f"[repo-runner] {phase}: {current} files found..."
     
-    # Pad with spaces to overwrite previous longer lines, carriage return to reset cursor
     sys.stdout.write(f"\r{msg:<70}")
     sys.stdout.flush()
 
@@ -146,6 +152,24 @@ def main():
             print_summary=True
         )
         print(f"Slice generated:\n  {os.path.abspath(out) if out else 'None'}")
+        return
+
+    if args.command == "diagram":
+        config = ConfigLoader.load_config(args.repo_root)
+        output_root = args.output_root if args.output_root is not None else config.output_root
+        # Validation Fix: Ensure output_root is present
+        if not output_root:
+            print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
+            sys.exit(1)
+
+        out = run_export_diagram(
+            output_root=output_root,
+            repo_root=args.repo_root,
+            snapshot_id=args.snapshot_id,
+            output_path=args.output,
+            title=args.title
+        )
+        print(f"Diagram generated:\n  {os.path.abspath(out)}")
         return
 
     if args.command == "export":

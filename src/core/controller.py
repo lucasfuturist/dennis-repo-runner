@@ -22,6 +22,7 @@ from src.exporters.flatten_markdown_exporter import (
     FlattenMarkdownExporter,
     FlattenOptions,
 )
+from src.exporters.mermaid_exporter import MermaidExporter
 from src.fingerprint.file_fingerprint import FileFingerprint
 from src.normalize.path_normalizer import PathNormalizer
 from src.scanner.filesystem_scanner import FileSystemScanner
@@ -333,6 +334,32 @@ def run_export_flatten(
             f.write(telemetry_md + "\n\n" + content)
 
     return out_path
+
+
+def run_export_diagram(
+    output_root: str,
+    repo_root: str,
+    snapshot_id: Optional[str],
+    output_path: Optional[str],
+    title: Optional[str]
+) -> str:
+    """
+    Orchestrates the creation of a Mermaid diagram from an existing snapshot.
+    """
+    loader = SnapshotLoader(output_root)
+    snapshot_dir = loader.resolve_snapshot_dir(snapshot_id)
+    
+    graph_path = os.path.join(snapshot_dir, "graph.json")
+    if not os.path.exists(graph_path):
+        raise FileNotFoundError(f"graph.json not found in {snapshot_dir}. Cannot generate diagram.")
+        
+    with open(graph_path, "r") as f:
+        graph_data = json.load(f)
+        
+    graph = GraphStructure.model_validate(graph_data)
+    
+    exporter = MermaidExporter()
+    return exporter.export(snapshot_dir, graph, output_path, title)
 
 
 def run_compare(
