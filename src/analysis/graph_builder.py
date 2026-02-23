@@ -38,6 +38,7 @@ class GraphBuilder:
                         relation="imports"
                     ))
                 else:
+                    # Fallback to External Resolution
                     pkg_name = self._resolve_external(raw_import, lang)
                     if pkg_name:
                         ext_id = f"external:{pkg_name}"
@@ -156,16 +157,30 @@ class GraphBuilder:
         return None
 
     def _resolve_external(self, import_str: str, language: str) -> Optional[str]:
+        """
+        Strictly normalizes external dependencies to their root package name.
+        Reference: ID_SPEC.md (External ID Normalization)
+        """
         if language == "python":
+            # Rule: Truncate at first dot
             if import_str.startswith("."): return None
             return import_str.split(".")[0]
+            
         elif language in ("javascript", "typescript"):
+            # Rules:
+            # 1. Ignore relatives / absolutes
             if import_str.startswith(".") or import_str.startswith("/"): return None
+            
+            # 2. Scoped Packages (@scope/pkg/sub -> @scope/pkg)
             if import_str.startswith("@"):
                 parts = import_str.split("/")
-                if len(parts) >= 2: return f"{parts[0]}/{parts[1]}"
+                if len(parts) >= 2: 
+                    return f"{parts[0]}/{parts[1]}"
                 return import_str 
+            
+            # 3. Standard Packages (pkg/sub -> pkg)
             return import_str.split("/")[0]
+            
         return None
 
     def _resolve_python(self, import_str: str, source_dir: str, path_map: Dict[str, str]) -> Optional[str]:

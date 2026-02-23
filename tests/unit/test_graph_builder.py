@@ -81,7 +81,11 @@ class TestGraphBuilder(unittest.TestCase):
     # --- Graph Construction Logic ---
 
     def test_scoped_and_deep_external_packages(self):
-        """Test that deep imports collapse to root packages, preserving NPM scopes."""
+        """
+        HARDENING TEST:
+        Test that deep imports collapse to root packages, preserving NPM scopes.
+        Reference: ID_SPEC.md (External ID Normalization)
+        """
         files = [
             FileEntry(
                 stable_id="file:src/app.ts",
@@ -89,10 +93,11 @@ class TestGraphBuilder(unittest.TestCase):
                 language="typescript",
                 # Imports testing various JS ecosystem quirks
                 imports=[
-                    "@mui/material/Button",  # Scoped + Subpath
-                    "lodash/fp/map",         # Unscoped + Subpath
-                    "@angular/core",         # Scoped strict
-                    "react"                  # Unscoped strict
+                    "@mui/material/Button",  # Scoped + Subpath -> @mui/material
+                    "lodash/fp/map",         # Unscoped + Subpath -> lodash
+                    "@angular/core",         # Scoped strict -> @angular/core
+                    "react",                 # Unscoped strict -> react
+                    "next/link"              # Unscoped subpath -> next
                 ], 
                 module_path="src",
                 sha256="abc", 
@@ -108,9 +113,42 @@ class TestGraphBuilder(unittest.TestCase):
         self.assertIn("external:lodash", node_ids)
         self.assertIn("external:@angular/core", node_ids)
         self.assertIn("external:react", node_ids)
+        self.assertIn("external:next", node_ids)
         
+        # Verify collapse
         self.assertNotIn("external:@mui/material/Button", node_ids)
         self.assertNotIn("external:lodash/fp/map", node_ids)
+        self.assertNotIn("external:next/link", node_ids)
+
+    def test_python_deep_package_normalization(self):
+        """
+        HARDENING TEST:
+        Test that Python dotted imports collapse to the top-level package.
+        """
+        files = [
+            FileEntry(
+                stable_id="file:analysis.py",
+                path="analysis.py",
+                language="python",
+                imports=[
+                    "pandas.core.frame",
+                    "matplotlib.pyplot",
+                    "os"
+                ], 
+                module_path=".",
+                sha256="abc", 
+                size_bytes=100
+            )
+        ]
+        
+        graph = self.builder.build(files)
+        node_ids = set(n.id for n in graph.nodes)
+        
+        self.assertIn("external:pandas", node_ids)
+        self.assertIn("external:matplotlib", node_ids)
+        self.assertIn("external:os", node_ids)
+        
+        self.assertNotIn("external:pandas.core.frame", node_ids)
 
     def test_graph_determinism(self):
         """Test that Graph output is perfectly sorted regardless of input order."""

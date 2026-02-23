@@ -53,6 +53,24 @@ Given a normalized path:
 - repo stable_id: `"repo:root"`
 - external stable_id: `"external:" + package_name`
 
+### External ID Normalization (v0.2 Hardening)
+
+To prevent graph fragmentation, external dependencies must be canonicalized to their **root package identity**.
+
+**Python Rules:**
+- Truncate at the first dot.
+- Example: `import pandas.core.frame` -> `external:pandas`
+- Example: `from os import path` -> `external:os`
+
+**JavaScript/TypeScript Rules:**
+- **Standard:** Truncate at the first slash.
+  - Example: `import ... from 'lodash/fp'` -> `external:lodash`
+- **Scoped:** Keep the first two segments (scope + package).
+  - Example: `import ... from '@mui/material/Button'` -> `external:@mui/material`
+- **Built-in:** Truncate at slash (if any).
+  - Example: `import ... from 'node:fs/promises'` -> `external:node:fs` (or simplified per ecosystem convention)
+  - *Note:* v0.2 treats node built-ins as standard packages.
+
 ## Symbol IDs
 
 Symbols are primarily used for Context Slicing queries and logical navigation.
