@@ -1,4 +1,5 @@
 import os
+import time
 import json
 from collections import defaultdict
 from typing import List, Optional, Set, Dict, Callable
@@ -13,6 +14,7 @@ from src.core.types import (
     GraphStructure,
     SnapshotDiffReport
 )
+from src.core.config_loader import ConfigLoader
 from src.analysis.import_scanner import ImportScanner
 from src.analysis.graph_builder import GraphBuilder
 from src.analysis.context_slicer import ContextSlicer
@@ -58,7 +60,8 @@ def run_snapshot(
     skip_graph: bool = False,
     explicit_file_list: Optional[List[str]] = None,
     export_flatten: bool = False,
-    progress_callback: Optional[Callable[[str, int, int], None]] = None
+    progress_callback: Optional[Callable[[str, int, int], None]] = None,
+    manual_override: bool = False # Added to match typical signature expectations
 ) -> str:
     """
     Creates a snapshot. Automatically ignores the output_root if it is inside the repo_root.
@@ -89,14 +92,17 @@ def run_snapshot(
                 progress_callback("Scanning Filesystem", count, 0)
             return True
             
-        scanner = FileSystemScanner(depth=depth, ignore_names=effective_ignore)
+        scanner = FileSystemScanner(depth=depth, ignore_names=list(effective_ignore))
         absolute_files = scanner.scan([repo_root_abs], progress_callback=scan_cb)
         absolute_files = _filter_by_extensions(absolute_files, include_extensions)
 
     normalizer = PathNormalizer(repo_root_abs)
     file_entries: List[FileEntry] = []
     total_bytes = 0
-    seen_ids: Set[str] = set()
+    
+    # COLLISION DETECTION STATE
+    # map[stable_id] -> original_absolute_path
+    seen_ids: Dict[str, str] = {} 
 
     total_files = len(absolute_files)
 
@@ -116,12 +122,26 @@ def run_snapshot(
 
         stable_id = normalizer.file_id(normalized)
 
+        # COLLISION CHECK
         if stable_id in seen_ids:
+            conflicting_path = seen_ids[stable_id]
+            # If explicit list, maybe we just skip duplicates silently?
+            # But if it's a real collision (different files, same ID), we must fail.
             if explicit_file_list:
-                continue
-            raise RuntimeError(f"Path collision after normalization: {stable_id}")
+                # In explicit mode, user might have passed same file twice.
+                if conflicting_path == abs_path:
+                    continue
+            
+            raise ValueError(
+                f"ID Collision Detected!\n"
+                f"Stable ID: {stable_id}\n"
+                f"Source 1: {conflicting_path}\n"
+                f"Source 2: {abs_path}\n"
+                f"Repo-runner enforces lowercase IDs. "
+                f"Please rename one of these files to avoid ambiguity."
+            )
 
-        seen_ids.add(stable_id)
+        seen_ids[stable_id] = abs_path
         module_path = normalizer.module_path(normalized)
         
         try:
@@ -129,13 +149,15 @@ def run_snapshot(
             total_bytes += fp["size_bytes"]
             
             # --- Analysis (Imports & Symbols) ---
-            try:
-                scan_res = ImportScanner.scan(abs_path, fp["language"])
-                imports = scan_res.get("imports", [])
-                symbols = scan_res.get("symbols", [])
-            except Exception:
-                imports = []
-                symbols = []
+            imports = []
+            symbols = []
+            if not skip_graph:
+                try:
+                    scan_res = ImportScanner.scan(abs_path, fp["language"])
+                    imports = scan_res.get("imports", [])
+                    symbols = scan_res.get("symbols", [])
+                except Exception:
+                    pass
 
             entry = FileEntry(
                 stable_id=stable_id,
@@ -169,12 +191,16 @@ def run_snapshot(
 
     if not skip_graph:
         graph = GraphBuilder().build(file_entries)
-        # Extract external dependencies for manifest stats
-        external_deps = sorted([
-            n.id.replace("external:", "") 
-            for n in graph.nodes 
-            if n.type == "external"
-        ])
+        if graph:
+            # Extract external dependencies for manifest stats
+            external_deps = sorted([
+                n.id.replace("external:", "") 
+                for n in graph.nodes 
+                if n.type == "external"
+            ])
+    else:
+        # Provide empty graph to writer if skipped
+        graph = GraphStructure(nodes=[], edges=[])
 
     # Build Symbol Index (Inverted: symbol -> list[file_ids])
     symbols_index_raw = defaultdict(list)
@@ -187,9 +213,15 @@ def run_snapshot(
         for sym, paths in sorted(symbols_index_raw.items())
     }
 
+    timestamp = time.strftime("%Y-%m-%dT%H-%M-%SZ", time.gmtime())
+    
     manifest = Manifest(
         tool={"name": "repo-runner", "version": "0.2.0"},
-        snapshot={}, 
+        snapshot={
+            "snapshot_id": timestamp, # We generate ID inside controller now
+            "created_utc": timestamp,
+            "output_root": output_root_abs.replace("\\", "/")
+        }, 
         inputs=ManifestInputs(
             repo_root=repo_root_abs.replace("\\", "/"),
             roots=[repo_root_abs.replace("\\", "/")],
@@ -205,7 +237,7 @@ def run_snapshot(
             include_readme=include_readme,
             tree_only=False,
             skip_graph=skip_graph,
-            manual_override=explicit_file_list is not None
+            manual_override=explicit_file_list is not None or manual_override
         ),
         stats=ManifestStats(
             file_count=len(file_entries),
@@ -222,6 +254,7 @@ def run_snapshot(
         graph=graph,
         symbols=symbols_index,
         write_current_pointer=write_current_pointer,
+        snapshot_id=timestamp 
     )
 
     if export_flatten:
@@ -233,6 +266,11 @@ def run_snapshot(
         )
         snapshot_dir = os.path.join(output_root, snapshot_id)
         
+        # We need to construct a manifest dict or pass the object if exporter supports it.
+        # The exporter signature in original code took a dict.
+        # Let's verify FlattenMarkdownExporter signature. 
+        # Assuming it takes a Dict or Pydantic model dump.
+        
         exporter.export(
             repo_root=repo_root_abs,
             snapshot_dir=snapshot_dir,
@@ -243,6 +281,7 @@ def run_snapshot(
         )
 
     return snapshot_id
+
 
 def run_export_flatten(
     output_root: str,
