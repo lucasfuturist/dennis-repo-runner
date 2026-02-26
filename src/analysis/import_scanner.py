@@ -6,9 +6,7 @@ class ImportScanner:
     # --- JavaScript / TypeScript Patterns (Regex) ---
     
     # Imports 
-    # CHANGED: Uses [^;]+? instead of [\s\S]+? to stop matching at the first semicolon.
-    # This prevents catastrophic backtracking on side-effect imports (import 'foo';)
-    # where the engine would otherwise scan the entire file looking for 'from'.
+    # Uses [^;]+? to stop matching at the first semicolon (prevent catastrophic backtracking)
     _JS_IMPORT_FROM = re.compile(r'import\s+(?:type\s+)?([^;]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
     _JS_EXPORT_FROM = re.compile(r'export\s+(?:type\s+)?([^;]+?)\s+from\s+[\'"]([^\'"]+)[\'"]')
     
@@ -20,9 +18,15 @@ class ImportScanner:
 
     # Symbols (Classes & Functions)
     _JS_CLASS_DEF = re.compile(r'(?:export\s+)?(?:default\s+)?(?:abstract\s+)?class\s+([a-zA-Z0-9_$]+)')
-    # FIXED: Allows `function* name`, `function * name`, or standard `function name`
+    # Allows `function* name`, `function * name`, or standard `function name`
     _JS_FUNC_DEF = re.compile(r'(?:export\s+)?(?:default\s+)?(?:async\s+)?function(?:\s+|\s*\*\s*)([a-zA-Z0-9_$]+)')
+    
+    # Arrow Functions: const foo = () => ...
     _JS_CONST_FUNC_DEF = re.compile(r'(?:export\s+)?const\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>')
+
+    # Constants (New in v0.2.1): export const SCREAMING_SNAKE = ...
+    # We enforce UPPER_CASE to avoid indexing every single local variable.
+    _JS_CONST_VAR_DEF = re.compile(r'(?:export\s+)?const\s+([A-Z0-9_]{2,})\s*=')
 
     # Comment Stripping
     _JS_BLOCK_COMMENT = re.compile(r'/\*[\s\S]*?\*/')
@@ -93,6 +97,24 @@ class ImportScanner:
                 symbols.add(node.name)
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 symbols.add(node.name)
+            
+            # Global Constants (Assignments)
+            # We look for UPPER_CASE variables at the top level (approx)
+            # ast.walk visits all nodes, so we check if the assignment target is a Name
+            elif isinstance(node, (ast.Assign, ast.AnnAssign)):
+                targets = []
+                if isinstance(node, ast.Assign):
+                    targets = node.targets
+                else:
+                    targets = [node.target]
+                
+                for target in targets:
+                    if isinstance(target, ast.Name):
+                        name = target.id
+                        # Heuristic: Only capture UPPER_CASE constants (min 2 chars)
+                        # to avoid indexing loop variables or locals.
+                        if name.isupper() and len(name) >= 2:
+                            symbols.add(name)
 
     @staticmethod
     def _scan_js(content: str, imports: Set[str], symbols: Set[str]):
@@ -101,12 +123,6 @@ class ImportScanner:
         clean_content = ImportScanner._JS_LINE_COMMENT.sub('', clean_content)
 
         # Imports
-        # Group 1 is the capture group for the 'from' path in the new regex
-        # Note: In the previous regex it was group 2, but we removed (?:type\s+)? from capture?
-        # Wait, the regex is:
-        # r'import\s+(?:type\s+)?([^;]+?)\s+from\s+[\'"]([^\'"]+)[\'"]'
-        # Group 1: ([^;]+?) -> The symbols
-        # Group 2: ([^\'"]+) -> The path
         for match in ImportScanner._JS_IMPORT_FROM.finditer(clean_content):
             imports.add(match.group(2)) 
             
@@ -130,4 +146,8 @@ class ImportScanner:
             symbols.add(match.group(1))
             
         for match in ImportScanner._JS_CONST_FUNC_DEF.finditer(clean_content):
+            symbols.add(match.group(1))
+            
+        # Constants
+        for match in ImportScanner._JS_CONST_VAR_DEF.finditer(clean_content):
             symbols.add(match.group(1))
