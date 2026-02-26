@@ -15,24 +15,29 @@ class TestCollisionLogic(unittest.TestCase):
     @patch("src.core.controller.ConfigLoader")
     def test_detects_case_collision(self, mock_config_loader, mock_scanner_cls):
         # 1. Setup Mocks
-        # Mock Config not strictly needed if we pass explicit args, but safer
         mock_config = MagicMock()
         mock_config_loader.load_config.return_value = mock_config
         
         # Mock Scanner to return colliding paths
-        # In a real scenario, these would come from os.walk on Linux
         mock_instance = mock_scanner_cls.return_value
         mock_instance.scan.return_value = [
             "/repo/src/Utils.py", 
             "/repo/src/utils.py"
         ]
         
+        # Helper to simulate relpath for our fake /repo structure
+        def fake_relpath(path, start):
+            # Simplistic simulation: remove start from path
+            if path.startswith(start):
+                return path[len(start):].lstrip("/")
+            return path
+
         # 2. Execution & Assertion
-        # We expect a ValueError because both Normalize to 'file:src/utils.py'
-        # We need to mock os.path.exists and isdir to bypass checks on fake paths
+        # We mock os.path heavily to simulate a Linux environment on any host
         with patch("os.path.exists", return_value=True), \
              patch("os.path.isdir", return_value=True), \
-             patch("os.path.abspath", side_effect=lambda x: x): # pass through
+             patch("os.path.abspath", side_effect=lambda x: x), \
+             patch("os.path.relpath", side_effect=fake_relpath): 
              
             with self.assertRaises(ValueError) as context:
                 run_snapshot(
@@ -60,11 +65,17 @@ class TestCollisionLogic(unittest.TestCase):
             "/repo/src/b.py"
         ]
         
+        def fake_relpath(path, start):
+            if path.startswith(start):
+                return path[len(start):].lstrip("/")
+            return path
+        
         # Should NOT raise
         try:
             with patch("os.path.exists", return_value=True), \
                  patch("os.path.isdir", return_value=True), \
                  patch("os.path.abspath", side_effect=lambda x: x), \
+                 patch("os.path.relpath", side_effect=fake_relpath), \
                  patch("src.core.controller.FileFingerprint.fingerprint") as mock_fp, \
                  patch("src.core.controller.SnapshotWriter"):
                 
