@@ -51,8 +51,6 @@ class FileEntry(BaseModel):
 class GraphNode(BaseModel):
     id: str
     type: str  # 'file' | 'module' | 'external'
-    
-    # Optional metadata for specific node types
     metadata: Optional[Any] = None
 
 class GraphEdge(BaseModel):
@@ -60,14 +58,24 @@ class GraphEdge(BaseModel):
     target: str
     relation: str = "imports"
 
+class UnresolvedReference(BaseModel):
+    """
+    Represents an import statement that could not be resolved to 
+    a file node OR a canonical external package.
+    Commonly caused by broken relative paths or typos.
+    """
+    source: str
+    import_ref: str
+
 class GraphStructure(BaseModel):
-    schema_version: str = "1.0"
+    schema_version: str = "1.1" # Bumped from 1.0 for new field
     nodes: List[GraphNode]
     edges: List[GraphEdge]
-    # List of cycles, where each cycle is a list of node IDs in traversal order
     cycles: List[List[str]] = Field(default_factory=list)
-    # Formalized flag for O(1) downstream checks (e.g., DAG validation)
     has_cycles: bool = False
+    
+    # New in v1.1: Track broken links instead of silently dropping them
+    unresolved_references: List[UnresolvedReference] = Field(default_factory=list)
 
 class ManifestStats(BaseModel):
     file_count: int

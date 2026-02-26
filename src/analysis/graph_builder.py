@@ -1,6 +1,6 @@
 import os
 from typing import List, Dict, Set, Optional
-from src.core.types import FileEntry, GraphStructure, GraphNode, GraphEdge
+from src.core.types import FileEntry, GraphStructure, GraphNode, GraphEdge, UnresolvedReference
 
 class GraphBuilder:
     def build(self, files: List[FileEntry]) -> GraphStructure:
@@ -15,6 +15,7 @@ class GraphBuilder:
         
         nodes: List[GraphNode] = []
         edges: List[GraphEdge] = []
+        unresolved: List[UnresolvedReference] = []
         external_ids: Set[str] = set()
         
         # Add all file nodes
@@ -53,11 +54,19 @@ class GraphBuilder:
                             target=ext_id,
                             relation="imports"
                         ))
+                    else:
+                        # Resolution Failed: It's neither a file nor a valid external.
+                        # Likely a broken relative import or file excluded by ignore rules.
+                        unresolved.append(UnresolvedReference(
+                            source=source_id,
+                            import_ref=raw_import
+                        ))
 
         # 3. Enforce Determinism 
         # Sort nodes and edges before graph analysis to ensure stable cycle detection
         nodes.sort(key=lambda n: n.id)
         edges.sort(key=lambda e: (e.source, e.target, e.relation))
+        unresolved.sort(key=lambda u: (u.source, u.import_ref))
 
         # 4. Cycle Detection
         adjacency = self._build_adjacency(nodes, edges)
@@ -68,11 +77,12 @@ class GraphBuilder:
             nodes=nodes, 
             edges=edges, 
             cycles=cycles, 
-            has_cycles=has_cycles
+            has_cycles=has_cycles,
+            unresolved_references=unresolved
         )
 
     def _build_adjacency(self, nodes: List[GraphNode], edges: List[GraphEdge]) -> Dict[str, List[str]]:
-        adj: Dict[str, List[str]] = {n.id: [] for n in nodes}
+        adj: Dict[str, List[str]] = {n.id:[] for n in nodes}
         for edge in edges:
             if edge.source in adj:
                 adj[edge.source].append(edge.target)
@@ -91,7 +101,7 @@ class GraphBuilder:
         visited: Set[str] = set()
         visiting: Set[str] = set()
         stack: List[str] = []
-        cycles: List[List[str]] = []
+        cycles: List[List[str]] =[]
 
         def dfs(node_id: str):
             visited.add(node_id)
@@ -123,7 +133,7 @@ class GraphBuilder:
         # Post-process cycles for deterministic output
         # 1. Normalize rotation (smallest element first)
         # 2. Sort the list of cycles
-        normalized_cycles = []
+        normalized_cycles =[]
         for cycle in cycles:
             # Rotate cycle so the smallest string is first
             min_idx = cycle.index(min(cycle))
@@ -131,7 +141,7 @@ class GraphBuilder:
             normalized_cycles.append(rotated)
         
         # Remove duplicates (possible if reachable from multiple paths)
-        unique_cycles = []
+        unique_cycles =[]
         seen_cycles = set()
         for c in normalized_cycles:
             c_tuple = tuple(c)
@@ -189,42 +199,36 @@ class GraphBuilder:
         return None
 
     def _resolve_python(self, import_str: str, source_dir: str, path_map: Dict[str, str]) -> Optional[str]:
-        # FIXED: Handle relative imports logic carefully
+        candidates =[]
         
         if import_str.startswith("."):
-            # It's a relative import (e.g. .utils or ..core)
-            # We must NOT replace the leading dots with slashes blindly, 
-            # as that creates paths like "/utils" which os.path.join treats as absolute root.
-            
-            # 1. Strip leading dots to get the name
+            # Explicit Relative import (e.g. .utils or ..core)
             name_part = import_str.lstrip(".")
             dot_count = len(import_str) - len(name_part)
             
-            # 2. Walk up directory tree based on dot count
-            # . -> current dir (dot_count 1)
-            # .. -> parent (dot_count 2)
-            
-            # Start at source_dir
             current_base = source_dir
-            
-            # Go up (dot_count - 1) times
-            # E.g. .utils -> 0 times up (stay in source_dir)
-            # ..utils -> 1 time up (parent)
             for _ in range(dot_count - 1):
                 current_base = os.path.dirname(current_base)
             
             base_path = name_part.replace(".", "/")
             rel_base = os.path.join(current_base, base_path).replace("\\", "/")
+            candidates.append(f"{rel_base}.py")
+            candidates.append(f"{rel_base}/__init__.py")
             
         else:
-            # Absolute import (e.g. src.utils)
+            # Absolute import (e.g. utils.logger)
             base_path = import_str.replace(".", "/")
-            # Here we treat absolute imports as relative to repo root (handled by path_map lookup)
-            rel_base = base_path
-        
-        candidates = []
-        candidates.append(f"{rel_base}.py")
-        candidates.append(f"{rel_base}/__init__.py")
+            
+            # 1. Check if it's relative to the repo root (standard absolute project import)
+            candidates.append(f"{base_path}.py")
+            candidates.append(f"{base_path}/__init__.py")
+            
+            # 2. FIX: Fallback to treating it as relative to source_dir 
+            # (Python 2 style or certain local import scenarios like `import logger` inside `utils/`)
+            # This restores the original behavior that test_python_internal_resolution expects.
+            rel_base = os.path.join(source_dir, base_path).replace("\\", "/")
+            candidates.append(f"{rel_base}.py")
+            candidates.append(f"{rel_base}/__init__.py")
         
         for c in candidates:
             c_lower = c.lower()
@@ -239,7 +243,7 @@ class GraphBuilder:
         except ValueError:
             return None
 
-        extensions = ["", ".ts", ".tsx", ".js", ".jsx", ".d.ts", ".json"]
+        extensions =["", ".ts", ".tsx", ".js", ".jsx", ".d.ts", ".json"]
         for ext in extensions:
             candidate = f"{normalized}{ext}"
             if candidate.lower() in path_map:
