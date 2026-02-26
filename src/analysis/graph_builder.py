@@ -189,14 +189,43 @@ class GraphBuilder:
         return None
 
     def _resolve_python(self, import_str: str, source_dir: str, path_map: Dict[str, str]) -> Optional[str]:
-        base_path = import_str.replace(".", "/")
+        # FIXED: Handle relative imports logic carefully
+        
+        if import_str.startswith("."):
+            # It's a relative import (e.g. .utils or ..core)
+            # We must NOT replace the leading dots with slashes blindly, 
+            # as that creates paths like "/utils" which os.path.join treats as absolute root.
+            
+            # 1. Strip leading dots to get the name
+            name_part = import_str.lstrip(".")
+            dot_count = len(import_str) - len(name_part)
+            
+            # 2. Walk up directory tree based on dot count
+            # . -> current dir (dot_count 1)
+            # .. -> parent (dot_count 2)
+            
+            # Start at source_dir
+            current_base = source_dir
+            
+            # Go up (dot_count - 1) times
+            # E.g. .utils -> 0 times up (stay in source_dir)
+            # ..utils -> 1 time up (parent)
+            for _ in range(dot_count - 1):
+                current_base = os.path.dirname(current_base)
+            
+            base_path = name_part.replace(".", "/")
+            rel_base = os.path.join(current_base, base_path).replace("\\", "/")
+            
+        else:
+            # Absolute import (e.g. src.utils)
+            base_path = import_str.replace(".", "/")
+            # Here we treat absolute imports as relative to repo root (handled by path_map lookup)
+            rel_base = base_path
+        
         candidates = []
-        candidates.append(f"{base_path}.py")
-        candidates.append(f"{base_path}/__init__.py")
-        rel_base = os.path.join(source_dir, base_path).replace("\\", "/")
         candidates.append(f"{rel_base}.py")
         candidates.append(f"{rel_base}/__init__.py")
-
+        
         for c in candidates:
             c_lower = c.lower()
             if c_lower in path_map:
