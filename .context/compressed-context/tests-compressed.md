@@ -1,6 +1,7 @@
-## High-Resolution Interface Map: repo-runner Tests
+# High-Resolution Interface Map: `repo-runner` (Tests)
 
-### Tree
+## 1. The Tree
+
 ```
 └── tests
     ├── __init__.py
@@ -18,12 +19,14 @@
         ├── __init__.py
         ├── test_config_loader.py
         ├── test_context_slicer.py
+        ├── test_drawio_exporter.py
         ├── test_file_fingerprint.py
         ├── test_filesystem_scanner.py
         ├── test_flatten_exporter.py
         ├── test_graph_builder.py
         ├── test_ignore_logic.py
         ├── test_import_scanner.py
+        ├── test_mermaid_exporter.py
         ├── test_path_normalizer.py
         ├── test_snapshot_comparator.py
         ├── test_snapshot_loader.py
@@ -32,134 +35,144 @@
         └── test_types.py
 ```
 
----
-
-### File Summaries
+## 2. File Summaries
 
 ### `tests/conftest.py`
-**Role:** Provides shared pytest fixtures for temporary filesystem orchestration and mock repository generation.
+**Role:** Global Pytest fixtures for creating temporary repository environments and file structures.
 **Key Exports:**
-- `temp_repo_root(): str` - A generator fixture that creates and cleans up a unique temporary directory for repository simulation.
-- `create_file(temp_repo_root): Callable` - A factory fixture for generating files with specific content within the test environment.
-- `complex_repo(temp_repo_root, create_file): str` - A fixture that populates a multi-language, nested directory structure for integration testing.
-**Dependencies:** `os`, `shutil`, `tempfile`
+- `temp_repo_root()` - Yields a unique, cleaned-up temporary directory path for isolation.
+- `create_file(rel_path, content)` - Factory to generate files within the temp repo.
+- `simple_repo` / `complex_repo` - Pre-scaffolded repository states for quick testing.
+**Dependencies:** `pytest`, `tempfile`, `shutil`
 
 ### `tests/integration/test_api.py`
-**Role:** Validates the FastAPI server's lifecycle, including snapshot creation, context slicing, and comparison endpoints.
+**Role:** Validates the FastAPI server endpoints for snapshot lifecycle, context slicing, and diffing.
 **Key Exports:**
-- `test_full_api_lifecycle()` - Verifies the end-to-end flow from initial ingestion to structural comparison.
-- `test_slice_with_token_limit()` - Ensures the API correctly prunes context when a `max_tokens` constraint is provided.
+- `TestAPI` - Test suite using `TestClient` to verify HTTP responses and JSON payloads.
 **Dependencies:** `src.api.server`, `fastapi.testclient`
 
 ### `tests/integration/test_cli_diff.py`
-**Role:** Ensures the command-line interface correctly parses arguments and dispatches them to the snapshot comparison engine.
+**Role:** Verifies that the CLI diff command correctly parses arguments and invokes the controller.
 **Key Exports:**
-- `test_diff_command_parsing()` - Validates that CLI flags map correctly to the internal `run_compare` controller.
-**Dependencies:** `src.cli.main`, `src.core.controller`
+- `TestCLIDiff` - Checks if `src.cli.main` correctly routes flags to `run_compare`.
+**Dependencies:** `src.cli.main`, `unittest.mock`
 
 ### `tests/integration/test_cli_slice.py`
-**Role:** Verifies CLI argument handling for the context slicing and Markdown export commands.
+**Role:** Verifies that the CLI slice command correctly maps arguments (radius, tokens) to the export controller.
 **Key Exports:**
-- `test_slice_command_invocation()` - Checks that `radius` and `max_tokens` flags reach the export controller with correct types.
-**Dependencies:** `src.cli.main`, `src.core.controller`
+- `TestCLISlice` - Checks argument parsing and defaults for `run_export_flatten`.
+**Dependencies:** `src.cli.main`, `unittest.mock`
 
 ### `tests/integration/test_e2e_snapshot.py`
-**Role:** Tests the high-level snapshot creation logic, ensuring all JSON artifacts and exports are generated on disk.
+**Role:** End-to-end verification of the snapshot engine, ensuring files, graphs, and manifests are written to disk.
 **Key Exports:**
-- `test_snapshot_creation_with_graph_and_auto_export()` - Confirms that a single run produces manifests, structure, and dependency graphs.
+- `TestFullSnapshot` - Validates directory structure, JSON schema compliance, and auto-export generation.
 **Dependencies:** `src.core.controller`, `src.snapshot.snapshot_loader`
 
 ### `tests/integration/test_export_flow.py`
-**Role:** Validates the conversion of snapshots into Markdown documentation across different scopes (full vs. module-limited).
+**Role:** Tests the Markdown export functionality, including scoping (full vs module) and token stats.
 **Key Exports:**
-- `test_export_scoped()` - Ensures that exports restricted to specific modules exclude files outside that directory.
+- `TestExportFlow` - Ensures generated Markdown contains expected file contents and exclusions.
 **Dependencies:** `src.core.controller`
 
 ### `tests/integration/test_graph_snapshot.py`
-**Role:** Validates that the dependency graph is correctly analyzed and persisted during a standard snapshot run.
+**Role:** Verifies the dependency graph generation within a full snapshot run.
 **Key Exports:**
-- `test_end_to_end_graph_generation()` - Confirms that internal file-to-file and external-to-package edges are captured in JSON.
+- `TestGraphSnapshot` - checks that nodes/edges correspond to actual Python imports in the temp repo.
 **Dependencies:** `src.core.controller`, `src.snapshot.snapshot_loader`
 
 ### `tests/integration/test_robustness.py`
-**Role:** Checks system stability against filesystem edge cases like symlink cycles and mixed health states.
+**Role:** Tests system stability against messy inputs like symlink cycles, ignored directories, and mixed file types.
 **Key Exports:**
-- `test_snapshot_with_mixed_health()` - Verifies that symlink loops do not cause infinite recursion in the scanner.
-**Dependencies:** `src.core.controller`, `src.scanner.filesystem_scanner`
+- `TestRobustness` - Ensures the scanner doesn't crash or hang on infinite loops or locked files.
+**Dependencies:** `src.core.controller`
 
 ### `tests/unit/test_config_loader.py`
-**Role:** Tests the robust parsing of `repo-runner.json` files and fallback behavior for invalid configurations.
+**Role:** Unit tests for parsing `repo-runner.json` and handling malformed configuration.
 **Key Exports:**
-- `test_load_custom_config()` - Validates mapping of JSON fields to the `RepoRunnerConfig` schema.
+- `TestConfigLoader` - Verifies fallback to defaults on missing or invalid JSON.
 **Dependencies:** `src.core.config_loader`
 
 ### `tests/unit/test_context_slicer.py`
-**Role:** Validates the graph traversal logic and token budgeting used to prune context for LLMs.
+**Role:** Validates graph traversal logic, including radius limitation, token budgeting, and cycle reporting.
 **Key Exports:**
-- `test_radius_logic_standard()` - Confirms that BFS expansion stops at the correct number of hops.
-- `test_token_budget_enforcement()` - Ensures files are excluded if they exceed the remaining token budget.
-- `test_symbol_focus_resolution()` - Validates the translation of symbolic names (classes/functions) to file IDs.
-**Dependencies:** `src.analysis.context_slicer`, `src.core.types`
+- `TestContextSlicer` - Tests `ContextSlicer.slice_manifest` against mock graph topologies.
+**Dependencies:** `src.analysis.context_slicer`
+
+### `tests/unit/test_drawio_exporter.py`
+**Role:** Ensures the Draw.io CSV exporter generates valid layout directives and node rows.
+**Key Exports:**
+- `TestDrawioExporter` - Verifies CSV headers and module swimlane generation.
+**Dependencies:** `src.exporters.drawio_exporter`
 
 ### `tests/unit/test_file_fingerprint.py`
-**Role:** Tests SHA256 hashing and language identification based on file extensions.
+**Role:** Tests SHA256 calculation and language detection, including error handling for locked files.
 **Key Exports:**
-- `test_valid_file()` - Confirms hash accuracy and metadata extraction.
+- `TestFingerprintHardening` - Verifies hashing accuracy and OS error propagation.
 **Dependencies:** `src.fingerprint.file_fingerprint`
 
 ### `tests/unit/test_filesystem_scanner.py`
-**Role:** Validates directory traversal, including depth limits and permission error handling.
+**Role:** Tests the recursive directory walker, ignore rules, and symlink loop detection.
 **Key Exports:**
-- `test_scanner_ignores()` - Ensures restricted directories (like `.git`) are never traversed.
+- `TestFileSystemScanner` - Verifies that ignored files are excluded and traversal depth is respected.
 **Dependencies:** `src.scanner.filesystem_scanner`
 
 ### `tests/unit/test_flatten_exporter.py`
-**Role:** Tests the rendering logic for the Markdown exporter, specifically the tree and binary file handling.
+**Role:** Unit tests for the Markdown generation logic, including tree rendering and binary file placeholders.
 **Key Exports:**
-- `test_scope_filtering()` - Checks the internal application of path filters on file lists.
+- `TestFlattenExporter` - Checks filtering logic and string output formatting.
 **Dependencies:** `src.exporters.flatten_markdown_exporter`
 
 ### `tests/unit/test_graph_builder.py`
-**Role:** Tests the construction of the dependency graph, including deterministic sorting and cycle detection.
+**Role:** Tests the construction of graph nodes/edges from file inputs, including cycle detection and import resolution.
 **Key Exports:**
-- `test_cycle_detection_triangular()` - Verifies that circular dependencies are correctly identified.
-- `test_graph_determinism()` - Ensures graph output is identical regardless of input processing order.
-**Dependencies:** `src.analysis.graph_builder`, `src.core.types`
+- `TestGraphBuilder` - Validates Python/JS import resolution and external node creation.
+**Dependencies:** `src.analysis.graph_builder`
+
+### `tests/unit/test_ignore_logic.py`
+**Role:** Dedicated tests for checking that specific directory patterns (e.g., `.git`, `dist`) are skipped.
+**Key Exports:**
+- `TestIgnoreLogic` - Validates scanner behavior against a set of ignore rules.
+**Dependencies:** `src.scanner.filesystem_scanner`
 
 ### `tests/unit/test_import_scanner.py`
-**Role:** Validates AST (Python) and Regex (JS/TS) scanning for imports and symbol definitions.
+**Role:** Tests the Regex and AST scanners for Python and JavaScript/TypeScript import extraction.
 **Key Exports:**
-- `test_python_scope_and_strings()` - Confirms that strings looking like imports are ignored by the AST parser.
-- `test_ts_advanced_imports()` - Validates support for `import type` and dynamic imports in TypeScript.
+- `TestImportScanner` - Verifies extraction of standard, relative, and dynamic imports.
 **Dependencies:** `src.analysis.import_scanner`
 
-### `tests/unit/test_path_normalizer.py`
-**Role:** Ensures paths are consistently formatted across platforms and security checks are enforced.
+### `tests/unit/test_mermaid_exporter.py`
+**Role:** Tests generation of Mermaid diagram syntax, including subgraph clustering and cycle styling.
 **Key Exports:**
-- `test_parent_traversal()` - Confirms that `..` segments are resolved to canonical paths.
-- `test_casing_policy()` - Validates that all stored paths are forced to lowercase for cross-OS stability.
+- `TestMermaidExporter` - Checks for correct `graph TD` syntax and node ID escaping.
+**Dependencies:** `src.exporters.mermaid_exporter`
+
+### `tests/unit/test_path_normalizer.py`
+**Role:** Verifies path normalization rules (lowercasing, forward slashes, root escape prevention).
+**Key Exports:**
+- `TestPathNormalizer` - Ensures paths are consistent across OS environments.
 **Dependencies:** `src.normalize.path_normalizer`
 
 ### `tests/unit/test_snapshot_comparator.py`
-**Role:** Validates the identification of added, removed, and modified files and edges between two manifests.
+**Role:** Unit tests for the diff engine, verifying detection of added/removed files and edge drift.
 **Key Exports:**
-- `test_file_diffing()` - Checks that changes in SHA256 trigger "modified" status.
-**Dependencies:** `src.analysis.snapshot_comparator`, `src.core.types`
+- `TestSnapshotComparator` - Checks logic for comparing two `Manifest` objects.
+**Dependencies:** `src.analysis.snapshot_comparator`
 
 ### `tests/unit/test_structure_builder.py`
-**Role:** Tests the mapping of a flat file list into a nested hierarchical JSON structure.
+**Role:** Tests the transformation of flat file lists into a nested hierarchical dictionary.
 **Key Exports:**
-- `test_build_structure()` - Verifies module grouping and path sorting.
-**Dependencies:** `src.structure.structure_builder`, `src.core.types`
+- `TestStructureBuilder` - Verifies module grouping logic.
+**Dependencies:** `src.structure.structure_builder`
 
 ### `tests/unit/test_token_telemetry.py`
-**Role:** Validates the mathematical accuracy of token estimations and cost calculations.
+**Role:** Verifies mathematical calculations for token estimation, cost, and compression ratios.
 **Key Exports:**
-- `test_telemetry_calculations()` - Confirms reduction percentages and cost formatting in the final report.
+- `TestTokenTelemetry` - Checks formatting of the markdown telemetry summary.
 **Dependencies:** `src.observability.token_telemetry`
 
 ### `tests/unit/test_types.py`
-**Role:** Ensures Pydantic models enforce schema constraints and automatic path cleaning.
+**Role:** Tests Pydantic data models, specifically custom validators for path normalization and IDs.
 **Key Exports:**
-- `test_path_normalization_validator()` - Demonstrates that `FileEntry` objects automatically clean dirty input paths on instantiation.
+- `TestTypes` - Ensures `FileEntry` automatically cleans inputs.
 **Dependencies:** `src.core.types`

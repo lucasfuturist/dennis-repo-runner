@@ -1,6 +1,7 @@
-## High-Resolution Interface Map: repo-runner
+# High-Resolution Interface Map: `repo-runner`
 
-### Tree
+## 1. The Tree
+
 ```
 └── src
     ├── __init__.py
@@ -24,7 +25,9 @@
     │   └── types.py
     ├── entry_point.py
     ├── exporters
-    │   └── flatten_markdown_exporter.py
+    │   ├── drawio_exporter.py
+    │   ├── flatten_markdown_exporter.py
+    │   └── mermaid_exporter.py
     ├── fingerprint
     │   └── file_fingerprint.py
     ├── gui
@@ -50,135 +53,182 @@
         └── structure_builder.py
 ```
 
----
-
-### File Summaries
+## 2. File Summaries
 
 ### `src/analysis/context_slicer.py`
-**Role:** Deterministically prunes a repository manifest to isolate a specific file and its dependencies within a token budget.
+**Role:** Deterministically prunes repository manifests based on graph topology to fit LLM context windows.
 **Key Exports:**
-- `ContextSlicer.slice_manifest(manifest, graph, focus_id, radius, max_tokens): Dict` - Performs a BFS on the dependency graph to return a subset of the manifest centered on a target file.
-**Dependencies:** `src.observability.token_telemetry`
+- `ContextSlicer.slice_manifest(manifest, graph, focus_id, radius, max_tokens): Dict` - Filters manifest to files within N-degree hops of a focus node, respecting token budgets.
+**Dependencies:** `TokenTelemetry`
 
 ### `src/analysis/graph_builder.py`
-**Role:** Transforms a list of file entries into a directed dependency graph with cycle detection.
+**Role:** Constructs a dependency graph from file entries by resolving imports and detecting cycles.
 **Key Exports:**
-- `GraphBuilder.build(files: List[FileEntry]): GraphStructure` - Orchestrates import resolution, node creation, and deterministic cycle detection.
-**Dependencies:** `src.core.types`
+- `GraphBuilder.build(files): GraphStructure` - processing list of files into nodes, edges, and cycles.
+**Dependencies:** `FileEntry`, `GraphStructure`, `GraphNode`, `GraphEdge`
 
 ### `src/analysis/import_scanner.py`
-**Role:** Extracts import statements and defined symbols (classes/functions) from Python and JavaScript/TypeScript source code.
+**Role:** Scans file content (Python, JS, TS) to extract import statements and defined symbols using Regex and AST.
 **Key Exports:**
-- `ImportScanner.scan(path, language): Dict` - Uses AST (Python) and Regex (JS/TS) to identify external and internal dependencies.
-**Dependencies:** None (Standard Library)
+- `ImportScanner.scan(path, language): Dict` - Returns a dictionary containing lists of `imports` and `symbols`.
+**Dependencies:** `re`, `ast`
 
 ### `src/analysis/snapshot_comparator.py`
-**Role:** Calculates the structural and content drift between two repository snapshots.
+**Role:** Deterministic diff engine that compares two snapshots to identify structural drift, file modifications, and edge changes.
 **Key Exports:**
-- `SnapshotComparator.compare(manifest_a, manifest_b, graph_a, graph_b): SnapshotDiffReport` - Identifies added, removed, or modified files (via SHA256) and dependency edge changes.
-**Dependencies:** `src.core.types`
+- `SnapshotComparator.compare(manifest_a, manifest_b, graph_a, graph_b): SnapshotDiffReport` - Generates a report detailing added/removed/modified files and edges.
+**Dependencies:** `Manifest`, `GraphStructure`, `SnapshotDiffReport`
 
 ### `src/api/server.py`
-**Role:** Provides a FastAPI web interface for triggering snapshots, slicing context, and comparing snapshots via HTTP.
+**Role:** FastAPI backend providing endpoints to trigger snapshots, context slicing, and comparisons.
 **Key Exports:**
-- `create_snapshot(req: SnapshotRequest)` - Endpoint to run the full ingestion pipeline on a target directory.
-- `slice_snapshot(snapshot_id, req: SliceRequest)` - Endpoint to retrieve a compressed LLM context manifest.
-- `compare_snapshots(req: CompareRequest)` - Endpoint to retrieve a diff report between two IDs.
-**Dependencies:** `src.core.controller`, `src.snapshot.snapshot_loader`, `src.analysis.context_slicer`
+- `app` - The FastAPI application instance.
+- `create_snapshot(SnapshotRequest): JSON` - Endpoint to trigger repo scanning.
+- `slice_snapshot(snapshot_id, SliceRequest): JSON` - Endpoint to generate pruned context.
+- `compare_snapshots(CompareRequest): SnapshotDiffReport` - Endpoint to diff two snapshots.
+**Dependencies:** `run_snapshot`, `ContextSlicer`, `SnapshotComparator`, `TokenTelemetry`
 
 ### `src/cli/main.py`
-**Role:** Command-line entry point for executing snapshots, diffs, and context exports.
+**Role:** Entry point for the CLI, parsing arguments for snapshotting, slicing, diffing, and diagram generation.
 **Key Exports:**
-- `main()` - Orchestrates CLI argument parsing and maps commands to controller functions.
-**Dependencies:** `src.core.controller`, `src.core.config_loader`
+- `main()` - Orchestrates command routing based on `sys.argv`.
+- `cli_progress(phase, current, total)` - Renders terminal-based progress updates.
+**Dependencies:** `run_snapshot`, `run_compare`, `run_export_flatten`, `run_export_diagram`, `ConfigLoader`
 
 ### `src/core/config_loader.py`
-**Role:** Locates and parses `repo-runner.json` to establish project-specific defaults.
+**Role:** Loads and validates the `repo-runner.json` project configuration file.
 **Key Exports:**
-- `ConfigLoader.load_config(repo_root): RepoRunnerConfig` - Returns a validated configuration object from a local JSON file or defaults.
-**Dependencies:** `src.core.types`
+- `ConfigLoader.load_config(repo_root): RepoRunnerConfig` - Returns configuration object, falling back to defaults on error.
+**Dependencies:** `RepoRunnerConfig`
 
 ### `src/core/controller.py`
-**Role:** The primary orchestrator that connects the scanner, analyzer, and writer to execute system operations.
+**Role:** Central orchestration layer connecting scanning, analysis, graph building, and exporting logic.
 **Key Exports:**
-- `run_snapshot(...) -> str` - Executes the full pipeline: scan, fingerprint, analyze, and write.
-- `run_export_flatten(...) -> str` - Handles the generation of Markdown context files, including slicing logic.
-- `run_compare(...) -> SnapshotDiffReport` - High-level wrapper for diffing two stored snapshots.
-**Dependencies:** `src.scanner`, `src.analysis`, `src.snapshot`, `src.exporters`, `src.fingerprint`
+- `run_snapshot(...)` - Orchestrates the full scanning, fingerprinting, and writing workflow.
+- `run_export_flatten(...)` - Generates a monolithic Markdown export of the repository.
+- `run_export_diagram(...)` - Orchestrates visual diagram generation (Mermaid/Draw.io).
+- `run_compare(...)` - Loads snapshots and triggers the comparator.
+**Dependencies:** `FileSystemScanner`, `GraphBuilder`, `SnapshotWriter`, `ImportScanner`, `FlattenMarkdownExporter`
 
 ### `src/core/types.py`
-**Role:** Centralized Pydantic model definitions for system-wide data structures and validation.
+**Role:** Defines Pydantic data models used throughout the system for validation and serialization.
 **Key Exports:**
-- `FileEntry` - Schema for individual file metadata including SHA256 and symbols.
-- `Manifest` - The root schema for a complete repository snapshot.
-- `GraphStructure` - Schema for nodes, edges, and detected cycles.
-- `SnapshotDiffReport` - Schema for structural comparisons.
-**Dependencies:** None
+- `RepoRunnerConfig` - Schema for configuration files.
+- `FileEntry` - Model for individual file metadata (path, SHA, symbols).
+- `GraphStructure` - Model for nodes, edges, and cycles.
+- `Manifest` - Root model for the snapshot artifact.
+- `SnapshotDiffReport` - Model for diff results.
+**Dependencies:** `pydantic`
 
 ### `src/entry_point.py`
-**Role:** Main execution hook for the application, handling platform-specific DPI scaling and mode switching (CLI vs GUI).
+**Role:** Application bootstrapper that detects environment and launches either the CLI or GUI.
 **Key Exports:**
-- `launch()` - Determines whether to start the Tkinter GUI or the Argparse CLI based on sys.argv.
+- `launch()` - Determines launch mode based on arguments.
 **Dependencies:** `src.cli.main`, `src.gui.app`
 
-### `src/exporters/flatten_markdown_exporter.py`
-**Role:** Converts repository snapshots into a single, LLM-friendly Markdown document.
+### `src/exporters/drawio_exporter.py`
+**Role:** Converts the dependency graph into a Draw.io compatible CSV format with auto-layout configuration.
 **Key Exports:**
-- `FlattenMarkdownExporter.export(...) -> str` - Renders the file tree and source code blocks into a formatted text file.
-- `FlattenOptions` - Data class defining export scope (full, module, or file list).
-**Dependencies:** None
+- `DrawioExporter.export(snapshot_dir, graph, ...): str` - Writes the CSV artifact to disk.
+**Dependencies:** `GraphStructure`
+
+### `src/exporters/flatten_markdown_exporter.py`
+**Role:** Generates a single Markdown file containing the repo tree and file contents.
+**Key Exports:**
+- `FlattenMarkdownExporter.export(..., options): str` - Orchestrates the export process.
+- `FlattenMarkdownExporter.generate_content(...)` - Builds the markdown string in memory.
+- `FlattenOptions` - Dataclass for export configuration (scope, tree_only).
+**Dependencies:** Standard Lib only.
+
+### `src/exporters/mermaid_exporter.py`
+**Role:** Converts the dependency graph into Mermaid.js diagram syntax.
+**Key Exports:**
+- `MermaidExporter.export(snapshot_dir, graph, ...): str` - Generates `.mmd` file with styling for cycles and modules.
+**Dependencies:** `GraphStructure`
 
 ### `src/fingerprint/file_fingerprint.py`
-**Role:** Generates unique identity markers for files based on content and extension.
+**Role:** Computes SHA256 hashes and detects file language based on extension.
 **Key Exports:**
-- `FileFingerprint.fingerprint(path): Dict` - Computes SHA256 hashes and maps extensions to programming languages.
-**Dependencies:** None
+- `FileFingerprint.fingerprint(path): Dict` - Returns SHA256, size, and language.
+- `LANGUAGE_MAP` - Dictionary mapping extensions to language IDs.
+**Dependencies:** `hashlib`
 
 ### `src/gui/app.py`
-**Role:** Main Tkinter application class managing the visual control panel and background worker threads.
+**Role:** Main Tkinter GUI application window handling the event loop and layout orchestration.
 **Key Exports:**
-- `RepoRunnerApp` - Coordinates UI updates, file scanning progress, and snapshot triggers.
-**Dependencies:** `src.gui.components`, `src.core.controller`, `src.scanner.filesystem_scanner`
+- `RepoRunnerApp` - Main `tk.Tk` class.
+- `run_gui()` - Initializes and runs the main loop.
+**Dependencies:** `FileSystemScanner`, `PathNormalizer`, `ConfigTabs`, `FileTreePanel`, `PreviewPanel`
+
+### `src/gui/components/config_tabs.py`
+**Role:** GUI component managing configuration inputs (depth, ignore rules, export settings).
+**Key Exports:**
+- `ConfigTabs` - `ttk.Notebook` subclass containing configuration controls.
+- `depth_var`, `ignore_var`, `ext_var` - Tkinter variables holding config state.
+**Dependencies:** `tkinter`
+
+### `src/gui/components/export_preview.py`
+**Role:** Modal window for previewing generated Markdown and estimating token counts.
+**Key Exports:**
+- `ExportPreviewWindow` - `tk.Toplevel` subclass for displaying content and stats.
+**Dependencies:** `tkinter`
+
+### `src/gui/components/preview_pane.py`
+**Role:** Panel displaying file metadata (imports/symbols) and syntax-highlighted source code.
+**Key Exports:**
+- `PreviewPanel` - `ttk.Frame` subclass for file visualization.
+- `load_file(abs_path, stable_id)` - Triggers on-demand analysis and display.
+**Dependencies:** `FileFingerprint`, `ImportScanner`
+
+### `src/gui/components/progress_window.py`
+**Role:** Modal dialog showing determinate or indeterminate progress bars.
+**Key Exports:**
+- `ProgressWindow` - `tk.Toplevel` subclass for blocking progress feedback.
+- `update_progress(current, total)` - Updates the bar state.
+**Dependencies:** `tkinter`
 
 ### `src/gui/components/tree_view.py`
-**Role:** Interactive file explorer with checkbox-based selection for selective snapshotting.
+**Role:** Interactive file tree widget with checkboxes for file selection.
 **Key Exports:**
-- `FileTreePanel` - Managed widget for visualizing directory structures and capturing user file selections.
-**Dependencies:** None
+- `FileTreePanel` - `ttk.Frame` subclass managing the `Treeview`.
+- `get_checked_files(): list` - Returns list of selected file paths.
+**Dependencies:** `tkinter`
 
 ### `src/normalize/path_normalizer.py`
-**Role:** Ensures consistent path formatting and security across different Operating Systems.
+**Role:** Standardizes file paths (lowercased, forward slashes) relative to the repo root to ensure ID stability.
 **Key Exports:**
-- `PathNormalizer.normalize(absolute_path): str` - Converts paths to lowercase, forward-slash-delimited strings relative to the repo root.
+- `PathNormalizer.normalize(absolute_path): str` - Converts absolute path to relative, normalized string.
+- `file_id(path)` / `module_id(path)` / `repo_id()` - Helpers for generating stable IDs.
 **Dependencies:** None
 
 ### `src/observability/token_telemetry.py`
-**Role:** Estimates and tracks LLM token usage and associated costs for context slices.
+**Role:** Provides utilities for estimating token usage and costs.
 **Key Exports:**
-- `TokenTelemetry.estimate_tokens(size_bytes, language): int` - Heuristic-based token counting for code and text.
-- `TokenTelemetry.calculate_telemetry(...) -> str` - Generates a markdown summary of context reduction and pricing.
+- `TokenTelemetry.estimate_tokens(size_bytes, language): int` - Heuristic token counting.
+- `TokenTelemetry.calculate_telemetry(...)` - Generates markdown summary of context reduction and cost.
 **Dependencies:** None
 
 ### `src/scanner/filesystem_scanner.py`
-**Role:** High-performance recursive directory crawler with depth limiting and ignore-list support.
+**Role:** Traverses the filesystem to find files, respecting depth limits and ignore rules.
 **Key Exports:**
-- `FileSystemScanner.scan(root_paths, progress_callback): List[str]` - Returns a list of absolute paths while respecting symlink cycle detection and depth constraints.
-**Dependencies:** None
+- `FileSystemScanner.scan(root_paths, progress_callback): List[str]` - Returns sorted list of absolute file paths.
+**Dependencies:** `os`
 
 ### `src/snapshot/snapshot_loader.py`
-**Role:** Handles retrieval of historical snapshot data from the output storage directory.
+**Role:** Resolves snapshot directories and loads JSON artifacts (manifests, graphs).
 **Key Exports:**
-- `SnapshotLoader.resolve_snapshot_dir(snapshot_id): str` - Resolves "current" alias or specific IDs to physical disk paths.
+- `SnapshotLoader.resolve_snapshot_dir(snapshot_id): str` - Finds path, handling "current" alias.
+- `SnapshotLoader.load_manifest(dir): dict` - Reads manifest.json.
 **Dependencies:** None
 
 ### `src/snapshot/snapshot_writer.py`
-**Role:** Persists manifests, graphs, and structure data to disk as JSON artifacts.
+**Role:** Serializes manifest, structure, and graph objects to JSON files on disk.
 **Key Exports:**
-- `SnapshotWriter.write(...) -> str` - Atomically saves snapshot components and updates the "current" pointer.
-**Dependencies:** `src.core.types`
+- `SnapshotWriter.write(manifest, structure, graph, ...): str` - Writes artifacts and updates `current.json` pointer.
+**Dependencies:** `Manifest`, `GraphStructure`
 
 ### `src/structure/structure_builder.py`
-**Role:** Maps a flat list of file entries into a logical module-based hierarchy.
+**Role:** Organizes flat file entries into a hierarchical module structure.
 **Key Exports:**
-- `StructureBuilder.build(repo_id, files): Dict` - Groups files by their parent directories for tree visualization.
-**Dependencies:** `src.core.types`
+- `StructureBuilder.build(repo_id, files): Dict` - Returns the nested directory structure dictionary.
+**Dependencies:** `FileEntry`

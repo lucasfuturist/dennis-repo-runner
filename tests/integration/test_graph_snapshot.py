@@ -3,6 +3,7 @@ import tempfile
 import shutil
 import os
 import json
+import pytest
 from src.core.controller import run_snapshot
 from src.snapshot.snapshot_loader import SnapshotLoader
 
@@ -25,7 +26,7 @@ class TestGraphSnapshot(unittest.TestCase):
     def _create_file(self, rel_path, content):
         path = os.path.join(self.repo_root, rel_path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(content)
 
     def test_end_to_end_graph_generation(self):
@@ -80,6 +81,96 @@ class TestGraphSnapshot(unittest.TestCase):
                 found_external = True
                 break
         self.assertTrue(found_external, "Dependency edge main->os not found")
+
+    def test_external_id_canonicalization(self):
+        """
+        Ensures that mixed-case imports for the same external package 
+        resolve to a single, lowercased external node.
+        """
+        # Create files with mixed casing for 'react'
+        self._create_file("component_a.tsx", "import React from 'react';")
+        self._create_file("component_b.tsx", "import { useState } from 'React';") # Capitalized import
+        self._create_file("component_c.tsx", "import * as R from 'react/client';") # Subpath
+        
+        snapshot_id = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=5,
+            ignore=[],
+            include_extensions=[".tsx"],
+            include_readme=False,
+            write_current_pointer=True,  # Added missing arg
+            skip_graph=False
+        )
+        
+        loader = SnapshotLoader(self.output_root)
+        snap_dir = loader.resolve_snapshot_dir(snapshot_id)
+        
+        with open(os.path.join(snap_dir, "graph.json"), "r") as f:
+            graph = json.load(f)
+            
+        nodes = {n["id"] for n in graph["nodes"]}
+        
+        # Must contain exactly one react node, and it must be lowercase
+        self.assertIn("external:react", nodes)
+        self.assertNotIn("external:React", nodes)
+        
+        # Ensure 'react/client' was normalized to root 'react'
+        self.assertNotIn("external:react/client", nodes)
+
+    def test_snapshot_determinism(self):
+        """
+        Runs the snapshot process twice on the exact same repo and asserts
+        that the outputs (stripped of timestamps) are bit-for-bit identical.
+        This uses the logic from assert_snapshot_determinism fixture, recreated here
+        since we are in a unittest.TestCase class.
+        """
+        # Setup complex state
+        self._create_file("main.py", "import utils\nimport requests")
+        self._create_file("utils.py", "x = 1")
+        
+        # Run 1
+        id_1 = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=5,
+            ignore=[],
+            include_extensions=[".py"],
+            include_readme=False,
+            write_current_pointer=True,  # Added missing arg
+            skip_graph=False
+        )
+        
+        # Run 2
+        id_2 = run_snapshot(
+            repo_root=self.repo_root,
+            output_root=self.output_root,
+            depth=5,
+            ignore=[],
+            include_extensions=[".py"],
+            include_readme=False,
+            write_current_pointer=True,  # Added missing arg
+            skip_graph=False
+        )
+        
+        loader = SnapshotLoader(self.output_root)
+        dir_1 = loader.resolve_snapshot_dir(id_1)
+        dir_2 = loader.resolve_snapshot_dir(id_2)
+        
+        # Use a local helper similar to the fixture logic
+        from tests.conftest import scrub_json
+        
+        for fname in ["manifest.json", "graph.json", "structure.json"]:
+            with open(os.path.join(dir_1, fname), "r") as f:
+                json_1 = scrub_json(json.load(f))
+            with open(os.path.join(dir_2, fname), "r") as f:
+                json_2 = scrub_json(json.load(f))
+                
+            self.assertEqual(
+                json.dumps(json_1, sort_keys=True),
+                json.dumps(json_2, sort_keys=True),
+                f"Determinism failed for {fname}"
+            )
 
 if __name__ == "__main__":
     unittest.main()

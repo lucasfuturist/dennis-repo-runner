@@ -2,8 +2,9 @@ import pytest
 import os
 import shutil
 import tempfile
+import json
 from pathlib import Path
-from typing import Generator, List, Dict
+from typing import Generator, List, Dict, Any
 
 @pytest.fixture
 def temp_repo_root() -> Generator[str, None, None]:
@@ -75,3 +76,62 @@ def complex_repo(temp_repo_root, create_file):
     create_file("requirements.txt", "flask")
     
     return temp_repo_root
+
+def scrub_json(data: Any) -> Any:
+    """
+    Recursively removes volatile fields (timestamps, dynamic paths) from a JSON object
+    to allow deterministic comparison.
+    """
+    if isinstance(data, dict):
+        # Create a copy to avoid mutating the original
+        new_data = data.copy()
+        
+        # Volatile fields to remove
+        keys_to_remove = ["created_utc", "snapshot_id", "output_root", "tool"]
+        
+        for key in keys_to_remove:
+            if key in new_data:
+                del new_data[key]
+        
+        # Recurse
+        for k, v in new_data.items():
+            new_data[k] = scrub_json(v)
+        return new_data
+    
+    elif isinstance(data, list):
+        return [scrub_json(item) for item in data]
+        
+    return data
+
+@pytest.fixture
+def assert_snapshot_determinism():
+    """
+    Returns a function that compares two snapshot directories for logical equivalence.
+    Usage: assert_snapshot_determinism(dir_a, dir_b)
+    """
+    def _compare(dir_a: str, dir_b: str):
+        files_to_compare = ["manifest.json", "graph.json", "structure.json"]
+        
+        for fname in files_to_compare:
+            path_a = os.path.join(dir_a, fname)
+            path_b = os.path.join(dir_b, fname)
+            
+            # Check existence
+            assert os.path.exists(path_a), f"{fname} missing in Run A"
+            assert os.path.exists(path_b), f"{fname} missing in Run B"
+            
+            with open(path_a, "r", encoding="utf-8") as f:
+                json_a = json.load(f)
+            with open(path_b, "r", encoding="utf-8") as f:
+                json_b = json.load(f)
+                
+            scrubbed_a = scrub_json(json_a)
+            scrubbed_b = scrub_json(json_b)
+            
+            # Use json.dumps with sort_keys to generate a readable diff if assertion fails
+            str_a = json.dumps(scrubbed_a, sort_keys=True, indent=2)
+            str_b = json.dumps(scrubbed_b, sort_keys=True, indent=2)
+            
+            assert str_a == str_b, f"Determinism failure in {fname}"
+            
+    return _compare

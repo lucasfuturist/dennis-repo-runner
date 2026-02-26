@@ -2,7 +2,7 @@
 
 - repo_root: `C:/projects/repo-runner`
 - snapshot_id: `QUICK_EXPORT_PREVIEW`
-- file_count: `100`
+- file_count: `104`
 - tree_only: `True`
 ## Tree
 
@@ -82,7 +82,9 @@
 │   │   └── types.py
 │   ├── entry_point.py
 │   ├── exporters
-│   │   └── flatten_markdown_exporter.py
+│   │   ├── drawio_exporter.py
+│   │   ├── flatten_markdown_exporter.py
+│   │   └── mermaid_exporter.py
 │   ├── fingerprint
 │   │   └── file_fingerprint.py
 │   ├── gui
@@ -122,12 +124,14 @@
         ├── __init__.py
         ├── test_config_loader.py
         ├── test_context_slicer.py
+        ├── test_drawio_exporter.py
         ├── test_file_fingerprint.py
         ├── test_filesystem_scanner.py
         ├── test_flatten_exporter.py
         ├── test_graph_builder.py
         ├── test_ignore_logic.py
         ├── test_import_scanner.py
+        ├── test_mermaid_exporter.py
         ├── test_path_normalizer.py
         ├── test_snapshot_comparator.py
         ├── test_snapshot_loader.py
@@ -138,6 +142,6 @@
 
 ---
 ## Context Stats
-- **Total Characters:** 3,513
-- **Estimated Tokens:** ~878 (assuming ~4 chars/token)
+- **Total Characters:** 3,649
+- **Estimated Tokens:** ~912 (assuming ~4 chars/token)
 - **Model Fit:** GPT-4 (8k)

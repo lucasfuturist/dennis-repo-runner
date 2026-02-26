@@ -1,44 +1,41 @@
-### `repo-runner` High-Resolution Interface Map
+# High-Resolution Interface Map: `repo-runner` (Scripts)
 
 ## 1. The Tree
+
 ```
 └── scripts
     ├── build_exe.ps1
     ├── export-signal.ps1
-    ├── generate_test_repo.ps1
-    └── package-repo.ps1
+    ├── package-repo.ps1
+    └── verify.ps1
 ```
 
 ## 2. File Summaries
 
 ### `scripts/build_exe.ps1`
-**Role:** Orchestrates the compilation of the Python source code into a single-file Windows executable using PyInstaller.
+**Role:** Automates the PyInstaller compilation process to turn the Python source into a standalone Windows executable.
 **Key Exports:**
-- `Force-Delete(Path): void` - Safely removes build artifacts, falling back to CMD for deep-path issues.
-- `$ExePath` - Configures the final destination path for the generated `repo-runner.exe`.
-**Dependencies:** `PyInstaller` (External), `src/entry_point.py` (Internal)
+- *Script Execution* - Cleans `dist/` folder, runs `python -m PyInstaller` against `src/entry_point.py`, and verifies the resulting `.exe`.
+**Dependencies:** `PyInstaller`, `src/entry_point.py`
 
 ### `scripts/export-signal.ps1`
-**Role:** Generates a "signal" export consisting of a flattened Markdown file (containing all code) and a ZIP archive based on configurable glob patterns.
+**Role:** Generates a filtered "signal" export (Markdown + ZIP) of the codebase for context sharing or documentation.
 **Key Exports:**
-- `RelPath(RepoRoot, AbsPath): string` - Calculates repository-relative paths for consistent mapping.
-- `ToForwardSlashes(Path): string` - Normalizes path separators for cross-platform compatibility in exports.
-- `$IncludeGlobs` - Configures the default set of file patterns to include in the context export.
-- `$ExcludeDirs` / `$ExcludeExts` - Defines the architectural boundaries for what constitutes "noise" (e.g., `.git`, `node_modules`, images).
-**Dependencies:** System.IO, System.Text.StringBuilder
-
-### `scripts/generate_test_repo.ps1`
-**Role:** Programmatically constructs a mock repository with Python, TypeScript, and config files to validate the runner's scanning and snapshotting capabilities.
-**Key Exports:**
-- `New-File(RelPath, Content): void` - Utility to simulate file creation within the generated fixture.
-- `$AbsRepoPath` - State representing the location of the dynamically generated test repository.
-- `$SkipSnapshot` - Config toggle to determine if the script should trigger the internal CLI after generation.
-**Dependencies:** `src.cli.main` (Internal Python Module)
+- `Param($OutDir)` - Target directory for artifacts.
+- `Param($IncludeGlobs)` - List of patterns to include (defaults to src, tests, docs).
+- `Param($ExcludeDirs)` - List of patterns to ignore (defaults to .git, node_modules).
+**Dependencies:** `PowerShell Core`
 
 ### `scripts/package-repo.ps1`
-**Role:** Creates a clean, distribution-ready copy of the entire repository by mirroring the source to a target directory and zipping the results.
+**Role:** Creates a clean distribution artifact of the repository by mirroring source files and excluding git/build metadata.
 **Key Exports:**
-- `Start-Heartbeat(Message): Job` - Manages a background process to provide visual feedback during long-running IO operations.
-- `$ExcludeDirs` / `$ExcludeFiles` - Configures the blacklist for packaging (e.g., `__pycache__`, `dist`).
-- `$CopyOut` / `$ZipOut` - Defines the destination paths for the mirrored folder and the final archive.
-**Dependencies:** `robocopy` (External OS Utility)
+- `Param($OutDir)` - Target root for the package.
+- `Param($ZipFileName)` - Name of the compressed archive.
+- `Param($ExcludeDirs)` - Directories to strip from the distribution.
+**Dependencies:** `robocopy`, `Compress-Archive`
+
+### `scripts/verify.ps1`
+**Role:** The "Definition of Done" enforcement script that executes the full test suite.
+**Key Exports:**
+- *Script Execution* - Runs `python -m pytest` with strict error checking and verbose reporting.
+**Dependencies:** `python`, `pytest`

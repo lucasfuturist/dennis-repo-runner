@@ -4239,6 +4239,8 @@ imported by:
  &#8226;   <a href="#shlex">shlex</a>
  &#8226;   <a href="#shutil">shutil</a>
  &#8226;   <a href="#src.analysis.context_slicer">src.analysis.context_slicer</a>
+ &#8226;   <a href="#src.core.controller">src.core.controller</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#statistics">statistics</a>
  &#8226;   <a href="#string">string</a>
@@ -4796,6 +4798,7 @@ imported by:
     <a href="#importlib.metadata">importlib.metadata</a>
  &#8226;   <a href="#setuptools._vendor.importlib_metadata">setuptools._vendor.importlib_metadata</a>
  &#8226;   <a href="#setuptools._vendor.wheel.wheelfile">setuptools._vendor.wheel.wheelfile</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
 
   </div>
 
@@ -9744,6 +9747,7 @@ imported by:
  &#8226;   <a href="#shlex">shlex</a>
  &#8226;   <a href="#socket">socket</a>
  &#8226;   <a href="#socketserver">socketserver</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
  &#8226;   <a href="#subprocess">subprocess</a>
  &#8226;   <a href="#tarfile">tarfile</a>
  &#8226;   <a href="#tempfile">tempfile</a>
@@ -11401,7 +11405,9 @@ imported by:
  &#8226;   <a href="#src.cli.main">src.cli.main</a>
  &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
+ &#8226;   <a href="#src.exporters.mermaid_exporter">src.exporters.mermaid_exporter</a>
  &#8226;   <a href="#src.fingerprint.file_fingerprint">src.fingerprint.file_fingerprint</a>
  &#8226;   <a href="#src.gui.app">src.gui.app</a>
  &#8226;   <a href="#src.gui.components.tree_view">src.gui.components.tree_view</a>
@@ -20771,7 +20777,8 @@ imported by:
   <a target="code" href="///C:/projects/repo-runner/src/core/controller.py" type="text/plain"><tt>src.core.controller</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#json">json</a>
+    <a href="#collections">collections</a>
+ &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#src.analysis.context_slicer">src.analysis.context_slicer</a>
  &#8226;   <a href="#src.analysis.graph_builder">src.analysis.graph_builder</a>
@@ -20779,7 +20786,9 @@ imports:
  &#8226;   <a href="#src.analysis.snapshot_comparator">src.analysis.snapshot_comparator</a>
  &#8226;   <a href="#src.core">src.core</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
+ &#8226;   <a href="#src.exporters.mermaid_exporter">src.exporters.mermaid_exporter</a>
  &#8226;   <a href="#src.fingerprint.file_fingerprint">src.fingerprint.file_fingerprint</a>
  &#8226;   <a href="#src.normalize.path_normalizer">src.normalize.path_normalizer</a>
  &#8226;   <a href="#src.observability.token_telemetry">src.observability.token_telemetry</a>
@@ -20818,6 +20827,8 @@ imported by:
  &#8226;   <a href="#src.analysis.snapshot_comparator">src.analysis.snapshot_comparator</a>
  &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
+ &#8226;   <a href="#src.exporters.mermaid_exporter">src.exporters.mermaid_exporter</a>
  &#8226;   <a href="#src.snapshot.snapshot_writer">src.snapshot.snapshot_writer</a>
  &#8226;   <a href="#src.structure.structure_builder">src.structure.structure_builder</a>
 
@@ -20856,7 +20867,31 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
+    <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
+ &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
+ &#8226;   <a href="#src.exporters.mermaid_exporter">src.exporters.mermaid_exporter</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.exporters.drawio_exporter"></a>
+  <a target="code" href="///C:/projects/repo-runner/src/exporters/drawio_exporter.py" type="text/plain"><tt>src.exporters.drawio_exporter</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#collections">collections</a>
+ &#8226;   <a href="#csv">csv</a>
+ &#8226;   <a href="#io">io</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#src.core.types">src.core.types</a>
+ &#8226;   <a href="#src.exporters">src.exporters</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.core.controller">src.core.controller</a>
 
   </div>
 
@@ -20877,6 +20912,25 @@ imports:
 imported by:
     <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.gui.app">src.gui.app</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.exporters.mermaid_exporter"></a>
+  <a target="code" href="///C:/projects/repo-runner/src/exporters/mermaid_exporter.py" type="text/plain"><tt>src.exporters.mermaid_exporter</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#os">os</a>
+ &#8226;   <a href="#src.core.types">src.core.types</a>
+ &#8226;   <a href="#src.exporters">src.exporters</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.core.controller">src.core.controller</a>
 
   </div>
 
@@ -22874,7 +22928,9 @@ imported by:
  &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
+ &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
+ &#8226;   <a href="#src.exporters.mermaid_exporter">src.exporters.mermaid_exporter</a>
  &#8226;   <a href="#src.fingerprint.file_fingerprint">src.fingerprint.file_fingerprint</a>
  &#8226;   <a href="#src.observability.token_telemetry">src.observability.token_telemetry</a>
  &#8226;   <a href="#src.scanner.filesystem_scanner">src.scanner.filesystem_scanner</a>

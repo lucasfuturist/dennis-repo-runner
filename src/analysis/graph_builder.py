@@ -41,6 +41,7 @@ class GraphBuilder:
                     # Fallback to External Resolution
                     pkg_name = self._resolve_external(raw_import, lang)
                     if pkg_name:
+                        # Enforce stable ID format: external:package_name (lowercase)
                         ext_id = f"external:{pkg_name}"
                         
                         if ext_id not in external_ids:
@@ -159,12 +160,14 @@ class GraphBuilder:
     def _resolve_external(self, import_str: str, language: str) -> Optional[str]:
         """
         Strictly normalizes external dependencies to their root package name.
+        Enforces LOWERCASE to prevent ID duplication (e.g. React vs react).
         Reference: ID_SPEC.md (External ID Normalization)
         """
         if language == "python":
             # Rule: Truncate at first dot
             if import_str.startswith("."): return None
-            return import_str.split(".")[0]
+            pkg = import_str.split(".")[0]
+            return pkg.lower()
             
         elif language in ("javascript", "typescript"):
             # Rules:
@@ -175,11 +178,13 @@ class GraphBuilder:
             if import_str.startswith("@"):
                 parts = import_str.split("/")
                 if len(parts) >= 2: 
-                    return f"{parts[0]}/{parts[1]}"
-                return import_str 
+                    # join then lower
+                    return f"{parts[0]}/{parts[1]}".lower()
+                return import_str.lower()
             
             # 3. Standard Packages (pkg/sub -> pkg)
-            return import_str.split("/")[0]
+            pkg = import_str.split("/")[0]
+            return pkg.lower()
             
         return None
 
