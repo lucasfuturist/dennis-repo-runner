@@ -1,10 +1,13 @@
 import os
+import re
 import threading
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import ctypes
 import datetime
 import time
+import platform
+import subprocess
 
 from src.scanner.filesystem_scanner import FileSystemScanner
 from src.normalize.path_normalizer import PathNormalizer
@@ -58,6 +61,9 @@ class RepoRunnerApp(tk.Tk):
         self.config_tabs = ConfigTabs(upper_frame)
         self.config_tabs.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
+        # Wire the Quick Select Apply button
+        self.config_tabs.btn_apply_selection.config(command=self._apply_quick_select)
+        
         action_frame = ttk.Frame(upper_frame, padding=10)
         action_frame.pack(side=tk.RIGHT, fill=tk.Y)
         
@@ -68,6 +74,9 @@ class RepoRunnerApp(tk.Tk):
         
         self.btn_export = ttk.Button(action_frame, text="Quick Export (Preview)", command=self._quick_export, state=tk.DISABLED, width=20)
         self.btn_export.pack(pady=5)
+
+        self.btn_batch_export = ttk.Button(action_frame, text="Batch Export Modules", command=self._batch_export, state=tk.DISABLED, width=20)
+        self.btn_batch_export.pack(pady=5)
 
         # Lower: Tree and Preview
         lower_paned = ttk.PanedWindow(main_paned, orient=tk.HORIZONTAL)
@@ -99,6 +108,12 @@ class RepoRunnerApp(tk.Tk):
         self.repo_root = root
         self.tree_panel.clear()
         self.preview_panel.clear()
+        
+        # Disable dependent buttons during scan
+        self.config_tabs.btn_apply_selection.config(state=tk.DISABLED)
+        self.btn_snap.config(state=tk.DISABLED)
+        self.btn_export.config(state=tk.DISABLED)
+        self.btn_batch_export.config(state=tk.DISABLED)
         
         # Get settings safely on Main Thread
         depth = self.config_tabs.depth_var.get()
@@ -157,19 +172,12 @@ class RepoRunnerApp(tk.Tk):
                 # Build nested dict
                 curr = struct
                 for i, p in enumerate(parts):
-                    # Check if p is a file (last part) or dir
                     is_last = (i == len(parts) - 1)
-                    
                     if is_last:
-                        # File leaf
-                        # We might need to handle the case where a directory was previously created 
-                        # with the same name (unlikely in valid FS, but possible in logic).
-                        # For now, simplistic approach:
                         if p not in curr:
                             curr[p] = {}
                         curr[p]['__metadata__'] = {'abs_path': f, 'stable_id': normalizer.file_id(rel)}
                     else:
-                        # Directory node
                         curr = curr.setdefault(p, {})
             
             # Success
@@ -182,8 +190,12 @@ class RepoRunnerApp(tk.Tk):
         self.progress_win.close()
         self.tree_panel.populate(struct)
         self.status_var.set(f"Scan Complete. Found {count} files.")
+        
+        # Re-enable buttons
+        self.config_tabs.btn_apply_selection.config(state=tk.NORMAL)
         self.btn_snap.config(state=tk.NORMAL)
         self.btn_export.config(state=tk.NORMAL)
+        self.btn_batch_export.config(state=tk.NORMAL)
 
     def _scan_cancelled(self):
         self.progress_win.close()
@@ -193,6 +205,42 @@ class RepoRunnerApp(tk.Tk):
         self.progress_win.close()
         messagebox.showerror("Scan Error", error)
         self.status_var.set("Scan Failed.")
+
+    def _apply_quick_select(self):
+        if not self.repo_root:
+            return
+            
+        raw_text = self.config_tabs.txt_quick_select.get("1.0", tk.END).strip()
+        
+        if not raw_text:
+            self.tree_panel.check_specific_files(set())
+            self.status_var.set("Quick Select cleared.")
+            return
+            
+        # Parse by comma or newline
+        raw_paths = [p.strip() for p in re.split(r'[,\n]+', raw_text) if p.strip()]
+        target_ids = set()
+        
+        repo_root_norm = self.repo_root.replace('\\', '/').lower().rstrip('/')
+        
+        for p in raw_paths:
+            p = p.replace('\\', '/')
+            if p.startswith("file:"):
+                target_ids.add(p.lower())
+                continue
+            p_lower = p.lower()
+            if p_lower.startswith(repo_root_norm):
+                p = p[len(repo_root_norm):]
+            while p.startswith('/') or p.startswith('./'):
+                if p.startswith('/'):
+                    p = p[1:]
+                elif p.startswith('./'):
+                    p = p[2:]
+            if p:
+                target_ids.add(f"file:{p.lower()}")
+                
+        matched_count = self.tree_panel.check_specific_files(target_ids)
+        self.status_var.set(f"Quick Select applied. Mapped {len(target_ids)} inputs to {matched_count} tree items.")
 
     def _on_file_selected(self, abs_path, stable_id):
         self.preview_panel.load_file(abs_path, stable_id)
@@ -206,7 +254,6 @@ class RepoRunnerApp(tk.Tk):
         out = filedialog.askdirectory(title="Select Snapshot Output Root")
         if not out: return
         
-        # UI Locking
         self.btn_snap.config(state=tk.DISABLED)
         self.progress_win = ProgressWindow(self, title="Snapshotting", message="Calculating Hashes and Analyzing Imports...")
         
@@ -256,20 +303,10 @@ class RepoRunnerApp(tk.Tk):
                 manifest_files = []
                 for abs_p in files:
                     rel = normalizer.normalize(abs_p)
-                    manifest_files.append({
-                        "path": rel,
-                        "size_bytes": 0,
-                        "sha256": "pre-snapshot"
-                    })
+                    manifest_files.append({"path": rel, "size_bytes": 0, "sha256": "pre-snapshot"})
                     
                 dummy_manifest = {"files": manifest_files}
-                
-                options = FlattenOptions(
-                    tree_only=tree_only,
-                    include_readme=True, 
-                    scope="full"
-                )
-                
+                options = FlattenOptions(tree_only=tree_only, include_readme=True, scope="full")
                 exporter = FlattenMarkdownExporter()
                 
                 content = exporter.generate_content(
@@ -289,7 +326,6 @@ class RepoRunnerApp(tk.Tk):
     def _quick_export_done(self, content):
         self.btn_export.config(state=tk.NORMAL)
         self.status_var.set("Export Preview Ready.")
-        
         default_name = f"flattened_{os.path.basename(self.repo_root)}_{datetime.date.today()}.md"
         ExportPreviewWindow(self, content, default_name)
 
@@ -297,6 +333,78 @@ class RepoRunnerApp(tk.Tk):
         self.btn_export.config(state=tk.NORMAL)
         self.status_var.set("Export Failed.")
         messagebox.showerror("Export Error", error)
+
+    def _batch_export(self):
+        modules = self.tree_panel.get_modules()
+        if not modules:
+            messagebox.showinfo("No Modules Found", "Please click a folder checkbox in the tree to lock it as a Module Root.")
+            return
+
+        # Automatic path generation
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        folder_name = f"{timestamp}_CONTEXT"
+        out_dir = os.path.join(self.repo_root, ".context", "compressed-context", folder_name)
+
+        # Create directories safely
+        os.makedirs(out_dir, exist_ok=True)
+        
+        self.status_var.set(f"Batch Exporting {len(modules)} modules...")
+        self.btn_batch_export.config(state=tk.DISABLED)
+        tree_only = self.config_tabs.export_tree_only_var.get()
+
+        def run_batch():
+            try:
+                normalizer = PathNormalizer(self.repo_root)
+                exporter = FlattenMarkdownExporter()
+
+                for mod_name, abs_files in modules.items():
+                    manifest_files = []
+                    for abs_p in abs_files:
+                        rel = normalizer.normalize(abs_p)
+                        manifest_files.append({"path": rel, "size_bytes": 0, "sha256": "pre-snapshot"})
+
+                    dummy_manifest = {"files": manifest_files}
+                    options = FlattenOptions(tree_only=tree_only, include_readme=True, scope="full")
+
+                    content = exporter.generate_content(
+                        repo_root=self.repo_root,
+                        manifest=dummy_manifest,
+                        options=options,
+                        title=f"Module Export: {mod_name}",
+                        snapshot_id="BATCH_EXPORT"
+                    )
+
+                    safe_name = re.sub(r'[\\/*?:"<>|]', "", mod_name)
+                    out_path = os.path.join(out_dir, f"{safe_name}-context.md")
+                    
+                    with open(out_path, "w", encoding="utf-8") as f:
+                        f.write(content)
+
+                self.after(0, lambda: self._batch_export_done(out_dir, len(modules)))
+            except Exception as e:
+                self.after(0, lambda: self._batch_export_fail(str(e)))
+
+        threading.Thread(target=run_batch, daemon=True).start()
+
+    def _batch_export_done(self, out_dir, count):
+        self.btn_batch_export.config(state=tk.NORMAL)
+        self.status_var.set(f"Batch Export Complete. Saved {count} modules to {out_dir}")
+        messagebox.showinfo("Success", f"Exported {count} module files to:\n{out_dir}")
+        try:
+            # Automatically open the new timestamped context folder
+            if platform.system() == "Windows":
+                os.startfile(out_dir)
+            elif platform.system() == "Darwin":
+                subprocess.call(["open", out_dir])
+            else:
+                subprocess.call(["xdg-open", out_dir])
+        except:
+            pass
+
+    def _batch_export_fail(self, error):
+        self.btn_batch_export.config(state=tk.NORMAL)
+        self.status_var.set("Batch Export Failed.")
+        messagebox.showerror("Batch Export Error", error)
 
 def run_gui():
     RepoRunnerApp().mainloop()

@@ -67,19 +67,21 @@ After **each set of implemented files**, provide a **clear, ordered test plan** 
 
 For each implementation batch, follow **exactly** this structure:
 
-1. **Files Implemented**
-   - List file paths
-   - Brief description of what changed and why
+1. **Files Implemented (Quick Select)**
+   - First, provide a single comma-separated list of the modified file paths inside a code block (for easy context re-exporting).
+   - Then, provide a brief description of what changed and why.
 
 2. **Full Code**
    - Provide each file **in full**
    - Use separate code blocks per file
+   - Ensure that the file paths are right above the implemented code (as a markdown title, not inside the actual codeblock).
 
 3. **Verification Steps**
    - Numbered, ordered steps
    - Explicit expected results for each step
 
-4. Please provide a concise, single-line git commit -m message summarizing all changes in this response, utilizing the feat/fix nomenclature and formatted as a single command for easy copy-pasting."
+4. **Git Commit**
+   - Provide a concise, single-line `git commit -m` message summarizing all changes in this response, utilizing the feat/fix nomenclature and formatted as a single command for easy copy-pasting.
 ---
 
 ## Tone & Assumptions
@@ -88,8 +90,6 @@ For each implementation batch, follow **exactly** this structure:
 - Assume another senior engineer will review and run the code.
 - Be exact, boring, and correct.
 - No motivational language. No speculation. No hand-waving.
-
-NOTE: ensure that the file titles are right above the implemented code. not in the actual codeblock, though. just a title before the codeblock.
 
 > **Codebase Context: Testing Regiment**
 >
@@ -101,4 +101,3 @@ NOTE: ensure that the file titles are right above the implemented code. not in t
 > 5.  **Validation:** Run `scripts/verify.ps1` to prove your code works.
 >
 > **Current State:** v0.2, All 63 tests passing.
-

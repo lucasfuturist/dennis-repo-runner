@@ -7,20 +7,15 @@ class FileTreePanel(ttk.Frame):
         super().__init__(parent)
         self.on_select_callback = on_select_callback
         
-        # Tools
         tools = ttk.Frame(self)
         tools.pack(fill=tk.X, pady=(0, 5))
         
-        # Styled Buttons
         ttk.Button(tools, text="☑ Check All", command=lambda: self._bulk_toggle(True), width=12).pack(side=tk.LEFT)
         ttk.Button(tools, text="☐ Uncheck All", command=lambda: self._bulk_toggle(False), width=12).pack(side=tk.LEFT, padx=5)
         
-        # Tree Container
         container = ttk.Frame(self)
         container.pack(fill=tk.BOTH, expand=True)
         
-        # Define Columns
-        # Note: #0 is the tree structure (Name). We add 'check' as a distinct column.
         self.tree = ttk.Treeview(container, columns=("check", "size", "id"), selectmode="browse")
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
@@ -28,27 +23,23 @@ class FileTreePanel(ttk.Frame):
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.tree.configure(yscrollcommand=scrollbar.set)
         
-        # --- Column Configuration (MO2 Style) ---
-        
-        # 1. The Tree Column (Name/Structure)
         self.tree.column("#0", width=300, minwidth=200)
         self.tree.heading("#0", text="File / Folder Name", anchor=tk.W)
         
-        # 2. The Checkbox Column (Strict width, first data column)
         self.tree.column("check", width=40, minwidth=40, stretch=False, anchor=tk.CENTER)
         self.tree.heading("check", text="Inc.")
         
-        # 3. Metadata Columns
         self.tree.column("size", width=80, anchor=tk.E)
         self.tree.heading("size", text="Size")
         
         self.tree.column("id", width=150)
         self.tree.heading("id", text="Stable ID")
         
-        # --- Event Bindings ---
-        # We bind Button-1 (Left Click) to handle the checkbox strictly
+        # UI Tags for locked modules
+        self.tree.tag_configure("locked", foreground="#999999")
+        self.tree.tag_configure("module_root", font=("Segoe UI", 9, "bold"), foreground="#0055AA")
+        
         self.tree.bind("<Button-1>", self._on_click)
-        # Selection event handles the preview logic
         self.tree.bind("<<TreeviewSelect>>", self._on_selection_change)
 
     def clear(self):
@@ -56,61 +47,129 @@ class FileTreePanel(ttk.Frame):
             self.tree.delete(item)
 
     def _on_click(self, event):
-        """
-        Strict click handler to separate Toggle vs Select actions.
-        """
         region = self.tree.identify_region(event.x, event.y)
-        
-        # Only interact if we clicked a cell (not a header, not the background)
         if region == "cell":
             column = self.tree.identify_column(event.x)
             item_id = self.tree.identify_row(event.y)
             
-            # The 'check' column is typically #1 in the columns list.
-            # identify_column returns string IDs like '#1', '#2'.
             if column == "#1" and item_id:
-                # User specifically clicked the Checkbox column. Toggle it.
+                tags = self.tree.item(item_id, "tags")
+                if "locked" in tags:
+                    # Ignore clicks on locked children
+                    return "break"
+                
                 self._toggle_item(item_id)
-                # Return 'break' to prevent the tree from selecting this row
-                # (Optional: remove if you want selection + toggle)
                 return "break"
-
-        # If user clicked the tree arrow or the name (Column #0), 
-        # default Treeview behavior takes over (Expand or Select).
         return
 
+    def _set_node_state(self, item_id, check_state, add_tags=None, remove_tags=None):
+        vals = list(self.tree.item(item_id, "values"))
+        vals[0] = check_state
+        self.tree.item(item_id, values=vals)
+
+        tags = list(self.tree.item(item_id, "tags"))
+        changed = False
+        if add_tags:
+            for t in add_tags:
+                if t not in tags:
+                    tags.append(t)
+                    changed = True
+        if remove_tags:
+            for t in remove_tags:
+                if t in tags:
+                    tags.remove(t)
+                    changed = True
+        if changed:
+            self.tree.item(item_id, tags=tags)
+
+    def _lock_children(self, parent_id, lock: bool):
+        for child in self.tree.get_children(parent_id):
+            tags = list(self.tree.item(child, "tags"))
+            state = "☑" if lock else "☐"
+
+            # Always strip module_root if a parent asserts a lock over this node
+            if "module_root" in tags:
+                tags.remove("module_root")
+
+            if lock:
+                if "locked" not in tags:
+                    tags.append("locked")
+            else:
+                if "locked" in tags:
+                    tags.remove("locked")
+
+            self.tree.item(child, tags=tags)
+            vals = list(self.tree.item(child, "values"))
+            vals[0] = state
+            self.tree.item(child, values=vals)
+
+            self._lock_children(child, lock)
+
     def _toggle_item(self, item_id):
-        """Toggles the state of a single item and its children."""
         current_vals = list(self.tree.item(item_id, "values"))
         current_check = current_vals[0]
-        
-        # Toggle Logic
-        # ☑ = True, ☐ = False
         new_state = "☐" if current_check == "☑" else "☑"
         
-        self._set_check_recursive(item_id, new_state)
-
-    def _set_check_recursive(self, item_id, state):
-        vals = list(self.tree.item(item_id, "values"))
-        vals[0] = state
-        self.tree.item(item_id, values=vals)
-        
-        for child in self.tree.get_children(item_id):
-            self._set_check_recursive(child, state)
+        tags = list(self.tree.item(item_id, "tags"))
+        if "folder" in tags:
+            if new_state == "☑":
+                self._set_node_state(item_id, "☑", add_tags=["module_root"])
+                self._lock_children(item_id, True)
+            else:
+                self._set_node_state(item_id, "☐", remove_tags=["module_root"])
+                self._lock_children(item_id, False)
+        else:
+            self._set_node_state(item_id, new_state)
 
     def _bulk_toggle(self, checked: bool):
+        """Standard check/uncheck that clears all locks."""
         state = "☑" if checked else "☐"
+        def recurse(item_id):
+            self._set_node_state(item_id, state, remove_tags=["locked", "module_root"])
+            for child in self.tree.get_children(item_id):
+                recurse(child)
+                
+        for child in self.tree.get_children(""):
+            recurse(child)
+
+    def check_specific_files(self, target_stable_ids: set) -> int:
+        self._bulk_toggle(False)
+        matched = [0]
+        
+        def traverse_and_check(item_id) -> bool:
+            vals = list(self.tree.item(item_id, "values"))
+            tags = self.tree.item(item_id, "tags")
+            is_file = tags and tags[0] != "folder"
+            
+            has_checked_child = False
+            
+            if is_file:
+                stable_id = vals[2]
+                if stable_id in target_stable_ids:
+                    vals[0] = "☑"
+                    self.tree.item(item_id, values=vals)
+                    matched[0] += 1
+                    return True
+            else:
+                for child in self.tree.get_children(item_id):
+                    if traverse_and_check(child):
+                        has_checked_child = True
+                        
+                if has_checked_child:
+                    self.tree.item(item_id, open=True)
+                    
+            return has_checked_child
+
         for child in self.tree.get_children():
-            self._set_check_recursive(child, state)
+            traverse_and_check(child)
+            
+        return matched[0]
 
     def _on_selection_change(self, event):
-        """Handles updating the Preview Pane."""
         selected = self.tree.selection()
         if selected:
             tags = self.tree.item(selected[0], "tags")
-            # Ensure it's a file, not a folder
             if tags and tags[0] != "folder":
-                # tags[0] is abs_path, values[2] is stable_id
                 stable_id = self.tree.item(selected[0], "values")[2]
                 self.on_select_callback(tags[0], stable_id)
 
@@ -126,8 +185,6 @@ class FileTreePanel(ttk.Frame):
                 node_data = structure[name]
                 is_file = '__metadata__' in node_data
                 
-                # Default to Checked (☑)
-                # Columns: [Check, Size, ID]
                 values = ["☑", "", ""]
                 
                 if is_file:
@@ -141,7 +198,6 @@ class FileTreePanel(ttk.Frame):
                 else:
                     icon = "📁 "
 
-                # CHANGED: open=False so folders start collapsed
                 item_id = self.tree.insert(parent_id, "end", text=f"{icon}{name}", values=values, open=False)
                 
                 if is_file:
@@ -156,15 +212,31 @@ class FileTreePanel(ttk.Frame):
         paths = []
         for item_id in self.tree.get_children(parent_id):
             vals = self.tree.item(item_id, "values")
-            
-            # 1. If this item is explicitly checked, add it (if it's a file)
             if vals[0] == "☑":
                 tags = self.tree.item(item_id, "tags")
                 if tags and tags[0] != "folder":
                     paths.append(tags[0])
-            
-            # 2. ALWAYS recurse into children, regardless of this folder's check state.
-            # This fixes the bug where deep files weren't found if a parent folder was unchecked.
             paths.extend(self.get_checked_files(item_id))
-            
         return paths
+
+    def get_modules(self) -> dict:
+        """
+        Returns a dictionary of { "module_name": [list_of_abs_paths] }
+        for all nodes explicitly tagged as module_root.
+        """
+        modules = {}
+        def traverse(item_id):
+            tags = self.tree.item(item_id, "tags")
+            if "module_root" in tags:
+                raw_text = self.tree.item(item_id, "text")
+                name = raw_text.replace("📁 ", "").strip()
+                paths = self.get_checked_files(item_id)
+                modules[name] = paths
+            else:
+                for child in self.tree.get_children(item_id):
+                    traverse(child)
+
+        for child in self.tree.get_children(""):
+            traverse(child)
+
+        return modules

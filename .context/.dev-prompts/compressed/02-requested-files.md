@@ -10,10 +10,12 @@
 > Analyze the file tree and summaries you currently have. Identify the **critical path files** required to build this feature.
 >
 > **Output a "Context Manifest" list:**
-> Please list the exact file paths I need to copy-paste into this chat so you have the **Ground Truth** (raw source code) necessary to write the implementation.
 >
-> *   **Group 1: Logic & State** (Files that need functional changes)
-> *   **Group 2: UI & Views** (Files that need visual/markup changes)
-> *   **Group 3: Data & Config** (Files defining types, schemas, or constants)
+> 1. **Quick Select String:** Output a single, comma-separated list of the exact file paths inside a simple code block. (I will paste this directly into my context-gathering tool to fetch the Ground Truth code).
+>
+> 2. **Grouped Breakdown:** Briefly categorize the requested files below the code block so I understand your intent:
+>    *   **Group 1: Logic & State** (Files that need functional changes)
+>    *   **Group 2: UI & Views** (Files that need visual/markup changes)
+>    *   **Group 3: Data & Config** (Files defining types, schemas, or constants)
 >
 > *Only request files that are strictly necessary for this specific task.*

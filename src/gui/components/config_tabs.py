@@ -41,6 +41,21 @@ class ConfigTabs(ttk.Notebook):
         row3.pack(fill=tk.X, pady=5)
         ttk.Checkbutton(row3, text="Always include README files (overrides extension filter)", variable=self.include_readme_var).pack(side=tk.LEFT)
 
+        # Quick Select
+        row4 = ttk.Frame(tab)
+        row4.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+        
+        lbl_frame = ttk.Frame(row4)
+        lbl_frame.pack(fill=tk.X)
+        ttk.Label(lbl_frame, text="Quick Select (Comma or newline separated paths):").pack(side=tk.LEFT)
+        
+        # Stored reference to wire in app.py
+        self.btn_apply_selection = ttk.Button(lbl_frame, text="Apply Selection", state=tk.DISABLED)
+        self.btn_apply_selection.pack(side=tk.RIGHT)
+        
+        self.txt_quick_select = tk.Text(row4, height=4, font=("Segoe UI", 9))
+        self.txt_quick_select.pack(fill=tk.BOTH, expand=True, pady=(2, 0))
+
     def _build_ignore_tab(self):
         tab = ttk.Frame(self, padding=10)
         self.add(tab, text=" Ignore Rules ")
