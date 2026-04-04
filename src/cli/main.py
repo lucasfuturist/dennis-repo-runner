@@ -1,7 +1,13 @@
 ﻿import argparse
 import os
 import sys
-from src.core.controller import run_snapshot, run_export_flatten, run_compare, run_export_diagram
+from src.core.controller import (
+    run_snapshot, 
+    run_export_flatten, 
+    run_compare, 
+    run_export_diagram, 
+    run_export_compression_state
+)
 from src.core.config_loader import ConfigLoader
 
 def _parse_args():
@@ -53,6 +59,8 @@ def _parse_args():
     # export
     exp = sub.add_parser("export", help="Export derived artifacts")
     exp_sub = exp.add_subparsers(dest="export_command", required=True)
+    
+    # export flatten
     flatten = exp_sub.add_parser("flatten")
     flatten.add_argument("--repo-root", required=True)
     flatten.add_argument("--output-root", required=False, default=None)
@@ -63,6 +71,14 @@ def _parse_args():
     flatten.add_argument("--no-include-readme", action="store_false", dest="include_readme")
     flatten.add_argument("--scope", required=False, default="full")
     flatten.add_argument("--title", required=False, default=None)
+
+    # export compression-state
+    comp_state = exp_sub.add_parser("compression-state", help="Sync incremental context compression states")
+    comp_state.add_argument("--base", required=True, help="Base snapshot ID, 'current', or 'empty'")
+    comp_state.add_argument("--target", required=True, help="Target snapshot ID or 'current'")
+    comp_state.add_argument("--state-dir", required=True, help="Directory to store JSON state files")
+    comp_state.add_argument("--output-root", required=False, default=None)
+    comp_state.add_argument("--repo-root", required=False, default=".")
 
     # ui
     sub.add_parser("ui", help="Launch the graphical control panel")
@@ -138,7 +154,6 @@ def main():
     if args.command == "slice":
         config = ConfigLoader.load_config(args.repo_root)
         output_root = args.output_root if args.output_root is not None else config.output_root
-        # Added validation check
         if not output_root:
             print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
             sys.exit(1)
@@ -181,23 +196,34 @@ def main():
     if args.command == "export":
         config = ConfigLoader.load_config(args.repo_root)
         output_root = args.output_root if args.output_root is not None else config.output_root
-        # Added validation check
         if not output_root:
             print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
             sys.exit(1)
 
-        out = run_export_flatten(
-            output_root=output_root,
-            repo_root=args.repo_root,
-            snapshot_id=args.snapshot_id,
-            output_path=args.output,
-            tree_only=args.tree_only,
-            include_readme=args.include_readme if args.include_readme is not None else config.include_readme,
-            scope=args.scope,
-            title=args.title,
-        )
-        print(f"Wrote Export:\n  {os.path.abspath(out)}")
-        return
+        if args.export_command == "flatten":
+            out = run_export_flatten(
+                output_root=output_root,
+                repo_root=args.repo_root,
+                snapshot_id=args.snapshot_id,
+                output_path=args.output,
+                tree_only=args.tree_only,
+                include_readme=args.include_readme if args.include_readme is not None else config.include_readme,
+                scope=args.scope,
+                title=args.title,
+            )
+            print(f"Wrote Export:\n  {os.path.abspath(out)}")
+            return
+            
+        elif args.export_command == "compression-state":
+            stats = run_export_compression_state(
+                output_root=output_root,
+                base_id=args.base,
+                target_id=args.target,
+                state_dir=args.state_dir
+            )
+            print(f"Compression State Synced in {os.path.abspath(args.state_dir)}")
+            print(f"  Pending LLM Compression: {stats['pending_compression']} files")
+            return
     
     if args.command == "ui":
         from src.gui.app import run_gui

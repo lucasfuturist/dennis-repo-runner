@@ -2,7 +2,7 @@ import os
 import time
 import json
 from collections import defaultdict
-from typing import List, Optional, Set, Dict, Callable
+from typing import List, Optional, Set, Dict, Callable, Any
 
 from src.core.types import (
     Manifest, 
@@ -193,8 +193,6 @@ def run_snapshot(
                 for n in graph.nodes 
                 if n.type == "external"
             ])
-    # FIX: Removed the else block that was instantiating GraphStructure. 
-    # SnapshotWriter expects None to skip file creation.
 
     symbols_index_raw = defaultdict(list)
     for entry in file_entries:
@@ -298,7 +296,7 @@ def run_export_flatten(
         if not os.path.exists(graph_path):
             raise FileNotFoundError(f"Cannot slice context: graph.json missing in {snapshot_dir}")
         
-        with open(graph_path, "r") as f:
+        with open(graph_path, "r", encoding="utf-8") as f:
             graph_data = json.load(f)
             
         sliced_manifest = ContextSlicer.slice_manifest(
@@ -381,7 +379,7 @@ def run_export_diagram(
     if not os.path.exists(graph_path):
         raise FileNotFoundError(f"graph.json not found in {snapshot_dir}. Cannot generate diagram.")
         
-    with open(graph_path, "r") as f:
+    with open(graph_path, "r", encoding="utf-8") as f:
         graph_data = json.load(f)
         
     graph = GraphStructure.model_validate(graph_data)
@@ -417,10 +415,92 @@ def run_compare(
     
     g_a, g_b = None, None
     if os.path.exists(ga_path):
-        with open(ga_path, "r") as f:
+        with open(ga_path, "r", encoding="utf-8") as f:
             g_a = GraphStructure.model_validate(json.load(f))
     if os.path.exists(gb_path):
-        with open(gb_path, "r") as f:
+        with open(gb_path, "r", encoding="utf-8") as f:
             g_b = GraphStructure.model_validate(json.load(f))
 
     return SnapshotComparator.compare(manifest_a, manifest_b, g_a, g_b)
+
+
+def run_export_compression_state(
+    output_root: str,
+    base_id: str,
+    target_id: str,
+    state_dir: str
+) -> Dict[str, Any]:
+    """
+    Synchronizes incremental context compression state files.
+    Maintains `master_compressed_context.json` and `file_changed_bool.json`
+    based on the deterministic diff between base and target snapshots.
+    Supports base_id="empty" for initial generation.
+    """
+    loader = SnapshotLoader(output_root)
+    
+    # Load Target
+    dir_b = loader.resolve_snapshot_dir(target_id)
+    manifest_b = Manifest.model_validate(loader.load_manifest(dir_b))
+    
+    # Load or Mock Base
+    if base_id.lower() == "empty":
+        manifest_a = Manifest(
+            tool={"name": "repo-runner", "version": "0.2.0"},
+            snapshot={"snapshot_id": "empty", "created_utc": "", "output_root": ""},
+            inputs=ManifestInputs(repo_root="", roots=[], git=GitMetadata(is_repo=False)),
+            config=ManifestConfig(
+                depth=0, ignore_names=[], include_extensions=[], 
+                include_readme=False, tree_only=False, skip_graph=True, manual_override=False
+            ),
+            stats=ManifestStats(file_count=0, total_bytes=0),
+            files=[]
+        )
+        g_a = None
+    else:
+        dir_a = loader.resolve_snapshot_dir(base_id)
+        manifest_a = Manifest.model_validate(loader.load_manifest(dir_a))
+        ga_path = os.path.join(dir_a, "graph.json")
+        g_a = None
+        if os.path.exists(ga_path):
+            with open(ga_path, "r", encoding="utf-8") as f:
+                g_a = GraphStructure.model_validate(json.load(f))
+                
+    gb_path = os.path.join(dir_b, "graph.json")
+    g_b = None
+    if os.path.exists(gb_path):
+        with open(gb_path, "r", encoding="utf-8") as f:
+            g_b = GraphStructure.model_validate(json.load(f))
+
+    # Calculate Diff deterministically
+    report = SnapshotComparator.compare(manifest_a, manifest_b, g_a, g_b)
+
+    master_ctx_path = os.path.join(state_dir, "master_compressed_context.json")
+    changed_bool_path = os.path.join(state_dir, "file_changed_bool.json")
+
+    master_ctx = {}
+    changed_bool = {}
+
+    if os.path.exists(master_ctx_path):
+        with open(master_ctx_path, "r", encoding="utf-8") as f: 
+            master_ctx = json.load(f)
+    if os.path.exists(changed_bool_path):
+        with open(changed_bool_path, "r", encoding="utf-8") as f: 
+            changed_bool = json.load(f)
+
+    # Apply Diffs to State Queues
+    for fd in report.file_diffs:
+        if fd.status == "removed":
+            master_ctx.pop(fd.stable_id, None)
+            changed_bool.pop(fd.stable_id, None)
+        elif fd.status in ("added", "modified"):
+            changed_bool[fd.stable_id] = 1
+
+    os.makedirs(state_dir, exist_ok=True)
+    
+    with open(master_ctx_path, "w", encoding="utf-8") as f: 
+        json.dump(master_ctx, f, indent=2)
+    with open(changed_bool_path, "w", encoding="utf-8") as f: 
+        json.dump(changed_bool, f, indent=2)
+
+    pending_count = sum(1 for v in changed_bool.values() if v == 1)
+    return {"updated": len(report.file_diffs), "pending_compression": pending_count}
