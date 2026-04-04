@@ -5,9 +5,10 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import ctypes
 import datetime
-import time
 import platform
 import subprocess
+import sys
+import json
 
 from src.scanner.filesystem_scanner import FileSystemScanner
 from src.normalize.path_normalizer import PathNormalizer
@@ -39,6 +40,7 @@ class RepoRunnerApp(tk.Tk):
         self.scan_worker = None
         
         self._build_ui()
+        self._load_default_ignores()
 
     def _build_ui(self):
         # Top Bar: Repository Selection
@@ -77,6 +79,9 @@ class RepoRunnerApp(tk.Tk):
 
         self.btn_batch_export = ttk.Button(action_frame, text="Batch Export Modules", command=self._batch_export, state=tk.DISABLED, width=20)
         self.btn_batch_export.pack(pady=5)
+        
+        self.btn_compress = ttk.Button(action_frame, text="Compress Context (LLM)", command=self._compress_context, state=tk.DISABLED, width=20)
+        self.btn_compress.pack(pady=5)
 
         # Lower: Tree and Preview
         lower_paned = ttk.PanedWindow(main_paned, orient=tk.HORIZONTAL)
@@ -92,12 +97,43 @@ class RepoRunnerApp(tk.Tk):
         self.status_var = tk.StringVar(value="Ready")
         ttk.Label(self, textvariable=self.status_var, relief=tk.SUNKEN, anchor=tk.W).pack(side=tk.BOTTOM, fill=tk.X)
 
+    def _load_default_ignores(self, repo_path=None):
+        """
+        Populates the ignore box with safe defaults and dynamically merges
+        entries from the repository's .gitignore file if one exists.
+        """
+        # Critical baseline to prevent scanning our own outputs or heavy caches
+        ignores = {".git", "node_modules", "__pycache__", "dist", "build", ".next", ".expo", ".venv", ".pytest_cache", "snapshots", "compression_state"}
+        
+        if repo_path:
+            gitignore_path = os.path.join(repo_path, ".gitignore")
+            if os.path.exists(gitignore_path):
+                try:
+                    with open(gitignore_path, "r", encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if line and not line.startswith("#"):
+                                # Clean trailing/leading slashes for exact name matching
+                                line = line.strip("/")
+                                if line.startswith("/"): 
+                                    line = line[1:]
+                                # Ignore complex globs (*), focus on static directory/file names
+                                if line and "*" not in line:
+                                    ignores.add(line)
+                except Exception:
+                    pass
+        
+        if hasattr(self, 'config_tabs') and hasattr(self.config_tabs, 'ignore_var'):
+            self.config_tabs.ignore_var.set(" ".join(sorted(list(ignores))))
+
     def _browse(self):
         path = filedialog.askdirectory()
         if path:
             self.ent_root.delete(0, tk.END)
             self.ent_root.insert(0, path)
             self.repo_root = path
+            # Dynamically read the .gitignore of the selected repo
+            self._load_default_ignores(path)
 
     def _start_scan(self):
         root = self.ent_root.get().strip()
@@ -114,6 +150,7 @@ class RepoRunnerApp(tk.Tk):
         self.btn_snap.config(state=tk.DISABLED)
         self.btn_export.config(state=tk.DISABLED)
         self.btn_batch_export.config(state=tk.DISABLED)
+        self.btn_compress.config(state=tk.DISABLED)
         
         # Get settings safely on Main Thread
         depth = self.config_tabs.depth_var.get()
@@ -196,6 +233,7 @@ class RepoRunnerApp(tk.Tk):
         self.btn_snap.config(state=tk.NORMAL)
         self.btn_export.config(state=tk.NORMAL)
         self.btn_batch_export.config(state=tk.NORMAL)
+        self.btn_compress.config(state=tk.NORMAL)
 
     def _scan_cancelled(self):
         self.progress_win.close()
@@ -405,6 +443,205 @@ class RepoRunnerApp(tk.Tk):
         self.btn_batch_export.config(state=tk.NORMAL)
         self.status_var.set("Batch Export Failed.")
         messagebox.showerror("Batch Export Error", error)
+
+    def _compress_context(self):
+        if not self.repo_root:
+            messagebox.showwarning("Error", "Please scan a repository first.")
+            return
+
+        env_path = os.path.join(self.repo_root, ".env")
+        if not os.path.exists(env_path):
+            messagebox.showwarning("Missing Configuration", f"Could not find '.env' file at repo root.\n\nPlease create {env_path} and add:\nGEMINI_API_KEY=\"your_key_here\"")
+            return
+
+        confirm = messagebox.askyesno(
+            "Execute Context Compression?",
+            "WARNING: This will make real HTTP calls to the Gemini API and consume AI Tokens.\n\n"
+            "This process will:\n"
+            "1. Snapshot the current codebase state.\n"
+            "2. Identify any files modified since the last run.\n"
+            "3. Send those specific files to Gemini for summarization.\n"
+            "4. Output a final 'compressed_context.md' artifact.\n\n"
+            "Do you want to proceed?"
+        )
+        if not confirm:
+            return
+
+        out_root = filedialog.askdirectory(title="Select Output Root (for Snapshots and State)")
+        if not out_root: return
+        
+        state_dir = os.path.join(out_root, "compression_state")
+        current_json = os.path.join(out_root, "current.json")
+        
+        # Capture base_id BEFORE we take a new snapshot and overwrite current.json
+        base_id = "empty"
+        if os.path.exists(current_json):
+            try:
+                with open(current_json, 'r') as f:
+                    base_id = json.load(f).get("current_snapshot_id", "empty")
+            except Exception:
+                pass
+
+        # Capture GUI ignore rules, depth, and extensions for the snapshot phase
+        depth_val = str(self.config_tabs.depth_var.get())
+        ignore_list = self.config_tabs.ignore_var.get().split()
+        ext_list = self.config_tabs.ext_var.get().split()
+        include_readme = self.config_tabs.include_readme_var.get()
+
+        self.btn_compress.config(state=tk.DISABLED)
+        self.btn_snap.config(state=tk.DISABLED)
+        self.btn_export.config(state=tk.DISABLED)
+        self.btn_batch_export.config(state=tk.DISABLED)
+        self.progress_win = ProgressWindow(self, title="Context Compression Orchestrator", message="Initializing Pipeline...")
+
+        def run_part1():
+            try:
+                python_exe = sys.executable
+                
+                # Phase 1: Snapshot (using inherited GUI rules)
+                self.after(0, lambda: self.progress_win.update_message("Phase 1/4: Generating strict snapshot..."))
+                
+                snap_cmd = [
+                    python_exe, "-m", "src.entry_point", "snapshot", self.repo_root, 
+                    "--output-root", out_root, "--depth", depth_val
+                ]
+                if ignore_list:
+                    snap_cmd.extend(["--ignore"] + ignore_list)
+                if ext_list:
+                    snap_cmd.extend(["--include-extensions"] + ext_list)
+                if not include_readme:
+                    snap_cmd.append("--no-include-readme")
+
+                subprocess.run(snap_cmd, check=True, capture_output=True)
+
+                # Phase 2: Diff State
+                self.after(0, lambda: self.progress_win.update_message("Phase 2/4: Syncing deterministic state queues..."))
+                subprocess.run(
+                    [python_exe, "-m", "src.entry_point", "export", "compression-state", 
+                     "--base", base_id, "--target", "current", "--output-root", out_root, "--state-dir", state_dir],
+                    check=True, capture_output=True
+                )
+                
+                # Move to main thread to show Dialog
+                self.after(0, lambda: self._show_compression_dialog(state_dir, out_root))
+                
+            except subprocess.CalledProcessError as e:
+                err_msg = e.stderr.decode('utf-8') if e.stderr else str(e)
+                self.after(0, lambda: self._compress_context_fail(f"Pipeline Step Failed:\n{err_msg}"))
+            except Exception as e:
+                self.after(0, lambda: self._compress_context_fail(str(e)))
+
+        threading.Thread(target=run_part1, daemon=True).start()
+
+    def _show_compression_dialog(self, state_dir, out_root):
+        self.progress_win.close()
+        
+        from src.gui.components.compression_queue_dialog import CompressionQueueDialog
+        dialog = CompressionQueueDialog(
+            parent=self, 
+            state_dir=state_dir, 
+            repo_root=self.repo_root, 
+            on_confirm_callback=lambda: self._run_part2(state_dir, out_root),
+            on_cancel_callback=self._compress_context_abort
+        )
+        
+        if not dialog.has_pending:
+            messagebox.showinfo("Up to date", "No files have been modified. Context is already fully compressed!")
+            dialog.destroy()
+            self._compress_context_abort()
+
+    def _run_part2(self, state_dir, out_root):
+        self.progress_win = ProgressWindow(self, title="Context Compression Orchestrator", message="Initializing LLM...")
+        final_out = os.path.join(out_root, "compressed_context.md")
+        
+        def run_part2_thread():
+            try:
+                python_exe = sys.executable
+                
+                # Phase 3: LLM
+                self.after(0, lambda: self.progress_win.update_message("Phase 3/4: Starting LLM Compressor..."))
+                llm_script = os.path.join(self.repo_root, "scripts", "llm_compressor.py")
+                
+                # Use Popen to stream stdout line-by-line
+                process = subprocess.Popen(
+                    [python_exe, "-u", llm_script, "--repo-root", self.repo_root, "--state-dir", state_dir],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1
+                )
+                
+                output_log = []
+                for line in iter(process.stdout.readline, ''):
+                    clean_line = line.strip()
+                    if not clean_line:
+                        continue
+                        
+                    output_log.append(clean_line)
+                    
+                    # Show the raw tail of the logs to ensure nothing is hidden
+                    log_tail = "\n".join(output_log[-4:])
+                    display_msg = f"Phase 3/4: Compressing via LLM...\n\n{log_tail}"
+                    self.after(0, lambda m=display_msg: self.progress_win.update_message(m))
+
+                process.wait()
+                
+                if process.returncode != 0:
+                    err_msg = "\n".join(output_log[-15:]) # Grab tail of logs for context
+                    raise Exception(f"LLM Compressor Failed (Code {process.returncode}):\n{err_msg}")
+
+                # Phase 4: Stitch
+                self.after(0, lambda: self.progress_win.update_message("Phase 4/4: Stitching final markdown artifact..."))
+                stitch_script = os.path.join(self.repo_root, "scripts", "llm_stitcher.py")
+                subprocess.run(
+                    [python_exe, stitch_script, "--state-dir", state_dir, "--output", final_out],
+                    check=True, capture_output=True
+                )
+
+                self.after(0, lambda: self._compress_context_done(final_out))
+
+            except subprocess.CalledProcessError as e:
+                err_msg = e.stderr.decode('utf-8') if e.stderr else str(e)
+                self.after(0, lambda: self._compress_context_fail(f"Pipeline Step Failed:\n{err_msg}"))
+            except Exception as e:
+                self.after(0, lambda: self._compress_context_fail(str(e)))
+                
+        threading.Thread(target=run_part2_thread, daemon=True).start()
+
+    def _compress_context_done(self, out_path):
+        self.progress_win.close()
+        self.btn_compress.config(state=tk.NORMAL)
+        self.btn_snap.config(state=tk.NORMAL)
+        self.btn_export.config(state=tk.NORMAL)
+        self.btn_batch_export.config(state=tk.NORMAL)
+        self.status_var.set(f"Compression Complete: {out_path}")
+        messagebox.showinfo("Success", f"Context Compression Pipeline Completed!\n\nFinal Artifact saved to:\n{out_path}")
+        
+        try:
+            if platform.system() == "Windows":
+                os.startfile(out_path)
+            elif platform.system() == "Darwin":
+                subprocess.call(["open", out_path])
+        except:
+            pass
+
+    def _compress_context_fail(self, error):
+        if hasattr(self, 'progress_win') and self.progress_win:
+            self.progress_win.close()
+        self.btn_compress.config(state=tk.NORMAL)
+        self.btn_snap.config(state=tk.NORMAL)
+        self.btn_export.config(state=tk.NORMAL)
+        self.btn_batch_export.config(state=tk.NORMAL)
+        self.status_var.set("Compression Pipeline Failed.")
+        messagebox.showerror("Pipeline Error", error)
+        
+    def _compress_context_abort(self):
+        self.btn_compress.config(state=tk.NORMAL)
+        self.btn_snap.config(state=tk.NORMAL)
+        self.btn_export.config(state=tk.NORMAL)
+        self.btn_batch_export.config(state=tk.NORMAL)
+        self.status_var.set("Compression Pipeline Aborted.")
+
 
 def run_gui():
     RepoRunnerApp().mainloop()
