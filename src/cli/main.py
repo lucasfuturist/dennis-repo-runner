@@ -1,14 +1,32 @@
 ﻿import argparse
 import os
 import sys
+from typing import List
 from src.core.controller import (
     run_snapshot, 
     run_export_flatten, 
     run_compare, 
     run_export_diagram, 
-    run_export_compression_state
+    run_export_compression_state,
+    run_batch_module_compression_stateless
 )
 from src.core.config_loader import ConfigLoader
+from src.scanner.filesystem_scanner import FileSystemScanner
+from src.normalize.path_normalizer import PathNormalizer
+
+def _filter_by_extensions(abs_files: List[str], include_exts: List[str]) -> List[str]:
+    if not include_exts:
+        return abs_files
+
+    include = set([e.lower() for e in include_exts])
+    out =[]
+
+    for p in abs_files:
+        ext = os.path.splitext(p)[1].lower()
+        if ext in include:
+            out.append(p)
+
+    return out
 
 def _parse_args():
     parser = argparse.ArgumentParser(prog="repo-runner", description="repo-runner v0.2")
@@ -79,6 +97,14 @@ def _parse_args():
     comp_state.add_argument("--state-dir", required=True, help="Directory to store JSON state files")
     comp_state.add_argument("--output-root", required=False, default=None)
     comp_state.add_argument("--repo-root", required=False, default=".")
+
+    # export batch-compress
+    batch_comp = exp_sub.add_parser("batch-compress", help="Perform direct stateless batch module compression")
+    batch_comp.add_argument("--repo-root", required=True, help="Path to repository root")
+    batch_comp.add_argument("--modules", nargs="+", required=True, help="Relative paths of modules/directories to compress")
+    batch_comp.add_argument("--output-dir", required=True, help="Directory where compressed outputs will be saved")
+    batch_comp.add_argument("--model", default="gemini-3.1-pro-preview", help="Gemini model to use")
+    batch_comp.add_argument("--delay", type=float, default=2.0, help="Delay (seconds) between API calls")
 
     # ui
     sub.add_parser("ui", help="Launch the graphical control panel")
@@ -195,12 +221,13 @@ def main():
 
     if args.command == "export":
         config = ConfigLoader.load_config(args.repo_root)
-        output_root = args.output_root if args.output_root is not None else config.output_root
-        if not output_root:
-            print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
-            sys.exit(1)
 
         if args.export_command == "flatten":
+            output_root = args.output_root if args.output_root is not None else config.output_root
+            if not output_root:
+                print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
+                sys.exit(1)
+
             out = run_export_flatten(
                 output_root=output_root,
                 repo_root=args.repo_root,
@@ -215,6 +242,11 @@ def main():
             return
             
         elif args.export_command == "compression-state":
+            output_root = args.output_root if args.output_root is not None else config.output_root
+            if not output_root:
+                print("Error: --output-root must be provided via CLI flag or 'repo-runner.json'")
+                sys.exit(1)
+
             stats = run_export_compression_state(
                 output_root=output_root,
                 base_id=args.base,
@@ -223,6 +255,42 @@ def main():
             )
             print(f"Compression State Synced in {os.path.abspath(args.state_dir)}")
             print(f"  Pending LLM Compression: {stats['pending_compression']} files")
+            return
+
+        elif args.export_command == "batch-compress":
+            selected_modules = {}
+            for rel_mod in args.modules:
+                abs_mod_dir = os.path.normpath(os.path.join(args.repo_root, rel_mod))
+                if not os.path.isdir(abs_mod_dir):
+                    print(f"\nError: Module directory does not exist: {abs_mod_dir}")
+                    sys.exit(1)
+                
+                # Fetch targets using core settings scanner
+                scanner = FileSystemScanner(depth=config.depth, ignore_names=config.ignore)
+                abs_files = scanner.scan([abs_mod_dir])
+                abs_files = _filter_by_extensions(abs_files, config.include_extensions)
+
+                if abs_files:
+                    selected_modules[rel_mod] = abs_files
+
+            if not selected_modules:
+                print("\nError: No valid files matched in the selected modules.")
+                sys.exit(1)
+
+            print(f"Stateless batch compressing {len(selected_modules)} modules...")
+
+            exported_paths = run_batch_module_compression_stateless(
+                repo_root=args.repo_root,
+                selected_modules=selected_modules,
+                export_dir=args.output_dir,
+                model=args.model,
+                delay=args.delay,
+                progress_callback=cli_progress
+            )
+
+            print(f"\n\nBatch Export Complete. Successfully wrote {len(exported_paths)} module files:")
+            for path in sorted(exported_paths.values()):
+                print(f"  - {os.path.abspath(path)}")
             return
     
     if args.command == "ui":
