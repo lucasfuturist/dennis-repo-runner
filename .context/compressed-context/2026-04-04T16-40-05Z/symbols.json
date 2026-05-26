@@ -1,0 +1,980 @@
+{
+  "CONFIG_FILENAME": [
+    "file:src/core/config_loader.py"
+  ],
+  "COST_PER_1M_INPUT": [
+    "file:src/observability/token_telemetry.py"
+  ],
+  "CompareRequest": [
+    "file:src/api/server.py"
+  ],
+  "CompressionQueueDialog": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "ConfigLoader": [
+    "file:src/core/config_loader.py"
+  ],
+  "ConfigTabs": [
+    "file:src/gui/components/config_tabs.py"
+  ],
+  "ContextSlicer": [
+    "file:src/analysis/context_slicer.py"
+  ],
+  "DrawioExporter": [
+    "file:src/exporters/drawio_exporter.py"
+  ],
+  "EdgeDiff": [
+    "file:src/core/types.py"
+  ],
+  "ExportPreviewWindow": [
+    "file:src/gui/components/export_preview.py"
+  ],
+  "FileDiff": [
+    "file:src/core/types.py"
+  ],
+  "FileEntry": [
+    "file:src/core/types.py"
+  ],
+  "FileFingerprint": [
+    "file:src/fingerprint/file_fingerprint.py"
+  ],
+  "FileSystemScanner": [
+    "file:src/scanner/filesystem_scanner.py"
+  ],
+  "FileTreePanel": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "FlattenMarkdownExporter": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "FlattenOptions": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "GOLDEN_GRAPH_SUBSET": [
+    "file:tests/integration/test_golden.py"
+  ],
+  "GitMetadata": [
+    "file:src/core/types.py"
+  ],
+  "GraphBuilder": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "GraphEdge": [
+    "file:src/core/types.py"
+  ],
+  "GraphNode": [
+    "file:src/core/types.py"
+  ],
+  "GraphStructure": [
+    "file:src/core/types.py"
+  ],
+  "ImportScanner": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "LANGUAGE_MAP": [
+    "file:src/fingerprint/file_fingerprint.py"
+  ],
+  "Manifest": [
+    "file:src/core/types.py"
+  ],
+  "ManifestConfig": [
+    "file:src/core/types.py"
+  ],
+  "ManifestInputs": [
+    "file:src/core/types.py"
+  ],
+  "ManifestStats": [
+    "file:src/core/types.py"
+  ],
+  "MermaidExporter": [
+    "file:src/exporters/mermaid_exporter.py"
+  ],
+  "PREVIEW_LIMIT": [
+    "file:src/gui/components/export_preview.py"
+  ],
+  "PathNormalizer": [
+    "file:src/normalize/path_normalizer.py"
+  ],
+  "PreviewPanel": [
+    "file:src/gui/components/preview_pane.py"
+  ],
+  "ProgressWindow": [
+    "file:src/gui/components/progress_window.py"
+  ],
+  "RepoRunnerApp": [
+    "file:src/gui/app.py"
+  ],
+  "RepoRunnerConfig": [
+    "file:src/core/types.py"
+  ],
+  "SYSTEM_PROMPT": [
+    "file:scripts/llm_compressor.py"
+  ],
+  "SliceRequest": [
+    "file:src/api/server.py"
+  ],
+  "SnapshotComparator": [
+    "file:src/analysis/snapshot_comparator.py"
+  ],
+  "SnapshotDiffReport": [
+    "file:src/core/types.py"
+  ],
+  "SnapshotLoader": [
+    "file:src/snapshot/snapshot_loader.py"
+  ],
+  "SnapshotRequest": [
+    "file:src/api/server.py"
+  ],
+  "SnapshotWriter": [
+    "file:src/snapshot/snapshot_writer.py"
+  ],
+  "StructureBuilder": [
+    "file:src/structure/structure_builder.py"
+  ],
+  "TEXT_EXTENSIONS": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "TOKENS_PER_BYTE": [
+    "file:src/observability/token_telemetry.py"
+  ],
+  "TestAPI": [
+    "file:tests/integration/test_api.py"
+  ],
+  "TestCLIDiff": [
+    "file:tests/integration/test_cli_diff.py"
+  ],
+  "TestCLISlice": [
+    "file:tests/integration/test_cli_slice.py"
+  ],
+  "TestCollisionLogic": [
+    "file:tests/unit/test_collision_logic.py"
+  ],
+  "TestConfigLoader": [
+    "file:tests/unit/test_config_loader.py"
+  ],
+  "TestContextSlicer": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "TestDrawioExporter": [
+    "file:tests/unit/test_drawio_exporter.py"
+  ],
+  "TestExportFlow": [
+    "file:tests/integration/test_export_flow.py"
+  ],
+  "TestFileSystemScanner": [
+    "file:tests/unit/test_filesystem_scanner.py"
+  ],
+  "TestFingerprintHardening": [
+    "file:tests/unit/test_file_fingerprint.py"
+  ],
+  "TestFlattenExporter": [
+    "file:tests/unit/test_flatten_exporter.py"
+  ],
+  "TestFullSnapshot": [
+    "file:tests/integration/test_e2e_snapshot.py"
+  ],
+  "TestGoldenSnapshot": [
+    "file:tests/integration/test_golden.py"
+  ],
+  "TestGraphBuilder": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "TestGraphBuilderUnresolved": [
+    "file:tests/unit/test_graph_builder_unresolved.py"
+  ],
+  "TestGraphSnapshot": [
+    "file:tests/integration/test_graph_snapshot.py"
+  ],
+  "TestIgnoreLogic": [
+    "file:tests/unit/test_ignore_logic.py"
+  ],
+  "TestImportScanner": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "TestMermaidExporter": [
+    "file:tests/unit/test_mermaid_exporter.py"
+  ],
+  "TestPathNormalizer": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "TestRobustness": [
+    "file:tests/integration/test_robustness.py"
+  ],
+  "TestScannerConstants": [
+    "file:tests/unit/test_scanner_constants.py"
+  ],
+  "TestSnapshotComparator": [
+    "file:tests/unit/test_snapshot_comparator.py"
+  ],
+  "TestStructureBuilder": [
+    "file:tests/unit/test_structure_builder.py"
+  ],
+  "TestTokenTelemetry": [
+    "file:tests/unit/test_token_telemetry.py"
+  ],
+  "TestTypes": [
+    "file:tests/unit/test_types.py"
+  ],
+  "TokenTelemetry": [
+    "file:src/observability/token_telemetry.py"
+  ],
+  "UnresolvedReference": [
+    "file:src/core/types.py"
+  ],
+  "_JS_BLOCK_COMMENT": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_CLASS_DEF": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_CONST_FUNC_DEF": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_CONST_VAR_DEF": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_DYNAMIC_IMPORT": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_EXPORT_FROM": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_FUNC_DEF": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_IMPORT_FROM": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_IMPORT_SIDE_EFFECT": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_LINE_COMMENT": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_JS_REQUIRE": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "__init__": [
+    "file:src/gui/app.py",
+    "file:src/gui/components/compression_queue_dialog.py",
+    "file:src/gui/components/config_tabs.py",
+    "file:src/gui/components/export_preview.py",
+    "file:src/gui/components/preview_pane.py",
+    "file:src/gui/components/progress_window.py",
+    "file:src/gui/components/tree_view.py",
+    "file:src/normalize/path_normalizer.py",
+    "file:src/scanner/filesystem_scanner.py",
+    "file:src/snapshot/snapshot_loader.py",
+    "file:src/snapshot/snapshot_writer.py"
+  ],
+  "_apply_quick_select": [
+    "file:src/gui/app.py"
+  ],
+  "_apply_scope": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_batch_export": [
+    "file:src/gui/app.py"
+  ],
+  "_batch_export_done": [
+    "file:src/gui/app.py"
+  ],
+  "_batch_export_fail": [
+    "file:src/gui/app.py"
+  ],
+  "_binary_placeholder": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_browse": [
+    "file:src/gui/app.py"
+  ],
+  "_build_adjacency": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "_build_ignore_tab": [
+    "file:src/gui/components/config_tabs.py"
+  ],
+  "_build_output_tab": [
+    "file:src/gui/components/config_tabs.py"
+  ],
+  "_build_scan_tab": [
+    "file:src/gui/components/config_tabs.py"
+  ],
+  "_build_ui": [
+    "file:src/gui/app.py",
+    "file:src/gui/components/compression_queue_dialog.py",
+    "file:src/gui/components/export_preview.py",
+    "file:src/gui/components/progress_window.py"
+  ],
+  "_bulk_toggle": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "_canonical_files_from_manifest": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_compare": [
+    "file:tests/conftest.py"
+  ],
+  "_compress_context": [
+    "file:src/gui/app.py"
+  ],
+  "_compress_context_abort": [
+    "file:src/gui/app.py"
+  ],
+  "_compress_context_done": [
+    "file:src/gui/app.py"
+  ],
+  "_compress_context_fail": [
+    "file:src/gui/app.py"
+  ],
+  "_copy": [
+    "file:src/gui/components/export_preview.py"
+  ],
+  "_create": [
+    "file:tests/conftest.py"
+  ],
+  "_create_and_scan": [
+    "file:tests/unit/test_scanner_constants.py"
+  ],
+  "_create_file": [
+    "file:tests/integration/test_api.py",
+    "file:tests/integration/test_e2e_snapshot.py",
+    "file:tests/integration/test_export_flow.py",
+    "file:tests/integration/test_graph_snapshot.py"
+  ],
+  "_create_manifest": [
+    "file:tests/unit/test_snapshot_comparator.py"
+  ],
+  "_detect_cycles": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "_escape_id": [
+    "file:src/exporters/mermaid_exporter.py"
+  ],
+  "_filter_by_extensions": [
+    "file:src/core/controller.py"
+  ],
+  "_generate_content": [
+    "file:src/exporters/mermaid_exporter.py"
+  ],
+  "_generate_csv": [
+    "file:src/exporters/drawio_exporter.py"
+  ],
+  "_get_model_fit": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_highlight_syntax": [
+    "file:src/gui/components/preview_pane.py"
+  ],
+  "_inject_fixtures": [
+    "file:tests/integration/test_golden.py"
+  ],
+  "_is_cycle_edge": [
+    "file:src/exporters/mermaid_exporter.py"
+  ],
+  "_load_json": [
+    "file:scripts/llm_compressor.py"
+  ],
+  "_lock_children": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "_on_cancel": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "_on_click": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "_on_confirm": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "_on_double_click": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "_on_file_selected": [
+    "file:src/gui/app.py"
+  ],
+  "_on_select": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "_on_selection_change": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "_parse_args": [
+    "file:src/cli/main.py"
+  ],
+  "_quick_export": [
+    "file:src/gui/app.py"
+  ],
+  "_quick_export_done": [
+    "file:src/gui/app.py"
+  ],
+  "_quick_export_fail": [
+    "file:src/gui/app.py"
+  ],
+  "_refresh_list": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "_render_contents": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_render_tree": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_resolve_external": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "_resolve_import": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "_resolve_js": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "_resolve_python": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "_run_part2": [
+    "file:src/gui/app.py"
+  ],
+  "_save": [
+    "file:src/gui/components/export_preview.py"
+  ],
+  "_save_json": [
+    "file:scripts/llm_compressor.py"
+  ],
+  "_scan_cancelled": [
+    "file:src/gui/app.py"
+  ],
+  "_scan_done": [
+    "file:src/gui/app.py"
+  ],
+  "_scan_fail": [
+    "file:src/gui/app.py"
+  ],
+  "_scan_js": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_scan_python": [
+    "file:src/analysis/import_scanner.py"
+  ],
+  "_scan_thread": [
+    "file:src/gui/app.py"
+  ],
+  "_set_node_state": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "_show_compression_dialog": [
+    "file:src/gui/app.py"
+  ],
+  "_snapshot": [
+    "file:src/gui/app.py"
+  ],
+  "_snapshot_done": [
+    "file:src/gui/app.py"
+  ],
+  "_snapshot_fail": [
+    "file:src/gui/app.py"
+  ],
+  "_sniff_binary": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_start_scan": [
+    "file:src/gui/app.py"
+  ],
+  "_toggle_item": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "_toggle_selected": [
+    "file:src/gui/components/compression_queue_dialog.py"
+  ],
+  "_touch": [
+    "file:tests/unit/test_filesystem_scanner.py",
+    "file:tests/unit/test_ignore_logic.py"
+  ],
+  "_tree_lines": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "_walk": [
+    "file:scripts/llm_stitcher.py",
+    "file:src/scanner/filesystem_scanner.py"
+  ],
+  "assert_snapshot_determinism": [
+    "file:tests/conftest.py"
+  ],
+  "build": [
+    "file:src/analysis/graph_builder.py",
+    "file:src/structure/structure_builder.py"
+  ],
+  "calculate_telemetry": [
+    "file:src/observability/token_telemetry.py"
+  ],
+  "cancel": [
+    "file:src/gui/components/progress_window.py"
+  ],
+  "check_specific_files": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "clear": [
+    "file:src/gui/components/preview_pane.py",
+    "file:src/gui/components/tree_view.py"
+  ],
+  "cli_progress": [
+    "file:src/cli/main.py"
+  ],
+  "close": [
+    "file:src/gui/components/progress_window.py"
+  ],
+  "compare": [
+    "file:src/analysis/snapshot_comparator.py"
+  ],
+  "compare_snapshots": [
+    "file:src/api/server.py"
+  ],
+  "complex_repo": [
+    "file:tests/conftest.py"
+  ],
+  "create_file": [
+    "file:tests/conftest.py"
+  ],
+  "create_snapshot": [
+    "file:src/api/server.py"
+  ],
+  "dfs": [
+    "file:src/analysis/graph_builder.py"
+  ],
+  "estimate_tokens": [
+    "file:src/observability/token_telemetry.py"
+  ],
+  "export": [
+    "file:src/exporters/drawio_exporter.py",
+    "file:src/exporters/flatten_markdown_exporter.py",
+    "file:src/exporters/mermaid_exporter.py"
+  ],
+  "fake_relpath": [
+    "file:tests/unit/test_collision_logic.py"
+  ],
+  "file_id": [
+    "file:src/normalize/path_normalizer.py"
+  ],
+  "fingerprint": [
+    "file:src/fingerprint/file_fingerprint.py"
+  ],
+  "format_usage": [
+    "file:src/observability/token_telemetry.py"
+  ],
+  "generate_content": [
+    "file:src/exporters/flatten_markdown_exporter.py"
+  ],
+  "get_checked_files": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "get_modules": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "insert_node": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "launch": [
+    "file:src/entry_point.py"
+  ],
+  "load_config": [
+    "file:src/core/config_loader.py"
+  ],
+  "load_file": [
+    "file:src/gui/components/preview_pane.py"
+  ],
+  "load_manifest": [
+    "file:src/snapshot/snapshot_loader.py"
+  ],
+  "load_structure": [
+    "file:src/snapshot/snapshot_loader.py"
+  ],
+  "main": [
+    "file:scripts/llm_compressor.py",
+    "file:scripts/llm_stitcher.py",
+    "file:src/cli/main.py"
+  ],
+  "module_id": [
+    "file:src/normalize/path_normalizer.py"
+  ],
+  "module_path": [
+    "file:src/normalize/path_normalizer.py"
+  ],
+  "normalize": [
+    "file:src/normalize/path_normalizer.py"
+  ],
+  "on_progress": [
+    "file:src/gui/app.py"
+  ],
+  "populate": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "recurse": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "render_ascii_tree": [
+    "file:scripts/llm_stitcher.py"
+  ],
+  "repo_id": [
+    "file:src/normalize/path_normalizer.py"
+  ],
+  "resolve_snapshot_dir": [
+    "file:src/snapshot/snapshot_loader.py"
+  ],
+  "root": [
+    "file:src/api/server.py"
+  ],
+  "run": [
+    "file:src/gui/app.py"
+  ],
+  "run_batch": [
+    "file:src/gui/app.py"
+  ],
+  "run_compare": [
+    "file:src/core/controller.py"
+  ],
+  "run_export": [
+    "file:src/gui/app.py"
+  ],
+  "run_export_compression_state": [
+    "file:src/core/controller.py"
+  ],
+  "run_export_diagram": [
+    "file:src/core/controller.py"
+  ],
+  "run_export_flatten": [
+    "file:src/core/controller.py"
+  ],
+  "run_gui": [
+    "file:src/gui/app.py"
+  ],
+  "run_part1": [
+    "file:src/gui/app.py"
+  ],
+  "run_part2_thread": [
+    "file:src/gui/app.py"
+  ],
+  "run_snapshot": [
+    "file:src/core/controller.py"
+  ],
+  "scan": [
+    "file:src/analysis/import_scanner.py",
+    "file:src/scanner/filesystem_scanner.py"
+  ],
+  "scan_cb": [
+    "file:src/core/controller.py"
+  ],
+  "scrub_json": [
+    "file:tests/conftest.py"
+  ],
+  "setUp": [
+    "file:tests/integration/test_api.py",
+    "file:tests/integration/test_e2e_snapshot.py",
+    "file:tests/integration/test_export_flow.py",
+    "file:tests/integration/test_graph_snapshot.py",
+    "file:tests/integration/test_robustness.py",
+    "file:tests/unit/test_config_loader.py",
+    "file:tests/unit/test_context_slicer.py",
+    "file:tests/unit/test_drawio_exporter.py",
+    "file:tests/unit/test_file_fingerprint.py",
+    "file:tests/unit/test_filesystem_scanner.py",
+    "file:tests/unit/test_flatten_exporter.py",
+    "file:tests/unit/test_graph_builder.py",
+    "file:tests/unit/test_ignore_logic.py",
+    "file:tests/unit/test_mermaid_exporter.py",
+    "file:tests/unit/test_path_normalizer.py",
+    "file:tests/unit/test_scanner_constants.py",
+    "file:tests/unit/test_snapshot_comparator.py",
+    "file:tests/unit/test_token_telemetry.py"
+  ],
+  "simple_repo": [
+    "file:tests/conftest.py"
+  ],
+  "slice_manifest": [
+    "file:src/analysis/context_slicer.py"
+  ],
+  "slice_snapshot": [
+    "file:src/api/server.py"
+  ],
+  "sync_var": [
+    "file:src/gui/components/config_tabs.py"
+  ],
+  "tearDown": [
+    "file:tests/integration/test_api.py",
+    "file:tests/integration/test_e2e_snapshot.py",
+    "file:tests/integration/test_export_flow.py",
+    "file:tests/integration/test_graph_snapshot.py",
+    "file:tests/integration/test_robustness.py",
+    "file:tests/unit/test_config_loader.py",
+    "file:tests/unit/test_drawio_exporter.py",
+    "file:tests/unit/test_file_fingerprint.py",
+    "file:tests/unit/test_filesystem_scanner.py",
+    "file:tests/unit/test_ignore_logic.py",
+    "file:tests/unit/test_mermaid_exporter.py",
+    "file:tests/unit/test_scanner_constants.py"
+  ],
+  "temp_repo_root": [
+    "file:tests/conftest.py"
+  ],
+  "test_basic_export_syntax": [
+    "file:tests/unit/test_mermaid_exporter.py"
+  ],
+  "test_basic_normalization": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "test_binary_placeholder": [
+    "file:tests/unit/test_flatten_exporter.py"
+  ],
+  "test_build_structure": [
+    "file:tests/unit/test_structure_builder.py"
+  ],
+  "test_captures_unresolved_references": [
+    "file:tests/unit/test_graph_builder_unresolved.py"
+  ],
+  "test_casing_policy": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "test_compression_state_lifecycle": [
+    "file:tests/integration/test_compression_state.py"
+  ],
+  "test_csv_generation": [
+    "file:tests/unit/test_drawio_exporter.py"
+  ],
+  "test_cycle_detection_simple": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_cycle_detection_triangular": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_cycle_highlighting": [
+    "file:tests/unit/test_mermaid_exporter.py"
+  ],
+  "test_cycle_stats_exclusion": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_cycle_stats_reporting": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_detects_case_collision": [
+    "file:tests/unit/test_collision_logic.py"
+  ],
+  "test_diff_command_parsing": [
+    "file:tests/integration/test_cli_diff.py"
+  ],
+  "test_empty_file": [
+    "file:tests/unit/test_file_fingerprint.py"
+  ],
+  "test_end_to_end_graph_generation": [
+    "file:tests/integration/test_graph_snapshot.py"
+  ],
+  "test_export_full_with_tokens": [
+    "file:tests/integration/test_export_flow.py"
+  ],
+  "test_export_scoped": [
+    "file:tests/integration/test_export_flow.py"
+  ],
+  "test_external_id_canonicalization": [
+    "file:tests/integration/test_graph_snapshot.py"
+  ],
+  "test_external_node_creation": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_file_diffing": [
+    "file:tests/unit/test_snapshot_comparator.py"
+  ],
+  "test_focus_exceeds_budget": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_full_api_lifecycle": [
+    "file:tests/integration/test_api.py"
+  ],
+  "test_golden_edges": [
+    "file:tests/integration/test_golden.py"
+  ],
+  "test_graph_determinism": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_graph_diffing": [
+    "file:tests/unit/test_snapshot_comparator.py"
+  ],
+  "test_id_escaping": [
+    "file:tests/unit/test_mermaid_exporter.py"
+  ],
+  "test_id_generation": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "test_ignore_invalid_json": [
+    "file:tests/unit/test_config_loader.py"
+  ],
+  "test_ignore_schema_mismatch": [
+    "file:tests/unit/test_config_loader.py"
+  ],
+  "test_js_constants": [
+    "file:tests/unit/test_scanner_constants.py"
+  ],
+  "test_js_edge_cases": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_js_index_resolution": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_js_standard_imports": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_js_symbols": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_large_file_skip": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_load_custom_config": [
+    "file:tests/unit/test_config_loader.py"
+  ],
+  "test_load_default_when_missing": [
+    "file:tests/unit/test_config_loader.py"
+  ],
+  "test_locked_or_missing_file": [
+    "file:tests/unit/test_file_fingerprint.py"
+  ],
+  "test_manifest_schema_version": [
+    "file:tests/integration/test_golden.py"
+  ],
+  "test_matches_golden_expectations": [
+    "file:tests/integration/test_golden.py"
+  ],
+  "test_messy_path_normalization": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "test_no_collision_on_distinct_files": [
+    "file:tests/unit/test_collision_logic.py"
+  ],
+  "test_no_false_positive_diamond": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_parent_traversal": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "test_path_normalization_validator": [
+    "file:tests/unit/test_types.py"
+  ],
+  "test_permission_error_handling": [
+    "file:tests/unit/test_filesystem_scanner.py"
+  ],
+  "test_python_assignment_unpacking": [
+    "file:tests/unit/test_scanner_constants.py"
+  ],
+  "test_python_complex_structure": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_python_constants": [
+    "file:tests/unit/test_scanner_constants.py"
+  ],
+  "test_python_deep_package_normalization": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_python_internal_resolution": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_python_relative_imports": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_python_scope_and_strings": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_python_symbols": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_python_syntax_error": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_python_unresolved": [
+    "file:tests/unit/test_graph_builder_unresolved.py"
+  ],
+  "test_radius_logic_standard": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_scanner_ignores": [
+    "file:tests/unit/test_filesystem_scanner.py",
+    "file:tests/unit/test_ignore_logic.py"
+  ],
+  "test_scope_filtering": [
+    "file:tests/unit/test_flatten_exporter.py"
+  ],
+  "test_scoped_and_deep_external_packages": [
+    "file:tests/unit/test_graph_builder.py"
+  ],
+  "test_slice_command_invocation": [
+    "file:tests/integration/test_cli_slice.py"
+  ],
+  "test_slice_defaults": [
+    "file:tests/integration/test_cli_slice.py"
+  ],
+  "test_slice_with_token_limit": [
+    "file:tests/integration/test_api.py"
+  ],
+  "test_snapshot_creation_with_graph_and_auto_export": [
+    "file:tests/integration/test_e2e_snapshot.py"
+  ],
+  "test_snapshot_determinism": [
+    "file:tests/integration/test_graph_snapshot.py"
+  ],
+  "test_snapshot_skip_graph": [
+    "file:tests/integration/test_e2e_snapshot.py"
+  ],
+  "test_snapshot_with_mixed_health": [
+    "file:tests/integration/test_robustness.py"
+  ],
+  "test_stable_id_validation": [
+    "file:tests/unit/test_types.py"
+  ],
+  "test_symbol_focus_resolution": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_symbol_not_found": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_symlink_cycle_detection": [
+    "file:tests/unit/test_filesystem_scanner.py"
+  ],
+  "test_telemetry_calculations": [
+    "file:tests/unit/test_token_telemetry.py"
+  ],
+  "test_token_budget_enforcement": [
+    "file:tests/unit/test_context_slicer.py"
+  ],
+  "test_tree_generation": [
+    "file:tests/unit/test_flatten_exporter.py"
+  ],
+  "test_ts_advanced_imports": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_unknown_language_safety": [
+    "file:tests/unit/test_import_scanner.py"
+  ],
+  "test_valid_file": [
+    "file:tests/unit/test_file_fingerprint.py"
+  ],
+  "test_windows_separator_handling": [
+    "file:tests/unit/test_path_normalizer.py"
+  ],
+  "traverse": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "traverse_and_check": [
+    "file:src/gui/components/tree_view.py"
+  ],
+  "update_message": [
+    "file:src/gui/components/progress_window.py"
+  ],
+  "update_progress": [
+    "file:src/gui/components/progress_window.py"
+  ],
+  "validate_path_normalization": [
+    "file:src/core/types.py"
+  ],
+  "validate_stable_id": [
+    "file:src/core/types.py"
+  ],
+  "write": [
+    "file:src/snapshot/snapshot_writer.py"
+  ]
+}

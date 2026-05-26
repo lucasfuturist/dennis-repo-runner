@@ -19,6 +19,7 @@ dist/
 .repo-runner/
 .repo-runner-output/
 out/
+snapshots/
 
 # IDE
 .vscode/
