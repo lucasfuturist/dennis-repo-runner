@@ -1,0 +1,1965 @@
+{
+  "schema_version": "1.1",
+  "nodes": [
+    {
+      "id": "external:argparse",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:ast",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:collections",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:csv",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:ctypes",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:dataclasses",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:datetime",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:dotenv",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:fastapi",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:google",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:hashlib",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:io",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:json",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:logging",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:multiprocessing",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:os",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:pathlib",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:platform",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:pydantic",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:pytest",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:re",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:shutil",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:subprocess",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:sys",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:tempfile",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:threading",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:time",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:tkinter",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:typing",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "external:unittest",
+      "type": "external",
+      "metadata": null
+    },
+    {
+      "id": "file:.pytest_cache/cachedir.tag",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.pytest_cache/readme.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.pytest_cache/v/cache/lastfailed",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:.pytest_cache/v/cache/nodeids",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:compressed_context.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:compression_state/file_changed_bool.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:compression_state/master_compressed_context.json",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:dennis_c2_manifest.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:pytest.ini",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:readme.md",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:repo-runner.code-workspace",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:repo-runner.spec",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:requirements.txt",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/build_exe.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/export-signal.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/llm_compressor.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/llm_stitcher.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/package-repo.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:scripts/verify.ps1",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/context_slicer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/graph_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/import_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/analysis/snapshot_comparator.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/api/init.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/api/server.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/cli/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/cli/main.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/config_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/controller.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/repo-runner.code-workspace",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/core/types.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/entry_point.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/exporters/drawio_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/exporters/flatten_markdown_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/exporters/mermaid_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/fingerprint/file_fingerprint.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/app.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/compression_queue_dialog.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/config_tabs.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/export_preview.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/preview_pane.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/progress_window.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/gui/components/tree_view.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/normalize/path_normalizer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/observability/init.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/observability/token_telemetry.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/scanner/filesystem_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/snapshot/snapshot_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/snapshot/snapshot_writer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:src/structure/structure_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/conftest.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_api.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_cli_diff.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_cli_slice.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_compression_state.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_e2e_snapshot.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_export_flow.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_golden.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_graph_snapshot.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/integration/test_robustness.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/__init__.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_collision_logic.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_config_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_context_slicer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_drawio_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_file_fingerprint.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_filesystem_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_flatten_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_graph_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_graph_builder_unresolved.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_ignore_logic.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_import_scanner.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_mermaid_exporter.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_path_normalizer.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_scanner_constants.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_snapshot_comparator.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_snapshot_loader.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_structure_builder.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_token_telemetry.py",
+      "type": "file",
+      "metadata": null
+    },
+    {
+      "id": "file:tests/unit/test_types.py",
+      "type": "file",
+      "metadata": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:argparse",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:dotenv",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:google",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:google",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:time",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_compressor.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_stitcher.py",
+      "target": "external:argparse",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_stitcher.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_stitcher.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:scripts/llm_stitcher.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "external:collections",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "external:logging",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/context_slicer.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/graph_builder.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/graph_builder.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/graph_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/import_scanner.py",
+      "target": "external:ast",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/import_scanner.py",
+      "target": "external:re",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/import_scanner.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/snapshot_comparator.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/analysis/snapshot_comparator.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:fastapi",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:fastapi",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:pydantic",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/analysis/context_slicer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/analysis/snapshot_comparator.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/api/server.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "external:argparse",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "file:src/core/config_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/cli/main.py",
+      "target": "file:src/gui/app.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/config_loader.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:collections",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:time",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/context_slicer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/graph_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/analysis/snapshot_comparator.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/core/config_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/exporters/drawio_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/exporters/flatten_markdown_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/exporters/mermaid_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/fingerprint/file_fingerprint.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/snapshot/snapshot_writer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/controller.py",
+      "target": "file:src/structure/structure_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/types.py",
+      "target": "external:pydantic",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/core/types.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "external:ctypes",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "external:multiprocessing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/entry_point.py",
+      "target": "file:src/gui/app.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/drawio_exporter.py",
+      "target": "external:collections",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/drawio_exporter.py",
+      "target": "external:csv",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/drawio_exporter.py",
+      "target": "external:io",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/drawio_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/drawio_exporter.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/drawio_exporter.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/flatten_markdown_exporter.py",
+      "target": "external:dataclasses",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/flatten_markdown_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/flatten_markdown_exporter.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/mermaid_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/mermaid_exporter.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/exporters/mermaid_exporter.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/fingerprint/file_fingerprint.py",
+      "target": "external:hashlib",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/fingerprint/file_fingerprint.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/fingerprint/file_fingerprint.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:ctypes",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:datetime",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:platform",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:re",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:subprocess",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:threading",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/exporters/flatten_markdown_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/compression_queue_dialog.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/config_tabs.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/export_preview.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/preview_pane.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/progress_window.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/gui/components/tree_view.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/app.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/compression_queue_dialog.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/compression_queue_dialog.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/compression_queue_dialog.py",
+      "target": "external:subprocess",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/compression_queue_dialog.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/config_tabs.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/export_preview.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/preview_pane.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/preview_pane.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/preview_pane.py",
+      "target": "file:src/fingerprint/file_fingerprint.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/progress_window.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/tree_view.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/gui/components/tree_view.py",
+      "target": "external:tkinter",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/normalize/path_normalizer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/observability/token_telemetry.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/scanner/filesystem_scanner.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/scanner/filesystem_scanner.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_loader.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_loader.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_loader.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:datetime",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/snapshot/snapshot_writer.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/structure/structure_builder.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:src/structure/structure_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:pathlib",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:pytest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/conftest.py",
+      "target": "external:typing",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:fastapi",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:time",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_api.py",
+      "target": "file:src/api/server.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_diff.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_diff.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_diff.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_diff.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_slice.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_slice.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_slice.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_cli_slice.py",
+      "target": "file:src/cli/main.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_compression_state.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_compression_state.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_compression_state.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_compression_state.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_e2e_snapshot.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_e2e_snapshot.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_e2e_snapshot.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_e2e_snapshot.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_e2e_snapshot.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_e2e_snapshot.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_export_flow.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "external:pytest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_golden.py",
+      "target": "file:tests/conftest.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:pytest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_graph_snapshot.py",
+      "target": "file:tests/conftest.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/integration/test_robustness.py",
+      "target": "file:src/snapshot/snapshot_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_collision_logic.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_collision_logic.py",
+      "target": "external:pytest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_collision_logic.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_collision_logic.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_collision_logic.py",
+      "target": "file:src/core/controller.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:json",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_config_loader.py",
+      "target": "file:src/core/config_loader.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_context_slicer.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_context_slicer.py",
+      "target": "file:src/analysis/context_slicer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_context_slicer.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "external:csv",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "external:io",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_drawio_exporter.py",
+      "target": "file:src/exporters/drawio_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_file_fingerprint.py",
+      "target": "external:hashlib",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_file_fingerprint.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_file_fingerprint.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_file_fingerprint.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_file_fingerprint.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_file_fingerprint.py",
+      "target": "file:src/fingerprint/file_fingerprint.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:sys",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_filesystem_scanner.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_flatten_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_flatten_exporter.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_flatten_exporter.py",
+      "target": "file:src/exporters/flatten_markdown_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder.py",
+      "target": "file:src/analysis/graph_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder_unresolved.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder_unresolved.py",
+      "target": "file:src/analysis/graph_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_graph_builder_unresolved.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_ignore_logic.py",
+      "target": "file:src/scanner/filesystem_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_import_scanner.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_mermaid_exporter.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_mermaid_exporter.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_mermaid_exporter.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_mermaid_exporter.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_mermaid_exporter.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_mermaid_exporter.py",
+      "target": "file:src/exporters/mermaid_exporter.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_path_normalizer.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_path_normalizer.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_path_normalizer.py",
+      "target": "file:src/normalize/path_normalizer.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_constants.py",
+      "target": "external:os",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_constants.py",
+      "target": "external:shutil",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_constants.py",
+      "target": "external:tempfile",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_constants.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_scanner_constants.py",
+      "target": "file:src/analysis/import_scanner.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_snapshot_comparator.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_snapshot_comparator.py",
+      "target": "file:src/analysis/snapshot_comparator.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_snapshot_comparator.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure_builder.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure_builder.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_structure_builder.py",
+      "target": "file:src/structure/structure_builder.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_token_telemetry.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_token_telemetry.py",
+      "target": "file:src/observability/token_telemetry.py",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_types.py",
+      "target": "external:pydantic",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_types.py",
+      "target": "external:unittest",
+      "relation": "imports"
+    },
+    {
+      "source": "file:tests/unit/test_types.py",
+      "target": "file:src/core/types.py",
+      "relation": "imports"
+    }
+  ],
+  "cycles": [],
+  "has_cycles": false,
+  "unresolved_references": []
+}

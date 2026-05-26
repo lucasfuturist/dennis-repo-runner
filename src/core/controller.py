@@ -504,3 +504,181 @@ def run_export_compression_state(
 
     pending_count = sum(1 for v in changed_bool.values() if v == 1)
     return {"updated": len(report.file_diffs), "pending_compression": pending_count}
+
+
+def _render_ascii_tree(paths: List[str]) -> str:
+    """
+    Builds a standard ASCII directory tree from a list of relative file paths.
+    """
+    tree = {}
+    for path in paths:
+        parts = path.split('/')
+        curr = tree
+        for part in parts:
+            curr = curr.setdefault(part, {})
+            
+    lines = ["."]
+    
+    def _walk(node, prefix=""):
+        entries = sorted(node.keys())
+        for i, key in enumerate(entries):
+            is_last = (i == len(entries) - 1)
+            connector = "└── " if is_last else "├── "
+            
+            # If the node has children, it's a directory
+            if node[key]:
+                lines.append(f"{prefix}{connector}{key}/")
+                extension = "    " if is_last else "│   "
+                _walk(node[key], prefix + extension)
+            else:
+                lines.append(f"{prefix}{connector}{key}")
+                
+    _walk(tree)
+    return "\n".join(lines)
+
+
+def run_batch_module_compression_stateless(
+    repo_root: str,
+    selected_modules: Dict[str, List[str]],
+    export_dir: str,
+    model: str = "gemini-3.1-pro-preview",
+    delay: float = 2.0,
+    progress_callback: Optional[Callable[[str, int, int], None]] = None
+) -> Dict[str, str]:
+    """
+    Performs direct, stateless compression of codebase modules.
+    No local caches are checked or created. Filenames follow the
+    [FILEPATH-TO-REPO-ROOT-COMPRESSED.md] layout.
+    """
+    try:
+        from google import genai
+        from google.genai import types
+    except ImportError:
+        raise ImportError(
+            "Error: 'google-genai' is not installed.\n"
+            "Please run: pip install google-genai"
+        )
+    
+    from dotenv import load_dotenv
+
+    abs_repo_root = os.path.abspath(repo_root)
+    load_dotenv(os.path.join(abs_repo_root, ".env"))
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable is not set in your .env file.")
+
+    client = genai.Client(api_key=api_key)
+
+    # Re-use prompt definition from compressor file safely
+    try:
+        from scripts.llm_compressor import SYSTEM_PROMPT
+    except ImportError:
+        SYSTEM_PROMPT = """You are an Expert Systems Architect. Your task is to perform "Context Compression" on a single source code file. 
+You will extract the structural and architectural essence of the file while completely discarding implementation details.
+
+Your output must strictly follow this exact Markdown schema. Do NOT wrap your response in markdown code blocks (```). Output the raw text directly.
+
+### `[File Path]`
+**Role:** [1 strict sentence explaining the primary architectural responsibility of this file.]
+**Key Interfaces:**
+- `ClassName` - [1 sentence explaining the entity/model]
+- `functionName(params): ReturnType` - [1 sentence explaining the inputs/outputs. Skip private/helper functions.]
+- `VariableName / TypeName` - [List critical exported state, constants, or data structures]
+**Dependencies:** [Comma-separated list of critical internal modules and external libraries imported]
+
+COMPRESSION RULES (CRITICAL):
+1. NO IMPLEMENTATION: Do not explain HOW a function works. No `if` statements, loops, or algorithmic steps. Only WHAT it takes in and WHAT it returns.
+2. PRUNE THE NOISE: Ignore local variables, loop counters, temporary state, and internal-only helper functions (e.g., functions starting with `_`).
+3. ARCHITECTURE FIRST: If the file is a Controller, mention the Service it calls. If it's a Repository, mention the Database Model it returns.
+4. MISSING DATA: If a file has no exports or dependencies, write "None" for that section. Do not omit the section entirely.
+"""
+
+    exported_files = {}
+    total_modules = len(selected_modules)
+
+    for mod_idx, (module_name, abs_file_paths) in enumerate(selected_modules.items(), 1):
+        if not abs_file_paths:
+            continue
+
+        # Resolve parent path and calculate relative folder path from repo root
+        first_file = abs_file_paths[0]
+        parent_dir = os.path.dirname(os.path.abspath(first_file))
+        
+        try:
+            rel_dir = os.path.relpath(parent_dir, abs_repo_root)
+        except ValueError:
+            rel_dir = module_name
+
+        if not rel_dir or rel_dir == "." or rel_dir == "":
+            flat_filename = "root-compressed.md"
+            module_display_name = "Root"
+        else:
+            safe_name = rel_dir.replace("/", "-").replace("\\", "-")
+            flat_filename = f"{safe_name}-compressed.md"
+            module_display_name = rel_dir.replace("\\", "/")
+
+        output_path = os.path.join(export_dir, flat_filename)
+        module_context = {}
+        total_files = len(abs_file_paths)
+
+        normalizer = PathNormalizer(abs_repo_root)
+
+        for file_idx, abs_path in enumerate(abs_file_paths, 1):
+            normalized_path = normalizer.normalize(abs_path)
+            stable_id = normalizer.file_id(normalized_path)
+
+            if progress_callback:
+                progress_callback(
+                    f"Module {mod_idx}/{total_modules}: Compressing {stable_id}", 
+                    file_idx, 
+                    total_files
+                )
+
+            if not os.path.exists(abs_path):
+                continue
+
+            try:
+                with open(abs_path, "r", encoding="utf-8") as f:
+                    code_content = f.read()
+            except Exception as e:
+                module_context[stable_id] = f"### `{normalized_path}`\n*Error reading file: {e}*"
+                continue
+
+            user_prompt = f"Please compress the following file:\n\nFile Path: {normalized_path}\n\n```\n{code_content}\n```"
+
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=user_prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT,
+                    )
+                )
+                module_context[stable_id] = response.text.strip()
+                
+                if file_idx < total_files:
+                    time.sleep(delay)
+            except Exception as e:
+                module_context[stable_id] = f"### `{normalized_path}`\n*Compression failed due to API error: {e}*"
+
+        if module_context:
+            clean_paths = [k.replace("file:", "", 1) for k in module_context.keys()]
+            module_tree = _render_ascii_tree(clean_paths)
+
+            os.makedirs(export_dir, exist_ok=True)
+            with open(output_path, "w", encoding="utf-8") as out:
+                out.write(f"# Module: {module_display_name}\n\n")
+                out.write("> *Direct compressed architectural slice, excluding raw implementation code.*\n\n")
+                out.write("## Module Directory Tree\n\n")
+                out.write("```text\n")
+                out.write(module_tree + "\n")
+                out.write("```\n\n")
+                out.write("---\n\n")
+                
+                for s_id in sorted(module_context.keys()):
+                    out.write(f"{module_context[s_id]}\n\n---\n\n")
+
+            exported_files[module_name] = output_path
+
+    return exported_files

@@ -9,15 +9,6 @@ class FlattenOptions:
     scope: str  # full | module:<path> | file:<path> | list:<a,b,c> | prefix:<path>
 
 class FlattenMarkdownExporter:
-    TEXT_EXTENSIONS = {
-        ".ts", ".tsx", ".js", ".jsx",
-        ".py", ".rs", ".go", ".java",
-        ".json", ".md", ".txt",
-        ".html", ".css", ".sql", ".toml",
-        ".ps1", ".ejs", ".yml", ".yaml",
-        ".env", ".example", ".gitignore",
-        ".d.ts",
-    }
 
     def generate_content(
         self,
@@ -155,8 +146,9 @@ class FlattenMarkdownExporter:
             abs_path = os.path.join(repo_root, path.replace("/", os.sep))
             blocks.append(f"### `{path}`")
             blocks.append("")
-            ext = os.path.splitext(path)[1].lower()
-            if ext not in self.TEXT_EXTENSIONS or self._sniff_binary(abs_path):
+            
+            # Rely strictly on the binary heuristic instead of a whitelist
+            if self._sniff_binary(abs_path):
                 blocks.append(self._binary_placeholder(entry))
                 blocks.append("")
                 continue

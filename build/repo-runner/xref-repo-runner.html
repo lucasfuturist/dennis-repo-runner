@@ -293,6 +293,17 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="'IPython.core'"></a>
+  <a target="code" href="" type="text/plain"><tt>'IPython.core'</tt></a>
+<span class="moduletype">MissingModule</span>  <div class="import">
+imported by:
+    <a href="#dotenv.ipython">dotenv.ipython</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="'collections.abc'"></a>
   <a target="code" href="" type="text/plain"><tt>'collections.abc'</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
@@ -583,6 +594,17 @@ imported by:
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
     <a href="#pydantic._internal._core_utils">pydantic._internal._core_utils</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="IPython"></a>
+  <a target="code" href="" type="text/plain"><tt>IPython</tt></a>
+<span class="moduletype">MissingModule</span>  <div class="import">
+imported by:
+    <a href="#dotenv.ipython">dotenv.ipython</a>
 
   </div>
 
@@ -2634,6 +2656,7 @@ imported by:
  &#8226;   <a href="#_pyrepl.input">_pyrepl.input</a>
  &#8226;   <a href="#contextlib">contextlib</a>
  &#8226;   <a href="#dataclasses">dataclasses</a>
+ &#8226;   <a href="#dotenv.variables">dotenv.variables</a>
  &#8226;   <a href="#email._policybase">email._policybase</a>
  &#8226;   <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#functools">functools</a>
@@ -4008,6 +4031,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#_pickle">_pickle</a>
+ &#8226;   <a href="#dotenv.parser">dotenv.parser</a>
  &#8226;   <a href="#encodings">encodings</a>
  &#8226;   <a href="#encodings._win_cp_codecs">encodings._win_cp_codecs</a>
  &#8226;   <a href="#encodings.ascii">encodings.ascii</a>
@@ -4195,6 +4219,7 @@ imported by:
  &#8226;   <a href="#contextlib">contextlib</a>
  &#8226;   <a href="#difflib">difflib</a>
  &#8226;   <a href="#dis">dis</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#email.feedparser">email.feedparser</a>
  &#8226;   <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#functools">functools</a>
@@ -4644,6 +4669,7 @@ imported by:
  &#8226;   <a href="#_threading_local">_threading_local</a>
  &#8226;   <a href="#asyncio.staggered">asyncio.staggered</a>
  &#8226;   <a href="#configparser">configparser</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#glob">glob</a>
  &#8226;   <a href="#http.server">http.server</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
@@ -5262,10 +5288,107 @@ imported by:
 
 <div class="node">
   <a name="dotenv"></a>
-  <a target="code" href="" type="text/plain"><tt>dotenv</tt></a>
-<span class="moduletype">MissingModule</span>  <div class="import">
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/dotenv/__init__.py" type="text/plain"><tt>dotenv</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#dotenv.ipython">dotenv.ipython</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
 imported by:
-    <a href="#pydantic.v1.env_settings">pydantic.v1.env_settings</a>
+    <a href="#dotenv.ipython">dotenv.ipython</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
+ &#8226;   <a href="#dotenv.parser">dotenv.parser</a>
+ &#8226;   <a href="#dotenv.variables">dotenv.variables</a>
+ &#8226;   <a href="#pydantic.v1.env_settings">pydantic.v1.env_settings</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="dotenv.ipython"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/dotenv/ipython.py" type="text/plain"><tt>dotenv.ipython</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#'IPython.core'">'IPython.core'</a>
+ &#8226;   <a href="#IPython">IPython</a>
+ &#8226;   <a href="#dotenv">dotenv</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#dotenv">dotenv</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="dotenv.main"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/dotenv/main.py" type="text/plain"><tt>dotenv.main</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#collections">collections</a>
+ &#8226;   <a href="#contextlib">contextlib</a>
+ &#8226;   <a href="#dotenv">dotenv</a>
+ &#8226;   <a href="#dotenv.parser">dotenv.parser</a>
+ &#8226;   <a href="#dotenv.variables">dotenv.variables</a>
+ &#8226;   <a href="#io">io</a>
+ &#8226;   <a href="#logging">logging</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#pathlib">pathlib</a>
+ &#8226;   <a href="#stat">stat</a>
+ &#8226;   <a href="#sys">sys</a>
+ &#8226;   <a href="#tempfile">tempfile</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#dotenv">dotenv</a>
+ &#8226;   <a href="#dotenv.ipython">dotenv.ipython</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="dotenv.parser"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/dotenv/parser.py" type="text/plain"><tt>dotenv.parser</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#codecs">codecs</a>
+ &#8226;   <a href="#dotenv">dotenv</a>
+ &#8226;   <a href="#re">re</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#dotenv.main">dotenv.main</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="dotenv.variables"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/dotenv/variables.py" type="text/plain"><tt>dotenv.variables</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#abc">abc</a>
+ &#8226;   <a href="#dotenv">dotenv</a>
+ &#8226;   <a href="#re">re</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#dotenv.main">dotenv.main</a>
 
   </div>
 
@@ -9708,6 +9831,7 @@ imported by:
  &#8226;   <a href="#configparser">configparser</a>
  &#8226;   <a href="#csv">csv</a>
  &#8226;   <a href="#dis">dis</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#email.feedparser">email.feedparser</a>
  &#8226;   <a href="#email.generator">email.generator</a>
  &#8226;   <a href="#email.iterators">email.iterators</a>
@@ -9935,6 +10059,8 @@ imported by:
  &#8226;   <a href="#setuptools.msvc">setuptools.msvc</a>
  &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
+ &#8226;   <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#src.snapshot.snapshot_loader">src.snapshot.snapshot_loader</a>
  &#8226;   <a href="#src.snapshot.snapshot_writer">src.snapshot.snapshot_writer</a>
 
@@ -10102,6 +10228,7 @@ imported by:
     <a href="#asyncio.futures">asyncio.futures</a>
  &#8226;   <a href="#asyncio.log">asyncio.log</a>
  &#8226;   <a href="#concurrent.futures._base">concurrent.futures._base</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#hashlib">hashlib</a>
  &#8226;   <a href="#http.cookiejar">http.cookiejar</a>
  &#8226;   <a href="#multiprocessing.util">multiprocessing.util</a>
@@ -11283,6 +11410,7 @@ imported by:
  &#8226;   <a href="#ctypes._aix">ctypes._aix</a>
  &#8226;   <a href="#ctypes.macholib.dyld">ctypes.macholib.dyld</a>
  &#8226;   <a href="#ctypes.util">ctypes.util</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#email.utils">email.utils</a>
  &#8226;   <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#fnmatch">fnmatch</a>
@@ -11410,6 +11538,7 @@ imported by:
  &#8226;   <a href="#src.exporters.mermaid_exporter">src.exporters.mermaid_exporter</a>
  &#8226;   <a href="#src.fingerprint.file_fingerprint">src.fingerprint.file_fingerprint</a>
  &#8226;   <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#src.gui.components.tree_view">src.gui.components.tree_view</a>
  &#8226;   <a href="#src.normalize.path_normalizer">src.normalize.path_normalizer</a>
  &#8226;   <a href="#src.scanner.filesystem_scanner">src.scanner.filesystem_scanner</a>
@@ -11884,6 +12013,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#_pyrepl.terminfo">_pyrepl.terminfo</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
  &#8226;   <a href="#importlib.resources._common">importlib.resources._common</a>
  &#8226;   <a href="#importlib.resources.abc">importlib.resources.abc</a>
@@ -12052,6 +12182,7 @@ imported by:
  &#8226;   <a href="#setuptools.monkey">setuptools.monkey</a>
  &#8226;   <a href="#setuptools.msvc">setuptools.msvc</a>
  &#8226;   <a href="#setuptools.windows_support">setuptools.windows_support</a>
+ &#8226;   <a href="#src.gui.app">src.gui.app</a>
  &#8226;   <a href="#uuid">uuid</a>
 
   </div>
@@ -16204,6 +16335,8 @@ imported by:
  &#8226;   <a href="#ctypes.util">ctypes.util</a>
  &#8226;   <a href="#dataclasses">dataclasses</a>
  &#8226;   <a href="#difflib">difflib</a>
+ &#8226;   <a href="#dotenv.parser">dotenv.parser</a>
+ &#8226;   <a href="#dotenv.variables">dotenv.variables</a>
  &#8226;   <a href="#email._encoded_words">email._encoded_words</a>
  &#8226;   <a href="#email._header_value_parser">email._header_value_parser</a>
  &#8226;   <a href="#email._policybase">email._policybase</a>
@@ -16319,6 +16452,7 @@ imported by:
  &#8226;   <a href="#setuptools.glob">setuptools.glob</a>
  &#8226;   <a href="#setuptools.wheel">setuptools.wheel</a>
  &#8226;   <a href="#src.analysis.import_scanner">src.analysis.import_scanner</a>
+ &#8226;   <a href="#src.gui.app">src.gui.app</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
  &#8226;   <a href="#sre_parse">sre_parse</a>
@@ -20767,6 +20901,7 @@ imports:
 imported by:
     <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#src.cli.main">src.cli.main</a>
+ &#8226;   <a href="#src.core.controller">src.core.controller</a>
 
   </div>
 
@@ -20785,6 +20920,7 @@ imports:
  &#8226;   <a href="#src.analysis.import_scanner">src.analysis.import_scanner</a>
  &#8226;   <a href="#src.analysis.snapshot_comparator">src.analysis.snapshot_comparator</a>
  &#8226;   <a href="#src.core">src.core</a>
+ &#8226;   <a href="#src.core.config_loader">src.core.config_loader</a>
  &#8226;   <a href="#src.core.types">src.core.types</a>
  &#8226;   <a href="#src.exporters.drawio_exporter">src.exporters.drawio_exporter</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
@@ -20796,6 +20932,7 @@ imports:
  &#8226;   <a href="#src.snapshot.snapshot_loader">src.snapshot.snapshot_loader</a>
  &#8226;   <a href="#src.snapshot.snapshot_writer">src.snapshot.snapshot_writer</a>
  &#8226;   <a href="#src.structure.structure_builder">src.structure.structure_builder</a>
+ &#8226;   <a href="#time">time</a>
  &#8226;   <a href="#typing">typing</a>
 
   </div>
@@ -20997,10 +21134,14 @@ imported by:
 imports:
     <a href="#ctypes">ctypes</a>
  &#8226;   <a href="#datetime">datetime</a>
+ &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#platform">platform</a>
+ &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#src.exporters.flatten_markdown_exporter">src.exporters.flatten_markdown_exporter</a>
  &#8226;   <a href="#src.gui">src.gui</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#src.gui.components.config_tabs">src.gui.components.config_tabs</a>
  &#8226;   <a href="#src.gui.components.export_preview">src.gui.components.export_preview</a>
  &#8226;   <a href="#src.gui.components.preview_pane">src.gui.components.preview_pane</a>
@@ -21008,8 +21149,9 @@ imports:
  &#8226;   <a href="#src.gui.components.tree_view">src.gui.components.tree_view</a>
  &#8226;   <a href="#src.normalize.path_normalizer">src.normalize.path_normalizer</a>
  &#8226;   <a href="#src.scanner.filesystem_scanner">src.scanner.filesystem_scanner</a>
+ &#8226;   <a href="#subprocess">subprocess</a>
+ &#8226;   <a href="#sys">sys</a>
  &#8226;   <a href="#threading">threading</a>
- &#8226;   <a href="#time">time</a>
  &#8226;   <a href="#tkinter">tkinter</a>
  &#8226;   <a href="#tkinter.filedialog">tkinter.filedialog</a>
  &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
@@ -21036,11 +21178,34 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#src.gui.components.config_tabs">src.gui.components.config_tabs</a>
+    <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
+ &#8226;   <a href="#src.gui.components.config_tabs">src.gui.components.config_tabs</a>
  &#8226;   <a href="#src.gui.components.export_preview">src.gui.components.export_preview</a>
  &#8226;   <a href="#src.gui.components.preview_pane">src.gui.components.preview_pane</a>
  &#8226;   <a href="#src.gui.components.progress_window">src.gui.components.progress_window</a>
  &#8226;   <a href="#src.gui.components.tree_view">src.gui.components.tree_view</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.gui.components.compression_queue_dialog"></a>
+  <a target="code" href="///C:/projects/repo-runner/src/gui/components/compression_queue_dialog.py" type="text/plain"><tt>src.gui.components.compression_queue_dialog</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#json">json</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#src.gui.components">src.gui.components</a>
+ &#8226;   <a href="#subprocess">subprocess</a>
+ &#8226;   <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
+ &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.gui.app">src.gui.app</a>
 
   </div>
 
@@ -21434,6 +21599,7 @@ imports:
 imported by:
     <a href="#asyncio.base_events">asyncio.base_events</a>
  &#8226;   <a href="#asyncio.unix_events">asyncio.unix_events</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#genericpath">genericpath</a>
  &#8226;   <a href="#glob">glob</a>
@@ -21621,6 +21787,8 @@ imported by:
  &#8226;   <a href="#setuptools._vendor.packaging._musllinux">setuptools._vendor.packaging._musllinux</a>
  &#8226;   <a href="#setuptools._vendor.packaging.tags">setuptools._vendor.packaging.tags</a>
  &#8226;   <a href="#setuptools.installer">setuptools.installer</a>
+ &#8226;   <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#uuid">uuid</a>
  &#8226;   <a href="#webbrowser">webbrowser</a>
 
@@ -21685,6 +21853,7 @@ imported by:
  &#8226;   <a href="#dataclasses">dataclasses</a>
  &#8226;   <a href="#decimal">decimal</a>
  &#8226;   <a href="#dis">dis</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#email._header_value_parser">email._header_value_parser</a>
  &#8226;   <a href="#email.contentmanager">email.contentmanager</a>
  &#8226;   <a href="#email.generator">email.generator</a>
@@ -21839,6 +22008,7 @@ imported by:
  &#8226;   <a href="#socketserver">socketserver</a>
  &#8226;   <a href="#src.cli.main">src.cli.main</a>
  &#8226;   <a href="#src.entry_point">src.entry_point</a>
+ &#8226;   <a href="#src.gui.app">src.gui.app</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#statistics">statistics</a>
  &#8226;   <a href="#subprocess">subprocess</a>
@@ -21978,6 +22148,7 @@ imported by:
     <a href="#_pyrepl.pager">_pyrepl.pager</a>
  &#8226;   <a href="#asyncio.windows_utils">asyncio.windows_utils</a>
  &#8226;   <a href="#ctypes.util">ctypes.util</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
  &#8226;   <a href="#importlib.resources._common">importlib.resources._common</a>
  &#8226;   <a href="#multiprocessing.connection">multiprocessing.connection</a>
  &#8226;   <a href="#multiprocessing.heap">multiprocessing.heap</a>
@@ -22144,7 +22315,7 @@ imported by:
  &#8226;   <a href="#setuptools._vendor.wheel.wheelfile">setuptools._vendor.wheel.wheelfile</a>
  &#8226;   <a href="#setuptools.command.egg_info">setuptools.command.egg_info</a>
  &#8226;   <a href="#socketserver">socketserver</a>
- &#8226;   <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.core.controller">src.core.controller</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#subprocess">subprocess</a>
  &#8226;   <a href="#tarfile">tarfile</a>
@@ -22186,6 +22357,7 @@ imports:
 imported by:
     <a href="#entry_point.py">entry_point.py</a>
  &#8226;   <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#src.gui.components.config_tabs">src.gui.components.config_tabs</a>
  &#8226;   <a href="#src.gui.components.export_preview">src.gui.components.export_preview</a>
  &#8226;   <a href="#src.gui.components.preview_pane">src.gui.components.preview_pane</a>
@@ -22289,6 +22461,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#src.gui.components.export_preview">src.gui.components.export_preview</a>
  &#8226;   <a href="#tkinter">tkinter</a>
  &#8226;   <a href="#tkinter.simpledialog">tkinter.simpledialog</a>
@@ -22325,6 +22498,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#src.gui.app">src.gui.app</a>
+ &#8226;   <a href="#src.gui.components.compression_queue_dialog">src.gui.components.compression_queue_dialog</a>
  &#8226;   <a href="#src.gui.components.config_tabs">src.gui.components.config_tabs</a>
  &#8226;   <a href="#src.gui.components.export_preview">src.gui.components.export_preview</a>
  &#8226;   <a href="#src.gui.components.preview_pane">src.gui.components.preview_pane</a>
@@ -22748,6 +22922,10 @@ imported by:
  &#8226;   <a href="#annotationlib">annotationlib</a>
  &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#dataclasses">dataclasses</a>
+ &#8226;   <a href="#dotenv">dotenv</a>
+ &#8226;   <a href="#dotenv.main">dotenv.main</a>
+ &#8226;   <a href="#dotenv.parser">dotenv.parser</a>
+ &#8226;   <a href="#dotenv.variables">dotenv.variables</a>
  &#8226;   <a href="#functools">functools</a>
  &#8226;   <a href="#importlib.metadata">importlib.metadata</a>
  &#8226;   <a href="#importlib.metadata._meta">importlib.metadata._meta</a>
@@ -23146,6 +23324,401 @@ imported by:
  &#8226;   <a href="#pydantic.fields">pydantic.fields</a>
  &#8226;   <a href="#typing_inspection">typing_inspection</a>
  &#8226;   <a href="#typing_inspection.introspection">typing_inspection.introspection</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/__init__.py" type="text/plain"><tt>tzdata</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata">tzdata</a>
+ &#8226;   <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Africa">tzdata.zoneinfo.Africa</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America">tzdata.zoneinfo.America</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.Argentina">tzdata.zoneinfo.America.Argentina</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.Indiana">tzdata.zoneinfo.America.Indiana</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.Kentucky">tzdata.zoneinfo.America.Kentucky</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.North_Dakota">tzdata.zoneinfo.America.North_Dakota</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Antarctica">tzdata.zoneinfo.Antarctica</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Arctic">tzdata.zoneinfo.Arctic</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Asia">tzdata.zoneinfo.Asia</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Atlantic">tzdata.zoneinfo.Atlantic</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Australia">tzdata.zoneinfo.Australia</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Brazil">tzdata.zoneinfo.Brazil</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Canada">tzdata.zoneinfo.Canada</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Chile">tzdata.zoneinfo.Chile</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Etc">tzdata.zoneinfo.Etc</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Europe">tzdata.zoneinfo.Europe</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Indian">tzdata.zoneinfo.Indian</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Mexico">tzdata.zoneinfo.Mexico</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Pacific">tzdata.zoneinfo.Pacific</a>
+ &#8226;   <a href="#tzdata.zoneinfo.US">tzdata.zoneinfo.US</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+ &#8226;   <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+ &#8226;   <a href="#zoneinfo">zoneinfo</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/__init__.py" type="text/plain"><tt>tzdata.zoneinfo</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Africa">tzdata.zoneinfo.Africa</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America">tzdata.zoneinfo.America</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Antarctica">tzdata.zoneinfo.Antarctica</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Arctic">tzdata.zoneinfo.Arctic</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Asia">tzdata.zoneinfo.Asia</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Atlantic">tzdata.zoneinfo.Atlantic</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Australia">tzdata.zoneinfo.Australia</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Brazil">tzdata.zoneinfo.Brazil</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Canada">tzdata.zoneinfo.Canada</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Chile">tzdata.zoneinfo.Chile</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Etc">tzdata.zoneinfo.Etc</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Europe">tzdata.zoneinfo.Europe</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Indian">tzdata.zoneinfo.Indian</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Mexico">tzdata.zoneinfo.Mexico</a>
+ &#8226;   <a href="#tzdata.zoneinfo.Pacific">tzdata.zoneinfo.Pacific</a>
+ &#8226;   <a href="#tzdata.zoneinfo.US">tzdata.zoneinfo.US</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Africa"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Africa/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Africa</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.America"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/America/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.America</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.Argentina">tzdata.zoneinfo.America.Argentina</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.Indiana">tzdata.zoneinfo.America.Indiana</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.Kentucky">tzdata.zoneinfo.America.Kentucky</a>
+ &#8226;   <a href="#tzdata.zoneinfo.America.North_Dakota">tzdata.zoneinfo.America.North_Dakota</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.America.Argentina"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/America/Argentina/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.America.Argentina</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo.America">tzdata.zoneinfo.America</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.America.Indiana"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/America/Indiana/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.America.Indiana</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo.America">tzdata.zoneinfo.America</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.America.Kentucky"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/America/Kentucky/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.America.Kentucky</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo.America">tzdata.zoneinfo.America</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.America.North_Dakota"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/America/North_Dakota/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.America.North_Dakota</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo.America">tzdata.zoneinfo.America</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Antarctica"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Antarctica/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Antarctica</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Arctic"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Arctic/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Arctic</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Asia"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Asia/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Asia</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Atlantic"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Atlantic/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Atlantic</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Australia"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Australia/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Australia</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Brazil"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Brazil/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Brazil</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Canada"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Canada/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Canada</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Chile"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Chile/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Chile</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Etc"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Etc/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Etc</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Europe"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Europe/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Europe</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Indian"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Indian/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Indian</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Mexico"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Mexico/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Mexico</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.Pacific"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/Pacific/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.Pacific</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="tzdata.zoneinfo.US"></a>
+  <a target="code" href="///C:/Users/futurist_/AppData/Roaming/Python/Python314/site-packages/tzdata/zoneinfo/US/__init__.py" type="text/plain"><tt>tzdata.zoneinfo.US</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#tzdata.zoneinfo">tzdata.zoneinfo</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#tzdata">tzdata</a>
 
   </div>
 
@@ -24310,6 +24883,7 @@ imported by:
 <span class="moduletype">Package</span>  <div class="import">
 imports:
     <a href="#_zoneinfo">_zoneinfo</a>
+ &#8226;   <a href="#tzdata">tzdata</a>
  &#8226;   <a href="#zoneinfo">zoneinfo</a>
  &#8226;   <a href="#zoneinfo._common">zoneinfo._common</a>
  &#8226;   <a href="#zoneinfo._tzpath">zoneinfo._tzpath</a>
