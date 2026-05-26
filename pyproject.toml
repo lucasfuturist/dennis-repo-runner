@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "repo-runner"
+version = "0.2.0"
+description = "Deterministic repository snapshot and slicing engine"
+readme = "readme.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0.0",
+    "google-genai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "pytest>=8.0.0"
+]
+
+[project.scripts]
+repo-runner = "src.entry_point:launch"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
