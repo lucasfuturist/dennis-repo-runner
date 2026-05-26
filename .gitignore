@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.pytest_cache/
 
 # Virtual Envs
 .venv/
@@ -20,6 +21,7 @@ dist/
 .repo-runner-output/
 out/
 snapshots/
+.context/
 
 # IDE
 .vscode/
