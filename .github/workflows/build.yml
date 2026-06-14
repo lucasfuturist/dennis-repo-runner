@@ -1,0 +1,69 @@
+name: Multi-Platform Build Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-build:
+    name: Test & Package Application
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11"]
+
+    steps:
+    - name: Check out Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install System Dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-tk
+
+    - name: Install Application Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Install baseline requirements if present, then guarantee all test dependencies are present
+        pip install -r requirements.txt || true
+        pip install pytest pydantic fastapi uvicorn pytest-mock pyinstaller google-genai python-dotenv
+
+    - name: Run Test Suite Verification
+      run: |
+        pytest tests/
+
+    - name: Package Windows Binary
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        ./scripts/build_exe.ps1
+
+    - name: Package macOS Binary
+      if: matrix.os == 'macos-latest'
+      run: |
+        chmod +x scripts/build_mac.sh
+        ./scripts/build_mac.sh
+
+    - name: Upload Windows Executable Artifact
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: repo-runner-windows
+        path: dist/repo-runner.exe
+
+    - name: Upload macOS Executable Artifact
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: repo-runner-macos
+        path: dist/repo-runner
