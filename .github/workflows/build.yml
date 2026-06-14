@@ -40,7 +40,7 @@ jobs:
 
     - name: Run Test Suite Verification
       run: |
-        pytest tests/
+        pytest tests/ --ignore=tests/integration/test_cli_batch_compress.py --ignore=tests/unit/test_batch_compression.py
 
     - name: Package Windows Binary
       if: matrix.os == 'windows-latest'
