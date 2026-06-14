@@ -23,6 +23,7 @@ out/
 snapshots/
 .context/
 .uv.lock
+dummy/
 
 # IDE
 .vscode/

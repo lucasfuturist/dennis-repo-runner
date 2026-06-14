@@ -525,7 +525,6 @@ def _render_ascii_tree(paths: List[str]) -> str:
             is_last = (i == len(entries) - 1)
             connector = "└── " if is_last else "├── "
             
-            # If the node has children, it's a directory
             if node[key]:
                 lines.append(f"{prefix}{connector}{key}/")
                 extension = "    " if is_last else "│   "
@@ -570,7 +569,6 @@ def run_batch_module_compression_stateless(
 
     client = genai.Client(api_key=api_key)
 
-    # Re-use prompt definition from compressor file safely
     try:
         from scripts.llm_compressor import SYSTEM_PROMPT
     except ImportError:
@@ -601,7 +599,6 @@ COMPRESSION RULES (CRITICAL):
         if not abs_file_paths:
             continue
 
-        # Resolve parent path and calculate relative folder path from repo root
         first_file = abs_file_paths[0]
         parent_dir = os.path.dirname(os.path.abspath(first_file))
         
@@ -682,3 +679,43 @@ COMPRESSION RULES (CRITICAL):
             exported_files[module_name] = output_path
 
     return exported_files
+
+
+def get_file_preview_data(abs_path: str, repo_root: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Acts as a secure core facade that retrieves metadata, language, fingerprint, 
+    imports, and symbols for a given file. This prevents direct view-layer dependencies 
+    on underlying analysis modules.
+    """
+    abs_path_clean = os.path.abspath(abs_path)
+    if not os.path.exists(abs_path_clean):
+        raise FileNotFoundError(f"Requested target file path does not exist: {abs_path_clean}")
+        
+    fp = FileFingerprint.fingerprint(abs_path_clean)
+    
+    actual_imports = []
+    actual_symbols = []
+    try:
+        scan_res = ImportScanner.scan(abs_path_clean, fp["language"])
+        actual_imports = scan_res.get("imports", [])
+        actual_symbols = scan_res.get("symbols", [])
+    except Exception:
+        pass
+        
+    stable_id = None
+    if repo_root:
+        try:
+            normalizer = PathNormalizer(os.path.abspath(repo_root))
+            normalized = normalizer.normalize(abs_path_clean)
+            stable_id = normalizer.file_id(normalized)
+        except Exception:
+            pass
+            
+    return {
+        "stable_id": stable_id,
+        "language": fp["language"],
+        "sha256": fp["sha256"],
+        "size_bytes": fp["size_bytes"],
+        "imports": actual_imports,
+        "symbols": actual_symbols
+    }
