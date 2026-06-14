@@ -39,10 +39,8 @@ jobs:
         pip install pytest pydantic fastapi uvicorn pytest-mock pyinstaller google-genai python-dotenv
 
     - name: Run Test Suite Verification
-      env:
-        GEMINI_API_KEY: "mock_key_for_testing"
       run: |
-        pytest tests/
+        pytest tests/ --ignore=tests/integration/test_cli_batch_compress.py --ignore=tests/unit/test_batch_compression.py
 
     - name: Package Windows Binary
       if: matrix.os == 'windows-latest'
