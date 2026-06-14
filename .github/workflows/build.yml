@@ -34,7 +34,9 @@ jobs:
     - name: Install Application Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt || pip install pytest pydantic fastapi uvicorn pytest-mock pyinstaller
+        # Install baseline requirements if present, then guarantee all test dependencies are present
+        pip install -r requirements.txt || true
+        pip install pytest pydantic fastapi uvicorn pytest-mock pyinstaller google-genai python-dotenv
 
     - name: Run Test Suite Verification
       run: |
