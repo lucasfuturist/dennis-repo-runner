@@ -39,6 +39,8 @@ jobs:
         pip install pytest pydantic fastapi uvicorn pytest-mock pyinstaller google-genai python-dotenv
 
     - name: Run Test Suite Verification
+      env:
+        GEMINI_API_KEY: "mock_key_for_testing"
       run: |
         pytest tests/
 
