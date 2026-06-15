@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from src.fingerprint.file_fingerprint import FileFingerprint
-from src.analysis.import_scanner import ImportScanner
+from src.core.controller import get_file_preview_data
 
 class PreviewPanel(ttk.Frame):
     def __init__(self, parent):
@@ -37,26 +36,25 @@ class PreviewPanel(ttk.Frame):
     def load_file(self, abs_path, stable_id):
         self.clear()
         try:
-            # 1. Fingerprint (Size, SHA, Lang)
-            fp = FileFingerprint.fingerprint(abs_path)
+            # Query backend securely via the Core Facade Layer
+            data = get_file_preview_data(abs_path)
             
-            # 2. Scan Imports (Lazy load on click using detected language)
-            scan_res = ImportScanner.scan(abs_path, fp['language'])
+            lang = data["language"]
+            sha256 = data["sha256"]
+            size_bytes = data["size_bytes"]
+            actual_imports = data["imports"]
+            actual_symbols = data["symbols"]
             
-            # Extract the actual lists from the dictionary
-            actual_imports = scan_res.get('imports', [])
-            actual_symbols = scan_res.get('symbols', [])
-            
-            # 3. Update Brief Header Label
+            # Update Brief Header Label
             import_count = len(actual_imports)
             symbol_count = len(actual_symbols)
-            self.lbl_meta.config(text=f" ID: {stable_id}  |  {fp['language']}  |  {import_count} Imports  |  {symbol_count} Symbols")
+            self.lbl_meta.config(text=f" ID: {stable_id}  |  {lang}  |  {import_count} Imports  |  {symbol_count} Symbols")
 
-            # 4. Construct Detailed Metadata Header
+            # Construct Detailed Metadata Header
             header_lines = [
                 f"Path:    {abs_path}",
-                f"SHA256:  {fp['sha256']}",
-                f"Size:    {fp['size_bytes']:,} bytes",
+                f"SHA256:  {sha256}",
+                f"Size:    {size_bytes:,} bytes",
                 "-" * 60,
                 "IMPORTS FOUND:",
             ]
@@ -81,11 +79,11 @@ class PreviewPanel(ttk.Frame):
             
             full_header = "\n".join(header_lines)
             
-            # 5. Insert Header
+            # Insert Header
             self.text_preview.insert("1.0", full_header, "header")
 
-            # 6. Append Real File Content
-            if fp['size_bytes'] > 250_000:
+            # Append Real File Content
+            if size_bytes > 250_000:
                 self.text_preview.insert(tk.END, "\n<< File too large for preview >>")
             else:
                 try:
@@ -101,33 +99,22 @@ class PreviewPanel(ttk.Frame):
             self.text_preview.insert("1.0", f"<< Error processing file: {e} >>")
 
     def _highlight_syntax(self, content):
-        """Very basic highlighting for common keywords. 
-           This is not a full lexer, just a visual aid."""
+        """Very basic highlighting for common keywords."""
         keywords = {
             "def", "class", "import", "from", "return", "if", "else", "elif", 
             "for", "while", "try", "except", "with", "as", "pass", "lambda",
             "const", "let", "var", "function", "export", "interface", "type"
         }
         
-        # We start searching after the header (heuristic: header is ~15 lines)
         start_index = "15.0" 
         
         for kw in keywords:
-            # Search for whole words only
             idx = start_index
             while True:
-                # search pattern, stop index, nocase, count, regexp...
-                # using a regex to ensure word boundaries would be better, but simpler approach first:
-                # We'll just search for the string. To do word boundaries in Tkinter search requires strict mode.
                 idx = self.text_preview.search(kw, idx, stopindex=tk.END)
                 if not idx:
                     break
                 
-                # Check length to calculate end index
                 end_idx = f"{idx}+{len(kw)}c"
-                
-                # Apply tag
                 self.text_preview.tag_add("keyword", idx, end_idx)
-                
-                # Move to next
                 idx = end_idx

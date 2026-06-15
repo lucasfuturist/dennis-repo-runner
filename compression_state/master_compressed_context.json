@@ -1,0 +1,3 @@
+{
+  "file:src/core/config_loader.py": "### `src/core/config_loader.py`\n**Role:** Responsible for locating, parsing, and validating the project configuration file into a typed domain model.\n**Key Interfaces:**\n- `ConfigLoader` - Class encapsulating the resolution and loading of the project configuration.\n- `load_config(repo_root: str): RepoRunnerConfig` - Takes a repository root directory path and returns the resolved configuration object, providing a default if unavailable.\n- `CONFIG_FILENAME` - Constant defining the target configuration file name (`repo-runner.json`).\n**Dependencies:** `os`, `json`, `typing`, `src.core.types.RepoRunnerConfig`"
+}

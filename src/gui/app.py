@@ -12,7 +12,10 @@ import json
 
 from src.scanner.filesystem_scanner import FileSystemScanner
 from src.normalize.path_normalizer import PathNormalizer
-from src.core.controller import run_snapshot
+from src.core.controller import (
+    run_snapshot, 
+    run_batch_module_compression_stateless
+)
 from src.exporters.flatten_markdown_exporter import FlattenMarkdownExporter, FlattenOptions
 
 from src.gui.components.config_tabs import ConfigTabs
@@ -102,7 +105,6 @@ class RepoRunnerApp(tk.Tk):
         Populates the ignore box with safe defaults and dynamically merges
         entries from the repository's .gitignore file if one exists.
         """
-        # Critical baseline to prevent scanning our own outputs or heavy caches
         ignores = {".git", "node_modules", "__pycache__", "dist", "build", ".next", ".expo", ".venv", ".pytest_cache", "snapshots", "compression_state"}
         
         if repo_path:
@@ -113,11 +115,9 @@ class RepoRunnerApp(tk.Tk):
                         for line in f:
                             line = line.strip()
                             if line and not line.startswith("#"):
-                                # Clean trailing/leading slashes for exact name matching
                                 line = line.strip("/")
                                 if line.startswith("/"): 
                                     line = line[1:]
-                                # Ignore complex globs (*), focus on static directory/file names
                                 if line and "*" not in line:
                                     ignores.add(line)
                 except Exception:
@@ -132,7 +132,6 @@ class RepoRunnerApp(tk.Tk):
             self.ent_root.delete(0, tk.END)
             self.ent_root.insert(0, path)
             self.repo_root = path
-            # Dynamically read the .gitignore of the selected repo
             self._load_default_ignores(path)
 
     def _start_scan(self):
@@ -145,23 +144,19 @@ class RepoRunnerApp(tk.Tk):
         self.tree_panel.clear()
         self.preview_panel.clear()
         
-        # Disable dependent buttons during scan
         self.config_tabs.btn_apply_selection.config(state=tk.DISABLED)
         self.btn_snap.config(state=tk.DISABLED)
         self.btn_export.config(state=tk.DISABLED)
         self.btn_batch_export.config(state=tk.DISABLED)
         self.btn_compress.config(state=tk.DISABLED)
         
-        # Get settings safely on Main Thread
         depth = self.config_tabs.depth_var.get()
         ignore = set(self.config_tabs.ignore_var.get().split())
         exts = self.config_tabs.ext_var.get().split()
         readme = self.config_tabs.include_readme_var.get()
         
-        # Launch Progress Window
         self.progress_win = ProgressWindow(self, title="Scanning", message=f"Scanning {root}...")
         
-        # Start Worker Thread
         self.scan_worker = threading.Thread(
             target=self._scan_thread,
             args=(root, depth, ignore, exts, readme),
@@ -173,12 +168,9 @@ class RepoRunnerApp(tk.Tk):
         try:
             scanner = FileSystemScanner(depth=depth, ignore_names=ignore)
             
-            # Define callback for the scanner
             def on_progress(count):
                 if self.progress_win.cancelled:
-                    return False # Stop scanning
-                
-                # Update UI thread
+                    return False
                 self.after(0, lambda: self.progress_win.update_message(f"Found {count} files..."))
                 return True
 
@@ -190,7 +182,6 @@ class RepoRunnerApp(tk.Tk):
 
             self.after(0, lambda: self.progress_win.update_message("Filtering and Normalizing..."))
             
-            # Filter
             filtered = []
             ext_set = set(e.lower() for e in exts)
             for f in abs_files:
@@ -199,14 +190,12 @@ class RepoRunnerApp(tk.Tk):
                 if not ext_set or ext.lower() in ext_set or is_readme:
                     filtered.append(f)
             
-            # Normalize for tree
             normalizer = PathNormalizer(root)
             struct = {}
             for f in filtered:
                 rel = normalizer.normalize(f)
                 parts = rel.split('/')
                 
-                # Build nested dict
                 curr = struct
                 for i, p in enumerate(parts):
                     is_last = (i == len(parts) - 1)
@@ -217,7 +206,6 @@ class RepoRunnerApp(tk.Tk):
                     else:
                         curr = curr.setdefault(p, {})
             
-            # Success
             self.after(0, lambda: self._scan_done(struct, len(filtered)))
             
         except Exception as e:
@@ -228,7 +216,6 @@ class RepoRunnerApp(tk.Tk):
         self.tree_panel.populate(struct)
         self.status_var.set(f"Scan Complete. Found {count} files.")
         
-        # Re-enable buttons
         self.config_tabs.btn_apply_selection.config(state=tk.NORMAL)
         self.btn_snap.config(state=tk.NORMAL)
         self.btn_export.config(state=tk.NORMAL)
@@ -255,7 +242,6 @@ class RepoRunnerApp(tk.Tk):
             self.status_var.set("Quick Select cleared.")
             return
             
-        # Parse by comma or newline
         raw_paths = [p.strip() for p in re.split(r'[,\n]+', raw_text) if p.strip()]
         target_ids = set()
         
@@ -373,63 +359,62 @@ class RepoRunnerApp(tk.Tk):
         messagebox.showerror("Export Error", error)
 
     def _batch_export(self):
+        """
+        Triggers Phase 2: Stateless, direct batch module compression.
+        """
         modules = self.tree_panel.get_modules()
         if not modules:
-            messagebox.showinfo("No Modules Found", "Please click a folder checkbox in the tree to lock it as a Module Root.")
+            messagebox.showinfo("No Modules Selected", "Please check a folder checkbox in the tree view to select modules.")
             return
 
-        # Automatic path generation
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        folder_name = f"{timestamp}_CONTEXT"
-        out_dir = os.path.join(self.repo_root, ".context", "compressed-context", folder_name)
+        env_path = os.path.join(self.repo_root, ".env")
+        if not os.path.exists(env_path):
+            messagebox.showwarning("Missing Configuration", f"Could not find '.env' file at repo root.\n\nPlease create {env_path} and add:\nGEMINI_API_KEY=\"your_key_here\"")
+            return
 
-        # Create directories safely
-        os.makedirs(out_dir, exist_ok=True)
-        
-        self.status_var.set(f"Batch Exporting {len(modules)} modules...")
+        out_dir = filedialog.askdirectory(title="Select Destination Folder for Compressed Modules")
+        if not out_dir:
+            return
+
+        self.status_var.set(f"Batch compressing {len(modules)} modules...")
         self.btn_batch_export.config(state=tk.DISABLED)
-        tree_only = self.config_tabs.export_tree_only_var.get()
+        self.btn_compress.config(state=tk.DISABLED)
+        self.btn_snap.config(state=tk.DISABLED)
+        self.btn_export.config(state=tk.DISABLED)
+
+        self.progress_win = ProgressWindow(self, title="Batch Module Compression", message="Initializing Gemini API Client...")
 
         def run_batch():
             try:
-                normalizer = PathNormalizer(self.repo_root)
-                exporter = FlattenMarkdownExporter()
-
-                for mod_name, abs_files in modules.items():
-                    manifest_files = []
-                    for abs_p in abs_files:
-                        rel = normalizer.normalize(abs_p)
-                        manifest_files.append({"path": rel, "size_bytes": 0, "sha256": "pre-snapshot"})
-
-                    dummy_manifest = {"files": manifest_files}
-                    options = FlattenOptions(tree_only=tree_only, include_readme=True, scope="full")
-
-                    content = exporter.generate_content(
-                        repo_root=self.repo_root,
-                        manifest=dummy_manifest,
-                        options=options,
-                        title=f"Module Export: {mod_name}",
-                        snapshot_id="BATCH_EXPORT"
-                    )
-
-                    safe_name = re.sub(r'[\\/*?:"<>|]', "", mod_name)
-                    out_path = os.path.join(out_dir, f"{safe_name}-context.md")
-                    
-                    with open(out_path, "w", encoding="utf-8") as f:
-                        f.write(content)
-
-                self.after(0, lambda: self._batch_export_done(out_dir, len(modules)))
+                # Execute stateless engine
+                exported_map = run_batch_module_compression_stateless(
+                    repo_root=self.repo_root,
+                    selected_modules=modules,
+                    export_dir=out_dir,
+                    progress_callback=self._update_batch_progress
+                )
+                self.after(0, lambda: self._batch_export_done(out_dir, len(exported_map)))
             except Exception as e:
                 self.after(0, lambda: self._batch_export_fail(str(e)))
 
         threading.Thread(target=run_batch, daemon=True).start()
 
+    def _update_batch_progress(self, msg: str, current: int, total: int):
+        """Thread-safe hook to update the UI progress bar and status message."""
+        self.after(0, lambda: self.progress_win.update_progress(current, total))
+        self.after(0, lambda: self.progress_win.update_message(msg))
+
     def _batch_export_done(self, out_dir, count):
+        self.progress_win.close()
         self.btn_batch_export.config(state=tk.NORMAL)
-        self.status_var.set(f"Batch Export Complete. Saved {count} modules to {out_dir}")
-        messagebox.showinfo("Success", f"Exported {count} module files to:\n{out_dir}")
+        self.btn_compress.config(state=tk.NORMAL)
+        self.btn_snap.config(state=tk.NORMAL)
+        self.btn_export.config(state=tk.NORMAL)
+        
+        self.status_var.set(f"Batch Compression Complete. Exported {count} modules.")
+        messagebox.showinfo("Export Success", f"Successfully exported {count} compressed module files to:\n\n{out_dir}")
+        
         try:
-            # Automatically open the new timestamped context folder
             if platform.system() == "Windows":
                 os.startfile(out_dir)
             elif platform.system() == "Darwin":
@@ -440,8 +425,15 @@ class RepoRunnerApp(tk.Tk):
             pass
 
     def _batch_export_fail(self, error):
+        if hasattr(self, 'progress_win') and self.progress_win:
+            self.progress_win.close()
+            
         self.btn_batch_export.config(state=tk.NORMAL)
-        self.status_var.set("Batch Export Failed.")
+        self.btn_compress.config(state=tk.NORMAL)
+        self.btn_snap.config(state=tk.NORMAL)
+        self.btn_export.config(state=tk.NORMAL)
+        
+        self.status_var.set("Batch Compression Failed.")
         messagebox.showerror("Batch Export Error", error)
 
     def _compress_context(self):
@@ -473,7 +465,6 @@ class RepoRunnerApp(tk.Tk):
         state_dir = os.path.join(out_root, "compression_state")
         current_json = os.path.join(out_root, "current.json")
         
-        # Capture base_id BEFORE we take a new snapshot and overwrite current.json
         base_id = "empty"
         if os.path.exists(current_json):
             try:
@@ -482,7 +473,6 @@ class RepoRunnerApp(tk.Tk):
             except Exception:
                 pass
 
-        # Capture GUI ignore rules, depth, and extensions for the snapshot phase
         depth_val = str(self.config_tabs.depth_var.get())
         ignore_list = self.config_tabs.ignore_var.get().split()
         ext_list = self.config_tabs.ext_var.get().split()
@@ -498,7 +488,6 @@ class RepoRunnerApp(tk.Tk):
             try:
                 python_exe = sys.executable
                 
-                # Phase 1: Snapshot (using inherited GUI rules)
                 self.after(0, lambda: self.progress_win.update_message("Phase 1/4: Generating strict snapshot..."))
                 
                 snap_cmd = [
@@ -514,7 +503,6 @@ class RepoRunnerApp(tk.Tk):
 
                 subprocess.run(snap_cmd, check=True, capture_output=True)
 
-                # Phase 2: Diff State
                 self.after(0, lambda: self.progress_win.update_message("Phase 2/4: Syncing deterministic state queues..."))
                 subprocess.run(
                     [python_exe, "-m", "src.entry_point", "export", "compression-state", 
@@ -522,7 +510,6 @@ class RepoRunnerApp(tk.Tk):
                     check=True, capture_output=True
                 )
                 
-                # Move to main thread to show Dialog
                 self.after(0, lambda: self._show_compression_dialog(state_dir, out_root))
                 
             except subprocess.CalledProcessError as e:
@@ -558,11 +545,9 @@ class RepoRunnerApp(tk.Tk):
             try:
                 python_exe = sys.executable
                 
-                # Phase 3: LLM
                 self.after(0, lambda: self.progress_win.update_message("Phase 3/4: Starting LLM Compressor..."))
                 llm_script = os.path.join(self.repo_root, "scripts", "llm_compressor.py")
                 
-                # Use Popen to stream stdout line-by-line
                 process = subprocess.Popen(
                     [python_exe, "-u", llm_script, "--repo-root", self.repo_root, "--state-dir", state_dir],
                     stdout=subprocess.PIPE,
@@ -579,7 +564,6 @@ class RepoRunnerApp(tk.Tk):
                         
                     output_log.append(clean_line)
                     
-                    # Show the raw tail of the logs to ensure nothing is hidden
                     log_tail = "\n".join(output_log[-4:])
                     display_msg = f"Phase 3/4: Compressing via LLM...\n\n{log_tail}"
                     self.after(0, lambda m=display_msg: self.progress_win.update_message(m))
@@ -587,10 +571,9 @@ class RepoRunnerApp(tk.Tk):
                 process.wait()
                 
                 if process.returncode != 0:
-                    err_msg = "\n".join(output_log[-15:]) # Grab tail of logs for context
+                    err_msg = "\n".join(output_log[-15:])
                     raise Exception(f"LLM Compressor Failed (Code {process.returncode}):\n{err_msg}")
 
-                # Phase 4: Stitch
                 self.after(0, lambda: self.progress_win.update_message("Phase 4/4: Stitching final markdown artifact..."))
                 stitch_script = os.path.join(self.repo_root, "scripts", "llm_stitcher.py")
                 subprocess.run(

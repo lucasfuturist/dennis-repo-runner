@@ -18,7 +18,43 @@ app = FastAPI(
     version="0.2.1"
 )
 
-# --- NEW: Root Redirect ---
+# --- Path Safety Verification Boundary ---
+def verify_safe_path(path: str) -> str:
+    """
+    Enforces boundary controls on incoming path arguments.
+    Prevents crawling systemic drive roots or targeting critical OS structures.
+    """
+    if not path or not path.strip():
+        raise HTTPException(status_code=400, detail="Path parameter cannot be empty.")
+        
+    abs_path = os.path.abspath(path.strip())
+    
+    # Establish root system directories to block
+    root_dirs = {os.path.abspath(os.sep)}
+    if os.name == 'nt':
+        drive = os.path.splitdrive(abs_path)[0]
+        if drive:
+            root_dirs.add(os.path.abspath(drive + os.sep))
+            
+    if abs_path in root_dirs:
+        raise HTTPException(
+            status_code=403, 
+            detail=f"Access Denied: Targeting system drive roots ({abs_path}) is forbidden."
+        )
+        
+    # Prevent traversal to critical OS files
+    normalized_lower = abs_path.lower().replace("\\", "/")
+    restricted_keywords = ["system32", "windows", "etc/passwd", "etc/shadow", "etc/hosts"]
+    for keyword in restricted_keywords:
+        if keyword in normalized_lower:
+            raise HTTPException(
+                status_code=403, 
+                detail="Access Denied: Path references a restricted operating system directory."
+            )
+            
+    return abs_path
+
+# --- Root Redirect ---
 @app.get("/", include_in_schema=False)
 def root():
     """Redirects the root URL to the interactive API documentation."""
@@ -39,7 +75,7 @@ class SliceRequest(BaseModel):
     output_root: str
     focus_id: str
     radius: int = 1
-    max_tokens: Optional[int] = None  # NEW FIELD
+    max_tokens: Optional[int] = None
 
 class CompareRequest(BaseModel):
     output_root: str
@@ -54,10 +90,12 @@ def create_snapshot(req: SnapshotRequest):
     Scans the target repository, normalizes paths, fingerprints files, 
     and builds an AST-derived dependency graph.
     """
+    safe_repo_root = verify_safe_path(req.repo_root)
+    safe_output_root = verify_safe_path(req.output_root)
     try:
         snap_id = run_snapshot(
-            repo_root=req.repo_root,
-            output_root=req.output_root,
+            repo_root=safe_repo_root,
+            output_root=safe_output_root,
             depth=req.depth,
             ignore=req.ignore,
             include_extensions=req.include_extensions,
@@ -76,7 +114,8 @@ def slice_snapshot(snapshot_id: str, req: SliceRequest):
     Performs a Bidirectional BFS on the dependency graph to isolate a target file 
     and its N-degree dependencies. Returns the compressed manifest and token telemetry.
     """
-    loader = SnapshotLoader(req.output_root)
+    safe_output_root = verify_safe_path(req.output_root)
+    loader = SnapshotLoader(safe_output_root)
     try:
         snap_dir = loader.resolve_snapshot_dir(snapshot_id)
         manifest_dict = loader.load_manifest(snap_dir)
@@ -85,7 +124,7 @@ def slice_snapshot(snapshot_id: str, req: SliceRequest):
         if not os.path.exists(graph_path):
             raise FileNotFoundError(f"graph.json missing in {snap_dir}")
             
-        with open(graph_path, "r") as f:
+        with open(graph_path, "r", encoding="utf-8") as f:
             graph_data = json.load(f)
             
     except Exception as e:
@@ -101,7 +140,6 @@ def slice_snapshot(snapshot_id: str, req: SliceRequest):
     )
     
     # Generate human-readable telemetry
-    # We use the sliced manifest's internal stats for telemetry generation
     estimated = sliced_manifest.get("stats", {}).get("estimated_tokens", 0)
     usage_str = TokenTelemetry.format_usage(estimated, req.max_tokens or 0)
     
@@ -127,7 +165,8 @@ def compare_snapshots(req: CompareRequest):
     Deterministically diffs two snapshots. Identifies added/removed/modified files 
     via SHA256 hashes, and calculates the exact dependency edges that drifted.
     """
-    loader = SnapshotLoader(req.output_root)
+    safe_output_root = verify_safe_path(req.output_root)
+    loader = SnapshotLoader(safe_output_root)
     try:
         dir_a = loader.resolve_snapshot_dir(req.base_id)
         dir_b = loader.resolve_snapshot_dir(req.target_id)
@@ -140,9 +179,11 @@ def compare_snapshots(req: CompareRequest):
         
         g_a, g_b = None, None
         if os.path.exists(ga_path):
-            with open(ga_path, "r") as f: g_a = GraphStructure.model_validate(json.load(f))
+            with open(ga_path, "r", encoding="utf-8") as f: 
+                g_a = GraphStructure.model_validate(json.load(f))
         if os.path.exists(gb_path):
-            with open(gb_path, "r") as f: g_b = GraphStructure.model_validate(json.load(f))
+            with open(gb_path, "r", encoding="utf-8") as f: 
+                g_b = GraphStructure.model_validate(json.load(f))
 
         report = SnapshotComparator.compare(manifest_a, manifest_b, g_a, g_b)
         return report
